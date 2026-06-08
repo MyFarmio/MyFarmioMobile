@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_main_graph"
+    app:startDestination="@id/nav_dashboard">
+
+    <fragment
+        android:id="@+id/nav_dashboard"
+        android:name="com.myfarmio.app.ui.dashboard.DashboardFragment"
+        android:label="Dashboard" />
+
+    <fragment
+        android:id="@+id/nav_tareas"
+        android:name="com.myfarmio.app.ui.tasks.TasksFragment"
+        android:label="Tareas" />
+
+    <fragment
+        android:id="@+id/nav_campos"
+        android:name="com.myfarmio.app.ui.fields.FieldsFragment"
+        android:label="Campos" />
+
+</navigation>

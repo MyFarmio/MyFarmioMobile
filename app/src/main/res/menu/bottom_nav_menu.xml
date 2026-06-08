@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_dashboard"
+        android:icon="@drawable/ic_panel_control"
+        android:title="Dashboard" />
+    <item
+        android:id="@+id/nav_tareas"
+        android:icon="@drawable/ic_lista_tareas"
+        android:title="Tareas" />
+    <item
+        android:id="@+id/nav_campos"
+        android:icon="@drawable/ic_planta_semillero"
+        android:title="Campos" />
+</menu>
