@@ -3,202 +3,41 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f8faf5"
+    android:background="#F8FAF5"
     android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:paddingBottom="32dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="14dp">
-
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/logo_myfarmio"
-                android:scaleType="fitCenter"
-                android:background="@drawable/bg_logo_white"
-                android:padding="5dp"
-                android:contentDescription="@null" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginStart="10dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/dashboard_brand_title"
-                    android:textSize="18sp"
-                    android:textColor="#154212"
-                    android:textStyle="bold"
-                    android:fontFamily="sans-serif-black" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/brand_tagline"
-                    android:textSize="10sp"
-                    android:textAllCaps="true"
-                    android:letterSpacing="0.2"
-                    android:textColor="#79564b" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
+            <ImageView android:layout_width="44dp" android:layout_height="44dp" android:background="@drawable/bg_logo_white" android:padding="6dp" android:src="@drawable/logo_myfarmio" android:contentDescription="@null" />
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="10dp" android:orientation="vertical">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="MyFarmio" android:textColor="#154212" android:textSize="18sp" android:textStyle="bold" android:fontFamily="sans-serif-black" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ASISTENTE RURAL" android:textColor="#79564B" android:textSize="9sp" android:textStyle="bold" android:letterSpacing="0.18" />
             </LinearLayout>
+            <com.google.android.material.button.MaterialButton android:id="@+id/btn_tasks_filter" android:layout_width="48dp" android:layout_height="48dp" android:text="" android:contentDescription="Filtrar tareas" android:insetTop="0dp" android:insetBottom="0dp" android:backgroundTint="#E6F1E1" app:cornerRadius="24dp" app:icon="@drawable/ic_lista_tareas" app:iconTint="#154212" />
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ÓRDENES DE TRABAJO"
-            android:textSize="11sp"
-            android:textAllCaps="true"
-            android:letterSpacing="0.2"
-            android:textColor="#79564b"
-            android:textStyle="bold" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:text="ÓRDENES DE TRABAJO" android:textColor="#79564B" android:textSize="11sp" android:textStyle="bold" android:letterSpacing="0.16" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:text="Tareas operativas" android:textColor="#154212" android:textSize="30sp" android:textStyle="bold" android:fontFamily="sans-serif-black" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Priorizá la jornada y actualizá cada labor desde una vista pensada para campo." android:textColor="#646862" android:textSize="14sp" android:lineSpacingExtra="3dp" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/tasks_title"
-            android:textSize="30sp"
-            android:textColor="#154212"
-            android:textStyle="bold"
-            android:fontFamily="sans-serif-black"
-            android:layout_marginTop="4dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/tasks_subtitle"
-            android:textSize="13sp"
-            android:textColor="#6b7280"
-            android:lineSpacingMultiplier="1.4"
-            android:layout_marginTop="4dp" />
-
-        <GridLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:columnCount="2"
-            android:useDefaultMargins="true"
-            android:layout_marginTop="16dp">
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="#ffffff">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Total" android:textAllCaps="true" android:textSize="10sp" android:textColor="#8b7d75"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="3" android:textSize="32sp" android:textStyle="bold" android:textColor="#154212" android:layout_marginTop="4dp"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="#ffffff">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Activas" android:textAllCaps="true" android:textSize="10sp" android:textColor="#8b7d75"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2" android:textSize="32sp" android:textStyle="bold" android:textColor="#79564b" android:layout_marginTop="4dp"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="#ffffff">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="En progreso" android:textAllCaps="true" android:textSize="10sp" android:textColor="#8b7d75"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="1" android:textSize="32sp" android:textStyle="bold" android:textColor="#1b6ebe" android:layout_marginTop="4dp"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="#ffffff">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Vencidas" android:textAllCaps="true" android:textSize="10sp" android:textColor="#8b7d75"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="1" android:textSize="32sp" android:textStyle="bold" android:textColor="#ba1a1a" android:layout_marginTop="4dp"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+        <GridLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="18dp" android:columnCount="2" android:useDefaultMargins="true">
+            <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" app:cardBackgroundColor="#FFFFFF" app:cardCornerRadius="18dp" app:cardElevation="1dp"><LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="15dp" android:orientation="vertical"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TOTAL" android:textColor="#72796E" android:textSize="10sp" android:textStyle="bold" android:letterSpacing="0.12"/><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:text="3" android:textColor="#191C1A" android:textSize="30sp" android:textStyle="bold" /></LinearLayout></com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" app:cardBackgroundColor="#FFFFFF" app:cardCornerRadius="18dp" app:cardElevation="1dp"><LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="15dp" android:orientation="vertical"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ACTIVAS" android:textColor="#72796E" android:textSize="10sp" android:textStyle="bold" android:letterSpacing="0.12"/><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:text="2" android:textColor="#79564B" android:textSize="30sp" android:textStyle="bold" /></LinearLayout></com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" app:cardBackgroundColor="#FFFFFF" app:cardCornerRadius="18dp" app:cardElevation="1dp"><LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="15dp" android:orientation="vertical"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="EN PROGRESO" android:textColor="#72796E" android:textSize="10sp" android:textStyle="bold" android:letterSpacing="0.12"/><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:text="1" android:textColor="#1B6EBE" android:textSize="30sp" android:textStyle="bold" /></LinearLayout></com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" app:cardBackgroundColor="#FFFFFF" app:cardCornerRadius="18dp" app:cardElevation="1dp"><LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="15dp" android:orientation="vertical"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="VENCIDAS" android:textColor="#72796E" android:textSize="10sp" android:textStyle="bold" android:letterSpacing="0.12"/><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:text="1" android:textColor="#93000A" android:textSize="30sp" android:textStyle="bold" /></LinearLayout></com.google.android.material.card.MaterialCardView>
         </GridLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginTop="16dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/tasks_current_user"
-                android:textColor="#8b7d75" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="My Farmio Admin"
-                android:textStyle="bold"
-                android:textColor="#154212" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:gravity="center_vertical">
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TABLERO MÓVIL" android:textColor="#79564B" android:textSize="10sp" android:textStyle="bold" android:letterSpacing="0.14"/><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="Tocá una tarjeta para actualizarla" android:textColor="#646862" android:textSize="13sp"/></LinearLayout>
+            <TextView android:layout_width="wrap_content" android:layout_height="44dp" android:gravity="center" android:text="Filtrar" android:textColor="#154212" android:textStyle="bold" android:paddingHorizontal="10dp" />
         </LinearLayout>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_tasks_filter"
-            android:layout_width="wrap_content"
-            android:layout_height="42dp"
-            android:layout_marginTop="12dp"
-            android:text="@string/tasks_filters"
-            android:textAllCaps="false"
-            app:cornerRadius="14dp"
-            android:backgroundTint="#eef2ea"
-            android:textColor="#154212" />
-
-        <LinearLayout
-            android:id="@+id/ll_tasks_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="12dp" />
-
+        <!-- Las tareas se agrupan por estado desde TasksFragment; se conectarán a API en la siguiente iteración. -->
+        <LinearLayout android:id="@+id/ll_tasks_container" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:orientation="vertical" />
     </LinearLayout>
-
 </androidx.core.widget.NestedScrollView>
