@@ -1,14 +1,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/nav_dashboard"
-        android:icon="@drawable/ic_panel_control"
-        android:title="Dashboard" />
+        android:icon="@drawable/ic_leaf"
+        android:title="Inicio" />
     <item
         android:id="@+id/nav_tareas"
-        android:icon="@drawable/ic_lista_tareas"
+        android:icon="@drawable/ic_task_alt"
         android:title="Tareas" />
     <item
         android:id="@+id/nav_campos"
-        android:icon="@drawable/ic_planta_semillero"
+        android:icon="@drawable/ic_leaf"
         android:title="Campos" />
+    <item
+        android:id="@+id/nav_ganado"
+        android:icon="@drawable/ic_pets"
+        android:title="Ganado" />
 </menu>

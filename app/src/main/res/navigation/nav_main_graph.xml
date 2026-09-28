@@ -19,4 +19,9 @@
         android:name="com.myfarmio.app.ui.fields.FieldsFragment"
         android:label="Campos" />
 
+    <fragment
+        android:id="@+id/nav_ganado"
+        android:name="com.myfarmio.app.ui.livestock.LivestockFragment"
+        android:label="Ganado" />
+
 </navigation>

@@ -33,7 +33,7 @@ public class DashboardFragment extends Fragment {
 
     private DashboardViewModel viewModel;
     private SwipeRefreshLayout swipeRefresh; // will point to dynamically created SwipeRefreshLayout or the placeholder frame
-    private ProgressBar progressOverlay;
+    private FrameLayout progressOverlay;
 
 
     @Nullable
