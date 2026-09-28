@@ -7,246 +7,168 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import com.myfarmio.app.R;
 import com.myfarmio.app.auth.SessionManager;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
+import com.myfarmio.app.ui.common.MobileUi;
+import com.myfarmio.app.ui.common.RecordText;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 public class DashboardFragment extends Fragment {
-
     private DashboardViewModel viewModel;
-    private SwipeRefreshLayout swipeRefresh; // will point to dynamically created SwipeRefreshLayout or the placeholder frame
+    private SwipeRefreshLayout swipeRefresh;
+    // XML has a container here, never cast this ID to ProgressBar.
     private FrameLayout progressOverlay;
+    private MobileUi.Sheet sheet;
+    private View root;
 
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    @Nullable @Override public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle state) {
         return inflater.inflate(R.layout.fragment_dashboard, container, false);
     }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        // Views
+    @Override public void onViewCreated(@NonNull View view, @Nullable Bundle saved) {
+        super.onViewCreated(view, saved);
+        root = view;
         swipeRefresh = view.findViewById(R.id.swipe_refresh);
         progressOverlay = view.findViewById(R.id.progress_overlay);
-
-        swipeRefresh.setOnRefreshListener(() -> {
-            String orgId = SessionManager.getInstance(requireContext()).getOrganizationId();
-            if (orgId != null && !orgId.isEmpty()) {
-                viewModel.loadDashboard(orgId);
-            } else {
-                swipeRefresh.setRefreshing(false);
-            }
-        });
-
-        TextView tvDashboardTitle = view.findViewById(R.id.tv_dashboard_title);
-        TextView tvAlertPlots = view.findViewById(R.id.tv_alert_plots);
-        TextView tvAlertPlotsDetail = view.findViewById(R.id.tv_alert_plots_detail);
-        TextView tvCriticalTasks = view.findViewById(R.id.tv_critical_tasks);
-        TextView tvCriticalTasksDetail = view.findViewById(R.id.tv_critical_tasks_detail);
-        TextView tvLivestock = view.findViewById(R.id.tv_livestock);
-        TextView tvLivestockDetail = view.findViewById(R.id.tv_livestock_detail);
-        TextView tvFinance = view.findViewById(R.id.tv_finance);
-        TextView tvFinanceDetail = view.findViewById(R.id.tv_finance_detail);
-
-        LinearLayout llAlerts = view.findViewById(R.id.ll_alerts_container);
-        LinearLayout llCropPulse = view.findViewById(R.id.ll_crop_pulse_container);
-        LinearLayout llAgenda = view.findViewById(R.id.ll_agenda_container);
-
-        TextView tvVerTareas = view.findViewById(R.id.tv_ver_tareas);
-
-        // Session info
-        SessionManager session = SessionManager.getInstance(requireContext());
-        String orgId = session.getOrganizationId();
-        String userName = session.getUserName();
-        if (TextUtils.isEmpty(userName)) userName = "Usuario";
-        tvDashboardTitle.setText(String.format(Locale.getDefault(), "Estado general de %s", userName));
-
         viewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
-
-        // Observers
+        view.findViewById(R.id.dashboard_content).setVisibility(viewModel.state.getValue() == null ? View.GONE : View.VISIBLE);
+        MobileUi.text(view, R.id.tv_dashboard_date, LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE d 'de' MMMM", new Locale("es", "AR"))));
+        swipeRefresh.setColorSchemeResources(R.color.primary);
+        swipeRefresh.setOnRefreshListener(this::reload);
+        view.findViewById(R.id.tv_ver_tareas).setOnClickListener(v -> navigate(R.id.nav_tareas));
+        view.findViewById(R.id.card_tasks).setOnClickListener(v -> navigate(R.id.nav_tareas));
+        view.findViewById(R.id.card_fields).setOnClickListener(v -> navigate(R.id.nav_campos));
+        view.findViewById(R.id.dashboard_fields).setOnClickListener(v -> navigate(R.id.nav_campos));
+        view.findViewById(R.id.card_livestock).setOnClickListener(v -> navigate(R.id.nav_ganado));
+        view.findViewById(R.id.card_finance).setOnClickListener(v -> {
+            if (sheet != null) sheet.dismiss();
+            sheet = new MobileUi.Sheet(requireContext(), "Balance registrado");
+            sheet.row("Alcance del resumen", "Balance calculado por la consulta existente de ingresos y egresos. No es una proyección ni confirma el saldo de una cuenta.");
+            sheet.row("Detalle financiero", "El módulo de finanzas todavía no tiene una ruta operativa en Android. Consultá los movimientos en la web.");
+            sheet.show();
+        });
         viewModel.isLoading.observe(getViewLifecycleOwner(), loading -> {
-            boolean isLoading = loading != null && loading;
-            setSwipeRefreshing(isLoading);
-            progressOverlay.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+            boolean busy = Boolean.TRUE.equals(loading);
+            boolean initial = busy && viewModel.state.getValue() == null;
+            progressOverlay.setVisibility(initial ? View.VISIBLE : View.GONE);
+            swipeRefresh.setImportantForAccessibility(initial ? View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS : View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+            swipeRefresh.setRefreshing(busy && !initial);
         });
-
-        viewModel.state.observe(getViewLifecycleOwner(), s -> {
-            if (s == null) return;
-
-            // Metrics
-            tvAlertPlots.setText(String.valueOf(s.alertPlots));
-            tvAlertPlotsDetail.setText(String.format(Locale.getDefault(), "%d lotes / %d ha", s.totalPlots, (long) s.totalHectares));
-
-            tvCriticalTasks.setText(String.valueOf(s.criticalTasks));
-            tvCriticalTasksDetail.setText(String.format(Locale.getDefault(), "%d vencen hoy", s.dueTodayTasks));
-
-            tvLivestock.setText(String.valueOf(s.livestockHerds));
-            tvLivestockDetail.setText(String.format(Locale.getDefault(), "%d animales / %d rodeos", s.livestockAnimals, s.livestockHerds));
-
-            tvFinance.setText(formatCurrency(s.financeBalance));
-            tvFinanceDetail.setText(String.format(Locale.getDefault(), "%d registros pendientes", s.financePending));
-
-            // Alerts
-            llAlerts.removeAllViews();
-            if (s.alerts == null || s.alerts.isEmpty()) {
-                addEmptyMessage(llAlerts);
-            } else {
-                LayoutInflater inflater = getLayoutInflater();
-                int count = 0;
-                for (DashboardViewModel.AlertItem a : s.alerts) {
-                    if (count >= 10) break; // safety cap
-                    View item = inflater.inflate(R.layout.item_alert, llAlerts, false);
-                    TextView tvTitle = item.findViewById(R.id.tv_alert_title);
-                    TextView tvDetail = item.findViewById(R.id.tv_alert_detail);
-                    TextView tvPriority = item.findViewById(R.id.tv_alert_priority);
-                    tvTitle.setText(a.title);
-                    tvDetail.setText(a.detail);
-                    tvPriority.setText(a.priority != null ? a.priority.toUpperCase(Locale.ROOT) : "");
-                    if ("Alta".equalsIgnoreCase(a.priority)) {
-                        tvPriority.setBackgroundResource(R.drawable.bg_priority_high);
-                        tvPriority.setTextColor(0xFF93000A);
-                    } else if ("Media".equalsIgnoreCase(a.priority)) {
-                        tvPriority.setBackgroundResource(R.drawable.bg_priority_medium);
-                        tvPriority.setTextColor(0xFF795200);
-                    } else {
-                        tvPriority.setBackgroundResource(R.drawable.bg_priority_medium);
-                        tvPriority.setTextColor(0xFF795200);
-                    }
-                    llAlerts.addView(item);
-                    count++;
-                }
-            }
-
-            // Crop pulse
-            llCropPulse.removeAllViews();
-            if (s.cropPulse == null || s.cropPulse.isEmpty()) {
-                addEmptyMessage(llCropPulse);
-            } else {
-                LayoutInflater inflater = getLayoutInflater();
-                for (DashboardViewModel.CropPulseItem c : s.cropPulse) {
-                    View item = inflater.inflate(R.layout.item_crop_pulse, llCropPulse, false);
-                    TextView tvTitle = item.findViewById(R.id.tv_crop_title);
-                    TextView tvDetail = item.findViewById(R.id.tv_crop_detail);
-                    TextView tvPercent = item.findViewById(R.id.tv_crop_percent);
-                    ProgressBar pb = item.findViewById(R.id.pb_crop);
-                    tvTitle.setText(c.title);
-                    tvDetail.setText(c.detail);
-                    tvPercent.setText(String.format(Locale.getDefault(), "%d%%", c.valuePercent));
-                    try { pb.setProgress(c.valuePercent); } catch (Exception ignored) {}
-                    llCropPulse.addView(item);
-                }
-            }
-
-            // Agenda
-            llAgenda.removeAllViews();
-            if (s.agenda == null || s.agenda.isEmpty()) {
-                addEmptyMessage(llAgenda);
-            } else {
-                LayoutInflater inflater = getLayoutInflater();
-                for (DashboardViewModel.AgendaItem a : s.agenda) {
-                    View item = inflater.inflate(R.layout.item_agenda, llAgenda, false);
-                    TextView tvTime = item.findViewById(R.id.tv_agenda_time);
-                    TextView tvTitle = item.findViewById(R.id.tv_agenda_title);
-                    TextView tvRef = item.findViewById(R.id.tv_agenda_reference);
-                    tvTime.setText(a.time != null ? a.time : "");
-                    tvTitle.setText(a.title != null ? a.title : "");
-                    tvRef.setText(a.reference != null ? a.reference : "");
-                    llAgenda.addView(item);
-                }
-            }
+        viewModel.state.observe(getViewLifecycleOwner(), state -> {
+            if (state != null) render(state);
         });
-
-        viewModel.error.observe(getViewLifecycleOwner(), msg -> {
-            if (!TextUtils.isEmpty(msg)) {
-                // show as toast or snackbar; for now set overlay to gone
-                setSwipeRefreshing(false);
+        viewModel.error.observe(getViewLifecycleOwner(), message -> {
+            if (!TextUtils.isEmpty(message)) {
                 progressOverlay.setVisibility(View.GONE);
+                swipeRefresh.setRefreshing(false);
+                MobileUi.state(view, "Resumen no disponible", "No pudimos cargar el resumen. Revisá la organización de tu sesión.", "Reintentar", this::reload);
             }
         });
-
-        // Pull to refresh: set listener via reflexión
-        setSwipeRefreshListener(() -> viewModel.loadDashboard(orgId));
-
-        // Ver tareas click -> navigate to MainFragment with bundle to select tasks tab
-        tvVerTareas.setOnClickListener(v -> {
-            NavController nav = Navigation.findNavController(view);
-            nav.navigate(R.id.nav_tareas);
-        });
-
-        if (orgId != null && !orgId.isEmpty()) {
-            viewModel.loadDashboard(orgId);
+        if (viewModel.state.getValue() == null && !Boolean.TRUE.equals(viewModel.isLoading.getValue())) reload();
+    }
+    private void reload() {
+        String org = SessionManager.getInstance(requireContext()).getOrganizationId();
+        if (TextUtils.isEmpty(org)) {
+            swipeRefresh.setRefreshing(false);
+            root.findViewById(R.id.dashboard_content).setVisibility(View.GONE);
+            MobileUi.state(root, "Falta una organización activa", "Revisá tu perfil o volvé a iniciar sesión para cargar el resumen.", null, null);
+            return;
         }
+        if (!Boolean.TRUE.equals(viewModel.isLoading.getValue())) viewModel.loadDashboard(org);
     }
-
-    private void addEmptyMessage(LinearLayout container) {
-        TextView tv = new TextView(requireContext());
-        tv.setText("Sin datos disponibles.");
-        tv.setTextColor(0xFF9CA3AF);
-        int pad = (int) (12 * getResources().getDisplayMetrics().density);
-        tv.setPadding(pad, pad, pad, pad);
-        container.addView(tv);
+    private void navigate(int route) {
+        NavController navigation = Navigation.findNavController(requireView());
+        NavOptions options = new NavOptions.Builder().setLaunchSingleTop(true).setRestoreState(true)
+            .setPopUpTo(navigation.getGraph().getStartDestinationId(), false, true).build();
+        navigation.navigate(route, null, options);
     }
-
-    private String formatCurrency(double v) {
-        double abs = Math.abs(v);
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.getDefault());
-        symbols.setGroupingSeparator('.');
-        DecimalFormat df = new DecimalFormat("#,###", symbols);
-        String formatted = df.format(Math.round(abs));
-        if (v < 0) return "-US$ " + formatted;
-        return "US$ " + formatted;
+    private void render(DashboardViewModel.DashboardState state) {
+        root.findViewById(R.id.dashboard_content).setVisibility(View.VISIBLE);
+        boolean plots = !state.unavailableSections.contains("Campos");
+        boolean tasks = !state.unavailableSections.contains("Tareas");
+        boolean herds = !state.unavailableSections.contains("Ganado");
+        boolean finance = !state.unavailableSections.contains("Finanzas");
+        root.findViewById(R.id.mobile_state).setVisibility(View.GONE);
+        if (!state.unavailableSections.isEmpty()) {
+            MobileUi.state(root, "Resumen parcial", "No se pudo consultar: " + TextUtils.join(", ", state.unavailableSections)
+                + ". Un guion indica un dato no disponible.", "Reintentar", this::reload);
+        }
+        MobileUi.text(root, R.id.tv_alert_plots, plots ? String.valueOf(state.alertPlots) : "—");
+        MobileUi.text(root, R.id.tv_alert_plots_detail, plots ? state.totalPlots + " lotes · " + RecordText.amount(state.totalHectares) + " ha" : "Consulta no disponible");
+        MobileUi.text(root, R.id.tv_critical_tasks, tasks ? String.valueOf(state.criticalTasks) : "—");
+        MobileUi.text(root, R.id.tv_critical_tasks_detail, tasks ? state.dueTodayTasks + " vencen hoy" : "Consulta no disponible");
+        MobileUi.text(root, R.id.tv_livestock, herds ? String.valueOf(state.livestockHerds) : "—");
+        MobileUi.text(root, R.id.tv_livestock_detail, herds ? "Revisar rodeos y seguimiento" : "Consulta no disponible");
+        // Existing summary has no currency field. Do not invent a USD denomination.
+        MobileUi.text(root, R.id.tv_finance, finance ? RecordText.amount(state.financeBalance) : "—");
+        MobileUi.text(root, R.id.tv_finance_detail, finance ? state.financePending + " pendientes · moneda no informada" : "Consulta no disponible");
+        LinearLayout alerts = root.findViewById(R.id.ll_alerts_container);
+        alerts.removeAllViews();
+        if (state.alerts.isEmpty()) empty(alerts, tasks && plots ? "No hay alertas en las consultas de tareas y lotes." : "Las alertas están incompletas. Reintentá la consulta.");
+        int count = 0;
+        for (DashboardViewModel.AlertItem alert : state.alerts) {
+            if (count++ >= 10) break;
+            View card = getLayoutInflater().inflate(R.layout.item_alert, alerts, false);
+            boolean field = alert.title != null && alert.title.startsWith("Lote ");
+            MobileUi.text(card, R.id.tv_alert_title, field ? "Lote que requiere atención" : alert.title);
+            // The current summary exposes IDs, not record names; avoid showing raw UUIDs.
+            MobileUi.text(card, R.id.tv_alert_detail, field ? alert.detail : "Abrir tareas para revisar el registro");
+            MobileUi.text(card, R.id.tv_alert_priority, "Prioridad " + (alert.priority == null ? "sin informar" : alert.priority.toLowerCase()));
+            card.setOnClickListener(v -> navigate(field ? R.id.nav_campos : R.id.nav_tareas));
+            alerts.addView(card);
+        }
+        LinearLayout pulse = root.findViewById(R.id.ll_crop_pulse_container);
+        pulse.removeAllViews();
+        if (state.cropPulse.isEmpty()) empty(pulse, plots ? "No hay cultivos visibles en tus lotes." : "No pudimos consultar tus campos.");
+        for (DashboardViewModel.CropPulseItem crop : state.cropPulse) {
+            View card = getLayoutInflater().inflate(R.layout.item_crop_pulse, pulse, false);
+            MobileUi.text(card, R.id.tv_crop_title, crop.title);
+            MobileUi.text(card, R.id.tv_crop_detail, TextUtils.isEmpty(crop.detail) ? "Etapa sin registrar" : crop.detail);
+            // valuePercent is a placeholder in the existing ViewModel, not measured progress.
+            pulse.addView(card);
+        }
+        LinearLayout agenda = root.findViewById(R.id.ll_agenda_container);
+        agenda.removeAllViews();
+        if (state.agenda.isEmpty()) empty(agenda, state.unavailableSections.contains("Agenda")
+            ? "No pudimos consultar la agenda." : "No hay eventos en la consulta actual.");
+        for (DashboardViewModel.AgendaItem event : state.agenda) {
+            View card = getLayoutInflater().inflate(R.layout.item_agenda, agenda, false);
+            MobileUi.text(card, R.id.tv_agenda_title, event.title);
+            MobileUi.text(card, R.id.tv_agenda_time, formatEventTime(event.time));
+            MobileUi.text(card, R.id.tv_agenda_reference, event.reference);
+            agenda.addView(card);
+        }
+        // TODO: Conectar clima y detalle de eventos a sus rutas y servicios móviles reales.
     }
-
-    // Reflection helpers to interact with SwipeRefreshLayout if available at runtime
-    private void setSwipeRefreshing(boolean refreshing) {
-        if (swipeRefresh == null) return;
+    private String formatEventTime(String raw) {
+        if (raw == null || raw.isEmpty()) return "Sin fecha";
         try {
-            Method m = swipeRefresh.getClass().getMethod("setRefreshing", boolean.class);
-            m.invoke(swipeRefresh, refreshing);
-        } catch (Exception ignored) {
-        }
+            return java.time.OffsetDateTime.parse(raw).atZoneSameInstant(java.time.ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("d MMM · HH:mm", new Locale("es", "AR")));
+        } catch (Exception ignored) { return RecordText.dateLabel(raw); }
     }
-
-    private void setSwipeRefreshListener(Runnable onRefresh) {
-        if (swipeRefresh == null) return;
-        try {
-            ClassLoader cl = swipeRefresh.getClass().getClassLoader();
-            Class<?> listenerInterface = cl.loadClass("androidx.swiperefreshlayout.widget.SwipeRefreshLayout$OnRefreshListener");
-
-            Object proxy = Proxy.newProxyInstance(cl, new Class<?>[]{listenerInterface}, new InvocationHandler() {
-                @Override
-                public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                    // onRefresh()
-                    onRefresh.run();
-                    return null;
-                }
-            });
-
-            Method setListener = swipeRefresh.getClass().getMethod("setOnRefreshListener", listenerInterface);
-            setListener.invoke(swipeRefresh, proxy);
-        } catch (Exception ignored) {
-        }
-    }}
+    private void empty(LinearLayout parent, String message) {
+        TextView view = new TextView(requireContext());
+        view.setTextAppearance(R.style.MobileBody);
+        view.setText(message);
+        view.setPadding(0, MobileUi.dp(requireContext(), 8), 0, MobileUi.dp(requireContext(), 8));
+        parent.addView(view);
+    }
+    @Override public void onDestroyView() {
+        if (sheet != null) { sheet.dismiss(); sheet = null; }
+        root = null; swipeRefresh = null; progressOverlay = null;
+        super.onDestroyView();
+    }
+}
 
 

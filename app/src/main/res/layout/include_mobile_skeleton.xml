@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mobile_skeleton"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:orientation="vertical"
+    android:visibility="gone"
+    android:importantForAccessibility="yes"
+    android:contentDescription="Cargando registros"
+    android:accessibilityLiveRegion="polite">
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/primary" />
+    <View
+        android:layout_width="120dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bg_mobile_skeleton" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="104dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_mobile_skeleton" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="104dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_mobile_skeleton" />
+</LinearLayout>

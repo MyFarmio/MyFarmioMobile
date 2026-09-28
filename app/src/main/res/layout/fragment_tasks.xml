@@ -1,43 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#F8FAF5"
-    android:fillViewport="true">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:paddingBottom="32dp">
-
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
-            <ImageView android:layout_width="44dp" android:layout_height="44dp" android:background="@drawable/bg_logo_white" android:padding="6dp" android:src="@drawable/logo_myfarmio" android:contentDescription="@null" />
-            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="10dp" android:orientation="vertical">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="MyFarmio" android:textColor="#154212" android:textSize="18sp" android:textStyle="bold" android:fontFamily="sans-serif-black" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ASISTENTE RURAL" android:textColor="#79564B" android:textSize="9sp" android:textStyle="bold" android:letterSpacing="0.18" />
-            </LinearLayout>
-            <com.google.android.material.button.MaterialButton android:id="@+id/btn_tasks_filter" android:layout_width="48dp" android:layout_height="48dp" android:text="" android:contentDescription="Filtrar tareas" android:insetTop="0dp" android:insetBottom="0dp" android:backgroundTint="#E6F1E1" app:cornerRadius="24dp" app:icon="@drawable/ic_lista_tareas" app:iconTint="#154212" />
-        </LinearLayout>
-
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:text="ÓRDENES DE TRABAJO" android:textColor="#79564B" android:textSize="11sp" android:textStyle="bold" android:letterSpacing="0.16" />
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:text="Tareas operativas" android:textColor="#154212" android:textSize="30sp" android:textStyle="bold" android:fontFamily="sans-serif-black" />
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Priorizá la jornada y actualizá cada labor desde una vista pensada para campo." android:textColor="#646862" android:textSize="14sp" android:lineSpacingExtra="3dp" />
-
-        <GridLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="18dp" android:columnCount="2" android:useDefaultMargins="true">
-            <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" app:cardBackgroundColor="#FFFFFF" app:cardCornerRadius="18dp" app:cardElevation="1dp"><LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="15dp" android:orientation="vertical"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TOTAL" android:textColor="#72796E" android:textSize="10sp" android:textStyle="bold" android:letterSpacing="0.12"/><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:text="3" android:textColor="#191C1A" android:textSize="30sp" android:textStyle="bold" /></LinearLayout></com.google.android.material.card.MaterialCardView>
-            <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" app:cardBackgroundColor="#FFFFFF" app:cardCornerRadius="18dp" app:cardElevation="1dp"><LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="15dp" android:orientation="vertical"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ACTIVAS" android:textColor="#72796E" android:textSize="10sp" android:textStyle="bold" android:letterSpacing="0.12"/><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:text="2" android:textColor="#79564B" android:textSize="30sp" android:textStyle="bold" /></LinearLayout></com.google.android.material.card.MaterialCardView>
-            <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" app:cardBackgroundColor="#FFFFFF" app:cardCornerRadius="18dp" app:cardElevation="1dp"><LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="15dp" android:orientation="vertical"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="EN PROGRESO" android:textColor="#72796E" android:textSize="10sp" android:textStyle="bold" android:letterSpacing="0.12"/><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:text="1" android:textColor="#1B6EBE" android:textSize="30sp" android:textStyle="bold" /></LinearLayout></com.google.android.material.card.MaterialCardView>
-            <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" app:cardBackgroundColor="#FFFFFF" app:cardCornerRadius="18dp" app:cardElevation="1dp"><LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="15dp" android:orientation="vertical"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="VENCIDAS" android:textColor="#72796E" android:textSize="10sp" android:textStyle="bold" android:letterSpacing="0.12"/><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:text="1" android:textColor="#93000A" android:textSize="30sp" android:textStyle="bold" /></LinearLayout></com.google.android.material.card.MaterialCardView>
-        </GridLayout>
-
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:gravity="center_vertical">
-            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TABLERO MÓVIL" android:textColor="#79564B" android:textSize="10sp" android:textStyle="bold" android:letterSpacing="0.14"/><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="Tocá una tarjeta para actualizarla" android:textColor="#646862" android:textSize="13sp"/></LinearLayout>
-            <TextView android:layout_width="wrap_content" android:layout_height="44dp" android:gravity="center" android:text="Filtrar" android:textColor="#154212" android:textStyle="bold" android:paddingHorizontal="10dp" />
-        </LinearLayout>
-        <!-- Las tareas se agrupan por estado desde TasksFragment; se conectarán a API en la siguiente iteración. -->
-        <LinearLayout android:id="@+id/ll_tasks_container" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:orientation="vertical" />
-    </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+    android:layout_height="match_parent">
+    <!-- Shared state, search/filter controls and recycled operational cards. -->
+    <include
+        layout="@layout/fragment_operational" />
+</FrameLayout>

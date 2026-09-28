@@ -1,7 +1,9 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/nav_dashboard"
-        android:icon="@drawable/ic_leaf"
+        android:icon="@drawable/ic_dashboard"
         android:title="Inicio" />
     <item
         android:id="@+id/nav_tareas"
@@ -9,10 +11,14 @@
         android:title="Tareas" />
     <item
         android:id="@+id/nav_campos"
-        android:icon="@drawable/ic_leaf"
+        android:icon="@drawable/ic_map"
         android:title="Campos" />
     <item
         android:id="@+id/nav_ganado"
         android:icon="@drawable/ic_pets"
         android:title="Ganado" />
+    <item
+        android:id="@+id/nav_more"
+        android:icon="@drawable/ic_more"
+        android:title="Más" />
 </menu>

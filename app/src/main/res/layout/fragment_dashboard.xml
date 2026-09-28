@@ -1,23 +1,354 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:background="#F8FAF5">
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout android:id="@+id/swipe_refresh" android:layout_width="match_parent" android:layout_height="match_parent">
-        <androidx.core.widget.NestedScrollView android:id="@+id/nested_scroll" android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true">
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp" android:paddingBottom="32dp">
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical"><ImageView android:layout_width="44dp" android:layout_height="44dp" android:src="@drawable/logo_myfarmio" android:background="@drawable/bg_logo_white" android:padding="6dp" android:contentDescription="@null"/><LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="10dp" android:orientation="vertical"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="MyFarmio" android:textColor="#154212" android:textSize="18sp" android:textStyle="bold" android:fontFamily="sans-serif-black"/><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ASISTENTE RURAL" android:textColor="#79564B" android:textSize="9sp" android:textStyle="bold" android:letterSpacing="0.18"/></LinearLayout></LinearLayout>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:text="RESUMEN OPERATIVO" android:textColor="#79564B" android:textSize="11sp" android:textStyle="bold" android:letterSpacing="0.16"/>
-                <TextView android:id="@+id/tv_dashboard_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:text="Estado general de mi campo" android:textColor="#154212" android:textSize="29sp" android:textStyle="bold" android:fontFamily="sans-serif-black"/>
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Lo que hoy impacta producción, riesgo y caja, reunido en una sola vista." android:textColor="#646862" android:textSize="14sp" android:lineSpacingExtra="3dp"/>
-                <GridLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="18dp" android:columnCount="2" android:useDefaultMargins="true">
-                    <com.google.android.material.card.MaterialCardView android:id="@+id/card_fields" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" app:cardBackgroundColor="#FFFFFF" app:cardCornerRadius="18dp" app:cardElevation="1dp"><LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="15dp"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="LOTES CON ALERTA" android:textColor="#72796E" android:textSize="10sp" android:textStyle="bold"/><TextView android:id="@+id/tv_alert_plots" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="0" android:textColor="#191C1A" android:textSize="30sp" android:textStyle="bold"/><TextView android:id="@+id/tv_alert_plots_detail" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#72796E" android:textSize="11sp"/></LinearLayout></com.google.android.material.card.MaterialCardView>
-                    <com.google.android.material.card.MaterialCardView android:id="@+id/card_tasks" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" app:cardBackgroundColor="#FFFFFF" app:cardCornerRadius="18dp" app:cardElevation="1dp"><LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="15dp"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="LABORES CRÍTICAS" android:textColor="#72796E" android:textSize="10sp" android:textStyle="bold"/><TextView android:id="@+id/tv_critical_tasks" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="0" android:textColor="#79564B" android:textSize="30sp" android:textStyle="bold"/><TextView android:id="@+id/tv_critical_tasks_detail" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#72796E" android:textSize="11sp"/></LinearLayout></com.google.android.material.card.MaterialCardView>
-                    <com.google.android.material.card.MaterialCardView android:id="@+id/card_livestock" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" app:cardBackgroundColor="#FFFFFF" app:cardCornerRadius="18dp" app:cardElevation="1dp"><LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="15dp"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="RODEO EN SEGUIMIENTO" android:textColor="#72796E" android:textSize="10sp" android:textStyle="bold"/><TextView android:id="@+id/tv_livestock" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="0" android:textColor="#154212" android:textSize="30sp" android:textStyle="bold"/><TextView android:id="@+id/tv_livestock_detail" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#72796E" android:textSize="11sp"/></LinearLayout></com.google.android.material.card.MaterialCardView>
-                    <com.google.android.material.card.MaterialCardView android:id="@+id/card_finance" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" app:cardBackgroundColor="#FFFFFF" app:cardCornerRadius="18dp" app:cardElevation="1dp"><LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="15dp"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CAJA DEL MES" android:textColor="#72796E" android:textSize="10sp" android:textStyle="bold"/><TextView android:id="@+id/tv_finance" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="US$ 0" android:textColor="#191C1A" android:textSize="25sp" android:textStyle="bold"/><TextView android:id="@+id/tv_finance_detail" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#72796E" android:textSize="11sp"/></LinearLayout></com.google.android.material.card.MaterialCardView>
-                </GridLayout>
-                <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="18dp" app:cardBackgroundColor="#FFFFFF" app:cardCornerRadius="20dp" app:cardElevation="1dp"><LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="18dp"><LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"><TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="ALERTAS QUE MUEVEN EL DÍA" android:textColor="#154212" android:textSize="16sp" android:textStyle="bold"/><TextView android:id="@+id/tv_ver_tareas" android:layout_width="wrap_content" android:layout_height="44dp" android:gravity="center" android:text="VER TAREAS" android:textColor="#79564B" android:textSize="10sp" android:textStyle="bold"/></LinearLayout><TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Prioridades construidas desde las operaciones de hoy." android:textColor="#646862" android:textSize="13sp"/><LinearLayout android:id="@+id/ll_alerts_container" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="8dp"/></LinearLayout></com.google.android.material.card.MaterialCardView>
-                <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" app:cardBackgroundColor="#FFFFFF" app:cardCornerRadius="20dp" app:cardElevation="1dp"><LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="18dp"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="PULSO DE CAMPAÑA" android:textColor="#154212" android:textSize="16sp" android:textStyle="bold"/><LinearLayout android:id="@+id/ll_crop_pulse_container" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="8dp"/></LinearLayout></com.google.android.material.card.MaterialCardView>
-                <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" app:cardBackgroundColor="#EEF2EA" app:cardCornerRadius="20dp" app:cardElevation="0dp"><LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="18dp"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="AGENDA DE HOY" android:textColor="#154212" android:textSize="16sp" android:textStyle="bold"/><LinearLayout android:id="@+id/ll_agenda_container" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="8dp"/></LinearLayout></com.google.android.material.card.MaterialCardView>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nested_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:clipToPadding="false">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:paddingBottom="24dp">
+                <TextView
+                    android:id="@+id/tv_dashboard_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/MobileLabel"
+                    android:text="RESUMEN OPERATIVO" />
+                <TextView
+                    android:id="@+id/tv_dashboard_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/MobileTitle"
+                    android:text="Tu campo, hoy"
+                    android:layout_marginTop="6dp"
+                    android:accessibilityHeading="true" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/MobileBody"
+                    android:text="Lo importante para empezar la jornada."
+                    android:layout_marginTop="4dp" />
+                <include
+                    layout="@layout/include_mobile_state" />
+                <LinearLayout
+                    android:id="@+id/dashboard_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <com.google.android.material.card.MaterialCardView
+                        style="@style/MobileCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textAppearance="@style/MobileSection"
+                                android:text="Requiere tu atención"
+                                android:accessibilityHeading="true" />
+                            <LinearLayout
+                                android:id="@+id/ll_alerts_container"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:layout_marginTop="12dp" />
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/tv_ver_tareas"
+                                style="@style/MobileButton"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:text="Revisar tareas" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:baselineAligned="false">
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/card_tasks"
+                            style="@style/MobileCard"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_margin="4dp"
+                            android:clickable="true"
+                            android:focusable="true">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:minHeight="152dp"
+                                android:orientation="vertical"
+                                android:padding="14dp">
+                                <ImageView
+                                    android:layout_width="28dp"
+                                    android:layout_height="28dp"
+                                    android:src="@drawable/ic_task_alt"
+                                    android:importantForAccessibility="no" />
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="@style/MobileLabel"
+                                    android:text="Labores críticas"
+                                    android:layout_marginTop="10dp" />
+                                <TextView
+                                    android:id="@+id/tv_critical_tasks"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="@style/MobileTitle"
+                                    android:text="—"
+                                    android:layout_marginTop="4dp" />
+                                <TextView
+                                    android:id="@+id/tv_critical_tasks_detail"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="@style/MobileBody"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/card_fields"
+                            style="@style/MobileCard"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_margin="4dp"
+                            android:clickable="true"
+                            android:focusable="true">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:minHeight="152dp"
+                                android:orientation="vertical"
+                                android:padding="14dp">
+                                <ImageView
+                                    android:layout_width="28dp"
+                                    android:layout_height="28dp"
+                                    android:src="@drawable/ic_map"
+                                    android:importantForAccessibility="no" />
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="@style/MobileLabel"
+                                    android:text="Lotes con alerta"
+                                    android:layout_marginTop="10dp" />
+                                <TextView
+                                    android:id="@+id/tv_alert_plots"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="@style/MobileTitle"
+                                    android:text="—"
+                                    android:layout_marginTop="4dp" />
+                                <TextView
+                                    android:id="@+id/tv_alert_plots_detail"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="@style/MobileBody"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+                    <com.google.android.material.card.MaterialCardView
+                        style="@style/MobileCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textAppearance="@style/MobileSection"
+                                android:text="Clima para decidir"
+                                android:accessibilityHeading="true" />
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textAppearance="@style/MobileBody"
+                                android:text="El pronóstico todavía no está conectado en Android. Revisá las condiciones locales antes de planificar labores."
+                                android:layout_marginTop="8dp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                    <com.google.android.material.card.MaterialCardView
+                        style="@style/MobileCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textAppearance="@style/MobileSection"
+                                android:text="Pulso de campaña"
+                                android:accessibilityHeading="true" />
+                            <LinearLayout
+                                android:id="@+id/ll_crop_pulse_container"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:layout_marginTop="12dp" />
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/dashboard_fields"
+                                style="@style/MobileQuietButton"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Ver mis campos" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:baselineAligned="false">
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/card_livestock"
+                            style="@style/MobileCard"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_margin="4dp"
+                            android:clickable="true"
+                            android:focusable="true">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:minHeight="152dp"
+                                android:orientation="vertical"
+                                android:padding="14dp">
+                                <ImageView
+                                    android:layout_width="28dp"
+                                    android:layout_height="28dp"
+                                    android:src="@drawable/ic_pets"
+                                    android:importantForAccessibility="no" />
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="@style/MobileLabel"
+                                    android:text="Rodeos registrados"
+                                    android:layout_marginTop="10dp" />
+                                <TextView
+                                    android:id="@+id/tv_livestock"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="@style/MobileTitle"
+                                    android:text="—"
+                                    android:layout_marginTop="4dp" />
+                                <TextView
+                                    android:id="@+id/tv_livestock_detail"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="@style/MobileBody"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/card_finance"
+                            style="@style/MobileCard"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_margin="4dp"
+                            android:clickable="true"
+                            android:focusable="true">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:minHeight="152dp"
+                                android:orientation="vertical"
+                                android:padding="14dp">
+                                <ImageView
+                                    android:layout_width="28dp"
+                                    android:layout_height="28dp"
+                                    android:src="@drawable/ic_payments"
+                                    android:importantForAccessibility="no" />
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="@style/MobileLabel"
+                                    android:text="Balance registrado"
+                                    android:layout_marginTop="10dp" />
+                                <TextView
+                                    android:id="@+id/tv_finance"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="@style/MobileTitle"
+                                    android:text="—"
+                                    android:layout_marginTop="4dp" />
+                                <TextView
+                                    android:id="@+id/tv_finance_detail"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="@style/MobileBody"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+                    <com.google.android.material.card.MaterialCardView
+                        style="@style/MobileCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textAppearance="@style/MobileSection"
+                                android:text="Agenda registrada"
+                                android:accessibilityHeading="true" />
+                            <LinearLayout
+                                android:id="@+id/ll_agenda_container"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:layout_marginTop="12dp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-    <FrameLayout android:id="@+id/progress_overlay" android:layout_width="match_parent" android:layout_height="match_parent" android:visibility="gone" />
+    <!-- This ID intentionally belongs to a FrameLayout, not a ProgressBar. -->
+    <FrameLayout
+        android:id="@+id/progress_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background"
+        android:visibility="gone">
+        <include
+            layout="@layout/include_mobile_skeleton"
+            android:id="@+id/dashboard_skeleton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible" />
+    </FrameLayout>
 </FrameLayout>

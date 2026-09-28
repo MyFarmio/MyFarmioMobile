@@ -35,6 +35,8 @@ public class DashboardViewModel extends AndroidViewModel {
 
     public static class DashboardState {
         public String orgName;
+        // UI availability metadata; keep failed queries distinct from successful empty results.
+        public final java.util.Set<String> unavailableSections = new java.util.LinkedHashSet<>();
         public int alertPlots;
         public int totalPlots;
         public double totalHectares;
@@ -152,13 +154,15 @@ public class DashboardViewModel extends AndroidViewModel {
                         }
                     }
                     s.totalHectares = hectares;
+                } else {
+                    s.unavailableSections.add("Campos");
                 }
                 tryFinish.run();
             }
 
             @Override
             public void onFailure(Call<List<Map<String, Object>>> call, Throwable t) {
-                // allow to continue; treat as empty
+                s.unavailableSections.add("Campos");
                 tryFinish.run();
             }
         });
@@ -186,12 +190,15 @@ public class DashboardViewModel extends AndroidViewModel {
                             }
                         }
                     }
+                } else {
+                    s.unavailableSections.add("Tareas");
                 }
                 tryFinish.run();
             }
 
             @Override
             public void onFailure(Call<List<Map<String, Object>>> call, Throwable t) {
+                s.unavailableSections.add("Tareas");
                 tryFinish.run();
             }
         });
@@ -205,12 +212,15 @@ public class DashboardViewModel extends AndroidViewModel {
                     List<Map<String, Object>> list = response.body();
                     s.livestockHerds = list.size();
                     // crude: count animals if present (not requested) - leave 0
+                } else {
+                    s.unavailableSections.add("Ganado");
                 }
                 tryFinish.run();
             }
 
             @Override
             public void onFailure(Call<List<Map<String, Object>>> call, Throwable t) {
+                s.unavailableSections.add("Ganado");
                 tryFinish.run();
             }
         });
@@ -238,12 +248,15 @@ public class DashboardViewModel extends AndroidViewModel {
                     }
                     s.financeBalance = balance;
                     s.financePending = pending;
+                } else {
+                    s.unavailableSections.add("Finanzas");
                 }
                 tryFinish.run();
             }
 
             @Override
             public void onFailure(Call<List<Map<String, Object>>> call, Throwable t) {
+                s.unavailableSections.add("Finanzas");
                 tryFinish.run();
             }
         });
@@ -261,12 +274,15 @@ public class DashboardViewModel extends AndroidViewModel {
                         String ref = e.get("reference_label") != null ? e.get("reference_label").toString() : "";
                         s.agenda.add(new AgendaItem(start, title, ref));
                     }
+                } else {
+                    s.unavailableSections.add("Agenda");
                 }
                 tryFinish.run();
             }
 
             @Override
             public void onFailure(Call<List<Map<String, Object>>> call, Throwable t) {
+                s.unavailableSections.add("Agenda");
                 tryFinish.run();
             }
         });

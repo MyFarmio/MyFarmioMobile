@@ -1,26 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingVertical="12dp">
     <TextView
-        android:id="@+id/tv_agenda_time"
+        android:id="@+id/detail_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="@style/MobileLabel" />
     <TextView
-        android:id="@+id/tv_agenda_title"
+        android:id="@+id/detail_value"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/MobileSection"
-        android:layout_marginTop="6dp" />
-    <TextView
-        android:id="@+id/tv_agenda_reference"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:textAppearance="@style/MobileBody"
-        android:layout_marginTop="4dp" />
+        android:textIsSelectable="true" />
 </LinearLayout>

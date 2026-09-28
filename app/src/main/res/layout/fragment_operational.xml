@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="8dp"
+        android:gravity="center_vertical">
+        <TextView
+            android:id="@+id/collection_title"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/MobileTitle"
+            android:accessibilityHeading="true" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/collection_options"
+            style="@style/MobileQuietButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="Opciones del módulo"
+            app:icon="@drawable/ic_more"
+            app:iconPadding="0dp"
+            app:iconGravity="textStart"
+            android:padding="12dp" />
+    </LinearLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/MobileInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="8dp"
+        app:endIconMode="clear_text"
+        app:startIconDrawable="@drawable/ic_search">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/collection_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:singleLine="true"
+            android:imeOptions="actionSearch"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="16dp"
+        android:gravity="center_vertical">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/collection_filter"
+            style="@style/MobileQuietButton"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Filtros"
+            android:gravity="start|center_vertical" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/collection_refresh"
+            style="@style/MobileQuietButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Actualizar" />
+    </LinearLayout>
+    <TextView
+        android:id="@+id/collection_notice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:background="@color/secondary_container"
+        android:textAppearance="@style/MobileBody"
+        android:visibility="gone"
+        android:accessibilityLiveRegion="polite" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/collection_swipe"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/collection_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingBottom="16dp" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/collection_feedback"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="false">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <include
+                    layout="@layout/include_mobile_skeleton" />
+                <include
+                    layout="@layout/include_mobile_state" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </FrameLayout>
+</LinearLayout>
