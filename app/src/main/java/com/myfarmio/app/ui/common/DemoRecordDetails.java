@@ -76,7 +76,7 @@ public final class DemoRecordDetails {
                 Toast.makeText(sheet.body.getContext(),"Tarea completada en demo",Toast.LENGTH_SHORT).show();
             });
         }
-        sheet.button("Eliminar de la demo",()->new MaterialAlertDialogBuilder(sheet.body.getContext())
+        sheet.danger("Eliminar de la demo",()->new MaterialAlertDialogBuilder(sheet.body.getContext())
             .setTitle("¿Eliminar este registro?")
             .setMessage("Se eliminará “"+or(row,"title",or(row,"name",value(row,"tag")))+"” de esta sesión demo. No afecta datos de tu organización.")
             .setNegativeButton("Cancelar",null).setPositiveButton("Eliminar",(dialog,which)-> {

@@ -35,6 +35,7 @@ public class LoginFragment extends Fragment {
         viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
         viewModel.isLoading.observe(getViewLifecycleOwner(), loading -> {
             boolean busy = Boolean.TRUE.equals(loading);
+            view.findViewById(R.id.button_demo).setEnabled(!busy);
             submit.setEnabled(!busy); email.setEnabled(!busy); password.setEnabled(!busy);
             submit.setText(busy ? "Ingresando…" : "Ingresar");
             view.findViewById(R.id.login_progress).setVisibility(busy ? View.VISIBLE : View.INVISIBLE);
@@ -78,6 +79,13 @@ public class LoginFragment extends Fragment {
             sheet.row("Tu contraseña", "No se envía ninguna solicitud al abrir esta ayuda.");
             // TODO: Conectar recuperación cuando exista el flujo autorizado en Android.
             sheet.show();
+        });
+        view.findViewById(R.id.button_demo).setOnClickListener(v -> {
+            if (Boolean.TRUE.equals(viewModel.isLoading.getValue())) return;
+            emailLayout.setError(null); passwordLayout.setError(null);
+            hideKeyboard();
+            // Uses the pre-existing demo branch; never simulates a real account login.
+            viewModel.login(LoginViewModel.DEMO_EMAIL, LoginViewModel.DEMO_PASSWORD, requireContext());
         });
         MobileUi.enter(submit);
     }

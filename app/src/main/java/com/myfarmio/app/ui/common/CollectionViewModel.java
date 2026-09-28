@@ -42,6 +42,7 @@ public class CollectionViewModel extends ViewModel {
         switch (module) {
             case "tasks": pending = api.getTasks("eq." + orgId, "is.null", "*"); break;
             case "fields": pending = api.getPlots("eq." + orgId, "is.null", "*"); break;
+            case "finance": pending = api.getFinance("eq." + orgId, "is.null", "*"); break;
             default: pending = api.getHerds("eq." + orgId, "is.null", "*"); break;
         }
         state.setValue(new State(previous.rows, true, previous.loaded, null));
@@ -66,4 +67,3 @@ public class CollectionViewModel extends ViewModel {
     }
     @Override protected void onCleared() { if (pending != null) pending.cancel(); }
 }
-

@@ -55,13 +55,15 @@ public final class MobileUi {
         public final LinearLayout body;
         public final MaterialButton action;
         private final View root;
+        private Runnable close;
+        private boolean editing;
         public Sheet(Context context, String title) {
             dialog = new BottomSheetDialog(context);
             root = LayoutInflater.from(context).inflate(R.layout.sheet_mobile, null, false);
             body = root.findViewById(R.id.sheet_body);
             action = root.findViewById(R.id.sheet_action);
             text(root, R.id.sheet_title, title);
-            root.findViewById(R.id.sheet_close).setOnClickListener(v -> dialog.dismiss());
+            root.findViewById(R.id.sheet_close).setOnClickListener(v -> { if (close != null) close.run(); else dialog.dismiss(); });
             dialog.setContentView(root);
             if (dialog.getWindow() != null) {
                 dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
@@ -69,16 +71,29 @@ public final class MobileUi {
             ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
                 Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
                 Insets ime = insets.getInsets(WindowInsetsCompat.Type.ime());
-                v.setPadding(bars.left, dp(context, 8), bars.right, Math.max(bars.bottom, ime.bottom));
+                v.setPadding(bars.left, dp(context, 8), bars.right, ime.bottom > 0 ? 0 : bars.bottom);
+                if (root.getParent() instanceof View) {
+                    View container = (View) root.getParent();
+                    int fullHeight = context.getResources().getDisplayMetrics().heightPixels;
+                    int available = fullHeight - bars.top - Math.max(bars.bottom, ime.bottom);
+                    int target = Math.min((int) (fullHeight * 0.92f), available);
+                    if (container.getLayoutParams().height != target) {
+                        container.getLayoutParams().height = target;
+                        container.requestLayout();
+                    }
+                }
                 return insets;
             });
             dialog.setOnShowListener(d -> {
                 View parent = (View) root.getParent();
-                int height = (int) (context.getResources().getDisplayMetrics().heightPixels * 0.9f);
+                int height = (int) (context.getResources().getDisplayMetrics().heightPixels * 0.92f);
+                BottomSheetBehavior<View> sizing = BottomSheetBehavior.from(parent);
+                sizing.setMaxWidth(dp(context, 640));
                 parent.getLayoutParams().height = height;
                 parent.requestLayout();
                 BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(parent);
                 behavior.setSkipCollapsed(true);
+                behavior.setDraggable(!editing);
                 behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 ViewCompat.requestApplyInsets(root);
             });
@@ -97,7 +112,7 @@ public final class MobileUi {
             text(row, R.id.detail_value, value == null || value.trim().isEmpty() ? "Sin dato registrado" : value);
             body.addView(row);
         }
-        public void button(String label, Runnable onClick) {
+        public MaterialButton button(String label, Runnable onClick) {
             MaterialButton button = new MaterialButton(body.getContext(), null,
                 com.google.android.material.R.attr.materialButtonOutlinedStyle);
             button.setText(label);
@@ -106,11 +121,27 @@ public final class MobileUi {
             params.topMargin = dp(body.getContext(), 8);
             body.addView(button, params);
             button.setOnClickListener(v -> onClick.run());
+            return button;
+        }
+        public void danger(String label, Runnable onClick) {
+            MaterialButton button = button(label, onClick);
+            button.setTextColor(body.getContext().getColor(R.color.error));
+            button.setStrokeColor(android.content.res.ColorStateList.valueOf(body.getContext().getColor(R.color.error)));
         }
         public void primary(String label, Runnable onClick) {
             action.setText(label);
             action.setVisibility(View.VISIBLE);
             action.setOnClickListener(v -> onClick.run());
+        }
+        public void guardClose(Runnable requestClose) {
+            close = requestClose; editing = true;
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.setOnKeyListener((d, key, event) -> {
+                if (key == android.view.KeyEvent.KEYCODE_BACK && event.getAction() == android.view.KeyEvent.ACTION_UP) {
+                    requestClose.run(); return true;
+                }
+                return key == android.view.KeyEvent.KEYCODE_BACK;
+            });
         }
         public void show() { dialog.show(); }
         public void dismiss() { dialog.dismiss(); }

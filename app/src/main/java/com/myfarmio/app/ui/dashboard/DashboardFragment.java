@@ -31,6 +31,7 @@ public class DashboardFragment extends Fragment {
     private FrameLayout progressOverlay;
     private MobileUi.Sheet sheet;
     private View root;
+    private com.myfarmio.app.ui.common.WorkspaceViewModel workspace;
 
     @Nullable @Override public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle state) {
         return inflater.inflate(R.layout.fragment_dashboard, container, false);
@@ -38,6 +39,8 @@ public class DashboardFragment extends Fragment {
     @Override public void onViewCreated(@NonNull View view, @Nullable Bundle saved) {
         super.onViewCreated(view, saved);
         root = view;
+        workspace = new ViewModelProvider(requireActivity()).get(com.myfarmio.app.ui.common.WorkspaceViewModel.class);
+        workspace.prepare(SessionManager.getInstance(requireContext()));
         swipeRefresh = view.findViewById(R.id.swipe_refresh);
         progressOverlay = view.findViewById(R.id.progress_overlay);
         viewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
@@ -50,14 +53,9 @@ public class DashboardFragment extends Fragment {
         view.findViewById(R.id.card_fields).setOnClickListener(v -> navigate(R.id.nav_campos));
         view.findViewById(R.id.dashboard_fields).setOnClickListener(v -> navigate(R.id.nav_campos));
         view.findViewById(R.id.card_livestock).setOnClickListener(v -> navigate(R.id.nav_ganado));
-        view.findViewById(R.id.card_finance).setOnClickListener(v -> {
-            if (sheet != null) sheet.dismiss();
-            sheet = new MobileUi.Sheet(requireContext(), "Balance registrado");
-            sheet.row("Alcance del resumen", "Balance calculado por la consulta existente de ingresos y egresos. No es una proyección ni confirma el saldo de una cuenta.");
-            sheet.row("Detalle financiero", "El módulo de finanzas todavía no tiene una ruta operativa en Android. Consultá los movimientos en la web.");
-            sheet.show();
-        });
+        view.findViewById(R.id.card_finance).setOnClickListener(v -> navigate(R.id.nav_finanzas));
         viewModel.isLoading.observe(getViewLifecycleOwner(), loading -> {
+            if (workspace.isDemo()) return;
             boolean busy = Boolean.TRUE.equals(loading);
             boolean initial = busy && viewModel.state.getValue() == null;
             progressOverlay.setVisibility(initial ? View.VISIBLE : View.GONE);
@@ -65,18 +63,29 @@ public class DashboardFragment extends Fragment {
             swipeRefresh.setRefreshing(busy && !initial);
         });
         viewModel.state.observe(getViewLifecycleOwner(), state -> {
-            if (state != null) render(state);
+            if (state != null && !workspace.isDemo()) render(state);
         });
         viewModel.error.observe(getViewLifecycleOwner(), message -> {
-            if (!TextUtils.isEmpty(message)) {
+            if (!workspace.isDemo() && !TextUtils.isEmpty(message)) {
                 progressOverlay.setVisibility(View.GONE);
                 swipeRefresh.setRefreshing(false);
                 MobileUi.state(view, "Resumen no disponible", "No pudimos cargar el resumen. Revisá la organización de tu sesión.", "Reintentar", this::reload);
             }
         });
-        if (viewModel.state.getValue() == null && !Boolean.TRUE.equals(viewModel.isLoading.getValue())) reload();
+        workspace.revision.observe(getViewLifecycleOwner(), revision -> {
+            MobileUi.text(root, R.id.dashboard_source, workspace.isDemo() ? "DEMO · Resumen de tus cambios locales" : "DATOS DE TU ORGANIZACIÓN");
+            MobileUi.text(root, R.id.dashboard_agenda_title, workspace.isDemo() ? "Próximos vencimientos" : "Agenda registrada");
+            if (workspace.isDemo()) reload();
+            else if (viewModel.state.getValue() != null) render(viewModel.state.getValue());
+            else reload();
+        });
     }
     private void reload() {
+        if (workspace.isDemo()) {
+            progressOverlay.setVisibility(View.GONE); swipeRefresh.setRefreshing(false);
+            swipeRefresh.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+            render(DemoDashboard.summarize(workspace.records())); return;
+        }
         String org = SessionManager.getInstance(requireContext()).getOrganizationId();
         if (TextUtils.isEmpty(org)) {
             swipeRefresh.setRefreshing(false);
@@ -108,10 +117,10 @@ public class DashboardFragment extends Fragment {
         MobileUi.text(root, R.id.tv_critical_tasks, tasks ? String.valueOf(state.criticalTasks) : "—");
         MobileUi.text(root, R.id.tv_critical_tasks_detail, tasks ? state.dueTodayTasks + " vencen hoy" : "Consulta no disponible");
         MobileUi.text(root, R.id.tv_livestock, herds ? String.valueOf(state.livestockHerds) : "—");
-        MobileUi.text(root, R.id.tv_livestock_detail, herds ? "Revisar rodeos y seguimiento" : "Consulta no disponible");
+        MobileUi.text(root, R.id.tv_livestock_detail, herds ? workspace.isDemo() ? state.livestockAnimals + " animales · " + state.livestockCritical + " rodeos en seguimiento" : "Revisar rodeos y seguimiento" : "Consulta no disponible");
         // Existing summary has no currency field. Do not invent a USD denomination.
-        MobileUi.text(root, R.id.tv_finance, finance ? RecordText.amount(state.financeBalance) : "—");
-        MobileUi.text(root, R.id.tv_finance_detail, finance ? state.financePending + " pendientes · moneda no informada" : "Consulta no disponible");
+        MobileUi.text(root, R.id.tv_finance, finance && !workspace.isDemo() ? RecordText.amount(state.financeBalance) : "—");
+        MobileUi.text(root, R.id.tv_finance_detail, workspace.isDemo() ? "Sin movimientos demo" : finance ? state.financePending + " pendientes · moneda no informada" : "Consulta no disponible");
         LinearLayout alerts = root.findViewById(R.id.ll_alerts_container);
         alerts.removeAllViews();
         if (state.alerts.isEmpty()) empty(alerts, tasks && plots ? "No hay alertas en las consultas de tareas y lotes." : "Las alertas están incompletas. Reintentá la consulta.");
@@ -120,9 +129,9 @@ public class DashboardFragment extends Fragment {
             if (count++ >= 10) break;
             View card = getLayoutInflater().inflate(R.layout.item_alert, alerts, false);
             boolean field = alert.title != null && alert.title.startsWith("Lote ");
-            MobileUi.text(card, R.id.tv_alert_title, field ? "Lote que requiere atención" : alert.title);
+            MobileUi.text(card, R.id.tv_alert_title, field && !workspace.isDemo() ? "Lote que requiere atención" : alert.title);
             // The current summary exposes IDs, not record names; avoid showing raw UUIDs.
-            MobileUi.text(card, R.id.tv_alert_detail, field ? alert.detail : "Abrir tareas para revisar el registro");
+            MobileUi.text(card, R.id.tv_alert_detail, field || workspace.isDemo() ? alert.detail : "Abrir tareas para revisar el registro");
             MobileUi.text(card, R.id.tv_alert_priority, "Prioridad " + (alert.priority == null ? "sin informar" : alert.priority.toLowerCase()));
             card.setOnClickListener(v -> navigate(field ? R.id.nav_campos : R.id.nav_tareas));
             alerts.addView(card);

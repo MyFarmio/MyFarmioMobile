@@ -8,6 +8,8 @@
         android:id="@+id/splashFragment"
         android:name="com.myfarmio.app.ui.splash.SplashFragment"
         android:label="Splash">
+        <action android:id="@+id/action_splash_to_login" app:destination="@id/loginFragment"
+            app:popUpTo="@id/splashFragment" app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_splash_to_welcome"
             app:destination="@id/welcomeFragment"
@@ -26,7 +28,7 @@
         android:label="Bienvenida">
         <action
             android:id="@+id/action_welcome_to_login"
-            app:destination="@id/loginFragment" />
+            app:destination="@id/loginFragment" app:popUpTo="@id/welcomeFragment" app:popUpToInclusive="true" />
     </fragment>
 
     <fragment

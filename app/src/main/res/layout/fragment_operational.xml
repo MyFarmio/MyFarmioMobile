@@ -30,6 +30,19 @@
             app:iconGravity="textStart"
             android:padding="12dp" />
     </LinearLayout>
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/collection_kind" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp" android:visibility="gone"
+        app:singleSelection="true" app:selectionRequired="true">
+        <com.google.android.material.button.MaterialButton android:id="@+id/kind_herds"
+            style="@style/MobileOutlineButton"
+            android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+            android:minHeight="48dp" android:text="Rodeos" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/kind_animals"
+            style="@style/MobileOutlineButton"
+            android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+            android:minHeight="48dp" android:text="Animales" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
     <com.google.android.material.textfield.TextInputLayout
         style="@style/MobileInput"
         android:layout_width="match_parent"
@@ -108,4 +121,9 @@
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </FrameLayout>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/collection_create" style="@style/MobileButton"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp" android:layout_marginBottom="8dp"
+        android:text="Crear en demo" android:visibility="gone" />
 </LinearLayout>

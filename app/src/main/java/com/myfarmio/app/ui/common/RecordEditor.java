@@ -29,6 +29,14 @@ public final class RecordEditor {
     private final Map<String,String> dates = new HashMap<>();
     private final Map<String,String> initial = new HashMap<>();
     private final Runnable saved;
+    private boolean restoredDraft;
+    public void markRestored() { restoredDraft = true; }
+    public Map<String,Object> snapshot() {
+        Map<String,Object> draft=DemoRepository.copy(original);
+        for (Map.Entry<Field,TextInputLayout> item:controls.entrySet())
+            draft.put(item.getKey().key,read(item.getKey(),item.getValue()));
+        return draft;
+    }
     public RecordEditor(MobileUi.Sheet sheet, String module, Map<String,Object> record, RecordRepository repository, Runnable saved) {
         this.sheet=sheet; this.module=module; this.repository=repository; this.saved=saved;
         original = DemoRepository.copy(record);
@@ -97,7 +105,7 @@ public final class RecordEditor {
         return input.getText().toString().trim();
     }
     private void requestClose() {
-        boolean dirty=false;
+        boolean dirty=restoredDraft;
         for (Map.Entry<Field,TextInputLayout> item:controls.entrySet())
             if (!Objects.equals(initial.get(item.getKey().key),read(item.getKey(),item.getValue()))) dirty=true;
         if (!dirty) { sheet.dismiss(); return; }

@@ -7,8 +7,11 @@
     android:fillViewport="true"
     android:background="@color/background"
     android:clipToPadding="false">
+    <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent" android:layout_height="wrap_content">
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_max="560dp" app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="24dp">
@@ -109,20 +112,25 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="¿Olvidaste tu contraseña?" />
-        <LinearLayout
-            android:id="@+id/button_google"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="48dp"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:paddingVertical="12dp">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Acceso con Google disponible en la web"
-                android:gravity="center"
-                android:textAppearance="@style/MobileBody" />
-        </LinearLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_google" style="@style/MobileOutlineButton"
+            android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp"
+            android:text="Ingresar con Google" android:enabled="false"
+            android:contentDescription="Ingresar con Google. Próximamente, no disponible." />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Google estará disponible próximamente." android:textAppearance="@style/MobileBody"
+            android:gravity="center" android:layout_marginTop="4dp" />
+        <View android:layout_width="match_parent" android:layout_height="1dp"
+            android:background="@color/outline_variant" android:layout_marginVertical="24dp" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Conocé MyFarmio antes de empezar" android:textAppearance="@style/MobileSection" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Recorré un campo de ejemplo. Los cambios de la demo no se guardan en tu organización."
+            android:textAppearance="@style/MobileBody" android:layout_marginTop="8dp" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_demo" style="@style/MobileOutlineButton"
+            android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp"
+            android:layout_marginTop="16dp" android:text="Explorar demostración" />
     </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

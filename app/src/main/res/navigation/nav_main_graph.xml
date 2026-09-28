@@ -24,4 +24,10 @@
         android:name="com.myfarmio.app.ui.livestock.LivestockFragment"
         android:label="Ganado" />
 
+    <fragment android:id="@+id/nav_inventario" android:name="com.myfarmio.app.ui.main.SecondaryFragment" android:label="Inventario">
+        <argument android:name="module" app:argType="string" android:defaultValue="inventory" />
+    </fragment>
+    <fragment android:id="@+id/nav_finanzas" android:name="com.myfarmio.app.ui.main.SecondaryFragment" android:label="Finanzas">
+        <argument android:name="module" app:argType="string" android:defaultValue="finance" />
+    </fragment>
 </navigation>

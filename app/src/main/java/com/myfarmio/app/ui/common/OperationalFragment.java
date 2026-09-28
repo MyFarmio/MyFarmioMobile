@@ -44,9 +44,11 @@ public abstract class OperationalFragment extends Fragment {
     private Parcelable pendingListState;
     private String query = "", status = "", priority = "", due = "", related = "", responsible = "";
     private boolean demo;
-    private List<Map<String, Object>> examples;
+    private WorkspaceViewModel workspace;
+    private boolean animals;
     private List<Map<String, Object>> source = new ArrayList<>(), visible = new ArrayList<>();
     private MobileUi.Sheet sheet;
+    private RecordEditor editor;
 
     @Nullable @Override public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup parent, @Nullable Bundle state) {
         return inflater.inflate(screenLayout(), parent, false);
@@ -58,15 +60,12 @@ public abstract class OperationalFragment extends Fragment {
             query = saved.getString("query", ""); status = saved.getString("status", "");
             priority = saved.getString("priority", ""); due = saved.getString("due", "");
             related = saved.getString("related", ""); responsible = saved.getString("responsible", "");
-            demo = saved.getBoolean("demo", false);
+            animals = saved.getBoolean("animals", false);
             pendingListState = saved.getParcelable("listState");
         }
-        if (examples == null) examples = LocalExamples.forModule(module());
-        if (saved != null && saved.containsKey("exampleStatuses")) {
-            ArrayList<String> states = saved.getStringArrayList("exampleStatuses");
-            if (states != null) for (int i = 0; i < Math.min(states.size(), examples.size()); i++)
-                examples.get(i).put("status", states.get(i));
-        }
+        workspace = new ViewModelProvider(requireActivity()).get(WorkspaceViewModel.class);
+        workspace.prepare(SessionManager.getInstance(requireContext()));
+        demo = workspace.isDemo();
         MobileUi.text(view, R.id.collection_title, title());
         TextInputEditText search = view.findViewById(R.id.collection_search);
         search.setHint(searchHint());
@@ -84,7 +83,12 @@ public abstract class OperationalFragment extends Fragment {
             public void afterTextChanged(Editable s) {}
         });
         RecyclerView list = view.findViewById(R.id.collection_list);
-        list.setLayoutManager(new LinearLayoutManager(requireContext()));
+        androidx.recyclerview.widget.GridLayoutManager grid = new androidx.recyclerview.widget.GridLayoutManager(requireContext(),
+            getResources().getConfiguration().screenWidthDp >= 700 ? 2 : 1);
+        grid.setSpanSizeLookup(new androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup() {
+            @Override public int getSpanSize(int position) { return position == 0 ? grid.getSpanCount() : 1; }
+        });
+        list.setLayoutManager(grid);
         // RecyclerView 1.1.0 has no Adapter.StateRestorationPolicy. Restore explicitly
         // after data arrives so an initially empty adapter cannot consume the position.
         list.setSaveEnabled(false);
@@ -97,7 +101,28 @@ public abstract class OperationalFragment extends Fragment {
         ((SwipeRefreshLayout) view.findViewById(R.id.collection_swipe)).setOnRefreshListener(this::refresh);
         model = new ViewModelProvider(this).get(CollectionViewModel.class);
         model.state.observe(getViewLifecycleOwner(), state -> render());
-        load(false);
+        workspace.revision.observe(getViewLifecycleOwner(), revision -> {
+            boolean changedMode = demo != workspace.isDemo();
+            demo = workspace.isDemo();
+            if (changedMode) { animals = false; clear(); }
+            root.findViewById(R.id.collection_create).setVisibility(demo ? View.VISIBLE : View.GONE);
+            root.findViewById(R.id.collection_kind).setVisibility(demo && module().equals("livestock") ? View.VISIBLE : View.GONE);
+            render();
+            if (!demo) load(false);
+        });
+        view.findViewById(R.id.collection_create).setOnClickListener(v -> edit(new java.util.LinkedHashMap<>()));
+        com.google.android.material.button.MaterialButtonToggleGroup kinds = view.findViewById(R.id.collection_kind);
+        kinds.check(animals ? R.id.kind_animals : R.id.kind_herds);
+        kinds.addOnButtonCheckedListener((group, id, checked) -> {
+            if (checked) { animals = id == R.id.kind_animals; clear(); }
+        });
+        if (!demo) load(false);
+        if (saved != null && saved.containsKey("editorDraft") && demo) {
+            @SuppressWarnings("unchecked") Map<String,Object> draft = (Map<String,Object>) saved.getSerializable("editorDraft");
+            if (draft != null) view.post(() -> {
+                if (getView() == view) { edit(draft); editor.markRestored(); }
+            });
+        }
     }
     private void load(boolean force) {
         model.load(module(), SessionManager.getInstance(requireContext()).getOrganizationId(), force);
@@ -112,7 +137,8 @@ public abstract class OperationalFragment extends Fragment {
         if (root == null || model == null || adapter == null) return;
         CollectionViewModel.State state = model.state.getValue();
         if (state == null) return;
-        source = demo ? examples : state.rows;
+        source = demo ? workspace.records().list(activeModule()) : state.rows;
+        MobileUi.text(root, R.id.collection_create, module().equals("tasks") ? "Nueva tarea" : module().equals("fields") ? "Nuevo lote" : animals ? "Nuevo animal" : "Nuevo rodeo");
         visible = new ArrayList<>();
         for (Map<String, Object> row : source) if (accepts(row)) visible.add(row);
         boolean initial = !demo && state.loading && source.isEmpty();
@@ -125,7 +151,7 @@ public abstract class OperationalFragment extends Fragment {
         swipe.setRefreshing(!demo && state.loading && !source.isEmpty());
         root.findViewById(R.id.collection_refresh).setEnabled(demo || !state.loading);
         TextView notice = root.findViewById(R.id.collection_notice);
-        String message = demo ? "EJEMPLO LOCAL · No son datos de tu organización."
+        String message = demo ? "DEMO · Cambios solo durante esta sesión"
             : state.error != null && !source.isEmpty() ? state.error + " Se conserva la última consulta." : "";
         notice.setText(message);
         notice.setVisibility(message.isEmpty() ? View.GONE : View.VISIBLE);
@@ -138,7 +164,7 @@ public abstract class OperationalFragment extends Fragment {
             } else if (!source.isEmpty() || !query.isEmpty() || filters > 0) {
                 MobileUi.state(root, "Sin coincidencias", "Probá otra búsqueda o quitá los filtros para ver todos los registros.", "Limpiar filtros", this::clear);
             } else {
-                MobileUi.state(root, "Todavía no hay registros", "No hay registros visibles para esta organización. Esta versión permite consultar; las altas todavía se realizan en la web.", "Actualizar", this::refresh);
+                MobileUi.state(root, "Todavía no hay registros", demo ? "Creá el primer registro para comenzar a explorar." : "No hay registros visibles para esta organización. Las altas se realizan en la web.", demo ? "Crear en demo" : "Actualizar", demo ? () -> edit(new java.util.LinkedHashMap<>()) : this::refresh);
             }
         }
         adapter.notifyDataSetChanged();
@@ -152,14 +178,14 @@ public abstract class OperationalFragment extends Fragment {
         }
     }
     private boolean accepts(Map<String, Object> row) {
-        if (!status.isEmpty() && !status.equals(value(row, "status"))) return false;
+        if (!status.isEmpty() && !status.equals(value(row, animals ? "health_status" : "status"))) return false;
         if (!priority.isEmpty() && !priority.equals(value(row, "priority"))) return false;
         if (!related.isEmpty() && !related.equals(value(row, relationKey()))) return false;
-        if (!responsible.isEmpty() && !responsible.equals(value(row, "responsible_user_id"))) return false;
+        if (!responsible.isEmpty() && !responsible.equals(value(row, demo ? "_responsible" : "responsible_user_id"))) return false;
         if ("Hoy".equals(due) && !LocalDate.now().equals(date(value(row, "due_date")))) return false;
         if ("Vencidas".equals(due) && !overdue(row, LocalDate.now())) return false;
         return matches(row, query, "title", "name", "description", "category", "current_crop",
-            "crop_stage", "zone", "next_action", "related_entity_name", "_responsible", "_location")
+            "crop_stage", "zone", "next_action", "related_entity_name", "_responsible", "_location", "tag", "_herd_name")
             || (!query.isEmpty() && normalize(label(value(row, "status"))).contains(normalize(query)));
     }
     private String relationKey() { return module().equals("tasks") ? "related_entity_name" : module().equals("fields") ? "current_crop" : "category"; }
@@ -172,6 +198,7 @@ public abstract class OperationalFragment extends Fragment {
     private MobileUi.Sheet openSheet(String heading) {
         MobileUi.hideKeyboard(root);
         if (sheet != null) sheet.dismiss();
+        editor = null;
         sheet = new MobileUi.Sheet(requireContext(), heading);
         return sheet;
     }
@@ -200,7 +227,7 @@ public abstract class OperationalFragment extends Fragment {
     }
     private void filters() {
         MobileUi.Sheet current = openSheet("Filtrar " + title().toLowerCase());
-        List<String> statuses = values("status"), relatedValues = values(relationKey());
+        List<String> statuses = values(animals ? "health_status" : "status"), relatedValues = values(relationKey());
         Spinner stateSelector = selector(current, "Estado", statuses, status, true);
         Spinner relatedSelector = selector(current, module().equals("tasks") ? "Referencia / campo" : module().equals("fields") ? "Cultivo" : "Categoría", relatedValues, related, false);
         List<String> priorities = values("priority");
@@ -209,29 +236,43 @@ public abstract class OperationalFragment extends Fragment {
         Spinner dateSelector = module().equals("tasks") ? selector(current, "Vencimiento", dates, due, false) : null;
         String myId = SessionManager.getInstance(requireContext()).getUserId();
         List<String> people = new ArrayList<>(Arrays.asList(""));
-        if (myId != null && source.stream().anyMatch(row -> myId.equals(value(row, "responsible_user_id")))) people.add("Asignadas a mí");
+        if (demo) people = values("_responsible");
+        else if (myId != null && source.stream().anyMatch(row -> myId.equals(value(row, "responsible_user_id")))) people.add("Asignadas a mí");
+        final List<String> personOptions = people;
         Spinner personSelector = module().equals("tasks") && people.size() > 1
-            ? selector(current, "Responsable", people, responsible.isEmpty() ? "" : "Asignadas a mí", false) : null;
+            ? selector(current, "Responsable", people, demo ? responsible : responsible.isEmpty() ? "" : "Asignadas a mí", false) : null;
         current.button("Limpiar búsqueda y filtros", () -> { clear(); current.dismiss(); });
         current.primary("Mostrar resultados", () -> {
             status = statuses.get(stateSelector.getSelectedItemPosition());
             related = relatedValues.get(relatedSelector.getSelectedItemPosition());
             priority = prioritySelector == null ? "" : priorities.get(prioritySelector.getSelectedItemPosition());
             due = dateSelector == null ? "" : dates.get(dateSelector.getSelectedItemPosition());
-            responsible = personSelector != null && personSelector.getSelectedItemPosition() == 1 ? myId : "";
+            responsible = personSelector == null ? "" : demo ? personOptions.get(personSelector.getSelectedItemPosition())
+                : personSelector.getSelectedItemPosition() == 1 ? myId : "";
             render(); current.dismiss();
         });
         current.show();
     }
+    private String activeModule() { return module().equals("livestock") && animals ? "animals" : module(); }
     private void options() {
         MobileUi.Sheet current = openSheet(title());
-        current.row("Consulta de tu organización", "La búsqueda, los filtros, el detalle y la actualización usan los datos accesibles de tu sesión.");
-        current.row("Crear y editar", "Las altas, cambios y eliminaciones todavía no tienen un servicio de guardado ni permisos de escritura conectados en Android. Realizalos desde la web.");
-        // TODO: Conectar en el próximo prompt altas/edición con servicios y permisos Android verificados.
-        if (!module().equals("fields")) current.button(demo ? "Volver a los datos de mi organización" : "Explorar los ejemplos locales", () -> {
-            demo = !demo; clear(); current.dismiss();
+        current.row(demo ? "Modo demostración" : "Consulta de tu organización", demo
+            ? "Podés crear, editar y eliminar registros locales. Se conservan al cambiar de módulo, pero no al cerrar la sesión o el proceso."
+            : "La consulta utiliza tus servicios y permisos actuales. Las escrituras siguen disponibles únicamente en la web.");
+        if (!workspace.isDemoAccount()) current.button(demo ? "Volver a mi organización" : "Explorar demostración", () -> {
+            current.dismiss(); workspace.setDemo(!demo);
         });
-        current.primary("Actualizar consulta", () -> { demo = false; clear(); load(true); current.dismiss(); });
+        current.primary("Actualizar vista", () -> { current.dismiss(); refresh(); });
+        current.show();
+    }
+    private void edit(Map<String,Object> row) {
+        if (!demo) return;
+        MobileUi.Sheet current = openSheet((row.isEmpty() ? "Crear" : "Editar") + (activeModule().equals("tasks") ? " tarea" : activeModule().equals("fields") ? " lote" : animals ? " animal" : " rodeo"));
+        editor = new RecordEditor(current, activeModule(), row, workspace.records(), () -> {
+            clear();
+            android.widget.Toast.makeText(requireContext(), "Guardado en la demostración", android.widget.Toast.LENGTH_SHORT).show();
+        });
+        current.dialog.setOnDismissListener(dialog -> editor = null);
         current.show();
     }
     private String responsible(Map<String, Object> row) {
@@ -252,6 +293,16 @@ public abstract class OperationalFragment extends Fragment {
         return key.equals("notes") ? raw : "";
     }
     private void detail(Map<String, Object> row) {
+        if (demo) {
+            MobileUi.Sheet current = openSheet(or(row, "title", or(row, "name", value(row,"tag"))));
+            DemoRecordDetails.bind(current, activeModule(), row, workspace.records(), () -> {
+                // Re-read to include checklist or comments changed while this detail was open.
+                Map<String,Object> latest = workspace.records().list(activeModule()).stream()
+                    .filter(item -> value(item,"id").equals(value(row,"id"))).findFirst().orElse(row);
+                edit(latest);
+            }, this::render);
+            current.show(); return;
+        }
         MobileUi.Sheet current = openSheet(or(row, module().equals("tasks") ? "title" : "name", "Detalle"));
         current.row(demo ? "Ejemplo local" : "Estado", label(value(row, "status")));
         if (module().equals("tasks")) {
@@ -315,7 +366,7 @@ public abstract class OperationalFragment extends Fragment {
             double area = 0; for (Map<String, Object> row : source) area += number(row, "area_hectares");
             return amount(area) + " ha registradas";
         }
-        return source.size() + (demo ? " animales de ejemplo" : " rodeos");
+        return source.size() + (animals ? " animales" : " rodeos");
     }
     private String summaryContext() {
         if (module().equals("tasks")) {
@@ -333,7 +384,7 @@ public abstract class OperationalFragment extends Fragment {
             animals += number(row, "quantity");
         }
         return module().equals("fields") ? source.size() + " lotes · " + alerts + " en seguimiento"
-            : demo ? "Datos locales separados de tu organización" : amount(animals) + " animales declarados · " + alerts + " rodeos en seguimiento";
+            : this.animals ? "Caravanas y seguimiento individual" : amount(animals) + " animales declarados · " + alerts + " rodeos en seguimiento";
     }
     private final class RecordAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         @Override public int getItemCount() { return visible.isEmpty() ? 0 : visible.size() + 1; }
@@ -347,17 +398,17 @@ public abstract class OperationalFragment extends Fragment {
             if (position == 0) {
                 MobileUi.text(card, R.id.summary_value, summary());
                 MobileUi.text(card, R.id.summary_context, summaryContext());
-                MobileUi.text(card, R.id.summary_count, visible.size() + " de " + source.size() + " registros · " + (demo ? "Ejemplos locales" : "Solo consulta"));
+                MobileUi.text(card, R.id.summary_count, visible.size() + " de " + source.size() + " registros · " + (demo ? "Demo editable" : "Solo consulta"));
                 return;
             }
             Map<String, Object> row = visible.get(position - 1);
-            String state = value(row, "status");
+            String state = value(row, animals ? "health_status" : "status");
             boolean risk = attention(state) || (module().equals("tasks") && overdue(row, LocalDate.now()));
             TextView badge = card.findViewById(R.id.record_status);
             badge.setText(label(state));
             badge.setTextColor(requireContext().getColor(risk ? R.color.on_error_container : R.color.primary));
             badge.setBackgroundResource(risk ? R.drawable.bg_priority_high : R.drawable.bg_mobile_badge);
-            MobileUi.text(card, R.id.record_title, or(row, module().equals("tasks") ? "title" : "name", "Sin nombre"));
+            MobileUi.text(card, R.id.record_title, or(row, module().equals("tasks") ? "title" : animals ? "tag" : "name", "Sin nombre"));
             String signal = "", subtitle = "", meta = "";
             ProgressBar progress = card.findViewById(R.id.record_progress);
             progress.setVisibility(View.GONE);
@@ -376,9 +427,9 @@ public abstract class OperationalFragment extends Fragment {
                 subtitle = join(or(row, "current_crop", "Sin cultivo"), value(row, "crop_stage"));
                 meta = or(row, "next_action", "Sin próxima acción registrada");
             } else {
-                signal = demo ? value(row, "_weight") : row.get("quantity") == null ? "" : amount(number(row, "quantity")) + " animales";
+                signal = animals ? (row.containsKey("weight_kg") ? amount(number(row,"weight_kg")) + " kg" : "") : row.get("quantity") == null ? "" : amount(number(row, "quantity")) + " animales";
                 subtitle = join(value(row, "category"), herdNote(row, "location"));
-                meta = demo ? "Seguimiento individual · Ejemplo" : row.get("average_weight_kg") == null
+                meta = animals ? value(row,"_herd_name") + " · " + label(value(row,"reproductive_status")) : row.get("average_weight_kg") == null
                     ? "Peso promedio sin registrar" : "Peso promedio · " + amount(number(row, "average_weight_kg")) + " kg";
             }
             MobileUi.text(card, R.id.record_signal, signal);
@@ -394,12 +445,9 @@ public abstract class OperationalFragment extends Fragment {
         out.putParcelable("listState", pendingListState);
         out.putString("query", query); out.putString("status", status); out.putString("priority", priority);
         out.putString("due", due); out.putString("related", related); out.putString("responsible", responsible);
-        out.putBoolean("demo", demo);
-        if (examples != null) {
-            ArrayList<String> states = new ArrayList<>();
-            for (Map<String, Object> example : examples) states.add(value(example, "status"));
-            out.putStringArrayList("exampleStatuses", states);
-        }
+        out.putBoolean("animals", animals);
+        if (editor != null && sheet != null && sheet.dialog.isShowing())
+            out.putSerializable("editorDraft", new java.util.LinkedHashMap<>(editor.snapshot()));
     }
     private void captureListState() {
         if (root == null || adapter == null || adapter.getItemCount() == 0) return;

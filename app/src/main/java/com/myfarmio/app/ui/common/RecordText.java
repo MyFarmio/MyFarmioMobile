@@ -33,6 +33,13 @@ public final class RecordText {
     }
     public static String label(String key) {
         switch (key) {
+            case "healthy": return "Sano";
+            case "treatment": return "En tratamiento";
+            case "open": return "Vacía";
+            case "pregnant": return "Preñada";
+            case "served": return "Servida";
+            case "dry": return "Seca";
+            case "calving": return "Parición";
             case "pending": return "Pendiente";
             case "planned": return "Planificada";
             case "in_progress": return "En progreso";
@@ -81,4 +88,3 @@ public final class RecordText {
         return normalize(haystack.toString()).contains(normalize(query));
     }
 }
-
