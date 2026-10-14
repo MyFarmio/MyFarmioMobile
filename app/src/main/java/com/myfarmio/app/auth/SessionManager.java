@@ -7,6 +7,7 @@ import androidx.security.crypto.MasterKey;
 import com.myfarmio.app.network.SupabaseConfig;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.security.KeyStore;
 
 public class SessionManager {
 
@@ -24,21 +25,49 @@ public class SessionManager {
 
     private SessionManager(Context context) {
         try {
-            MasterKey masterKey = new MasterKey.Builder(context)
-                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                .build();
-
-            prefs = EncryptedSharedPreferences.create(
-                context,
-                PREFS_NAME,
-                masterKey,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            );
-        } catch (GeneralSecurityException | IOException e) {
-            // Fallback a SharedPreferences normales si falla el cifrado
-            prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+            // App data can be cleared while the Android Keystore alias survives on
+            // some devices. That orphaned key blocks MasterKey during startup.
+            if (context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getAll().isEmpty()) {
+                deleteMasterKey();
+            }
+            prefs = createEncryptedPreferences(context);
+            // EncryptedSharedPreferences opens lazily. Reading once here detects
+            // restored/corrupt ciphertext before it can crash the splash screen.
+            prefs.getAll();
+        } catch (GeneralSecurityException | IOException | RuntimeException damagedPreferences) {
+            context.deleteSharedPreferences(PREFS_NAME);
+            deleteMasterKey();
+            try {
+                prefs = createEncryptedPreferences(context);
+            } catch (GeneralSecurityException | IOException encryptionUnavailable) {
+                // Keep an unreadable encrypted file separate from the emergency store.
+                prefs = context.getSharedPreferences(PREFS_NAME + "_fallback", Context.MODE_PRIVATE);
+            }
         }
+    }
+
+    private void deleteMasterKey() {
+        try {
+            KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+            keyStore.load(null);
+            keyStore.deleteEntry(MasterKey.DEFAULT_MASTER_KEY_ALIAS);
+        } catch (Exception ignored) {
+            // The separate fallback preferences below still let the app start.
+        }
+    }
+
+    private SharedPreferences createEncryptedPreferences(Context context)
+            throws GeneralSecurityException, IOException {
+        MasterKey masterKey = new MasterKey.Builder(context)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build();
+        return EncryptedSharedPreferences.create(
+            context,
+            PREFS_NAME,
+            masterKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        );
     }
 
     public static synchronized SessionManager getInstance(Context context) {

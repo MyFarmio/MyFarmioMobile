@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_inset" android:padding="12dp" android:layout_marginTop="12dp">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+        <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/st_agriculture" app:tint="@color/stitch_primary" android:importantForAccessibility="no" />
+        <TextView android:id="@+id/window_title" style="@style/StitchSection" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:layout_marginEnd="8dp" />
+        <TextView android:id="@+id/window_status" style="@style/StitchBadge" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/stitch_badge_success" android:paddingHorizontal="8dp" android:paddingVertical="4dp" />
+    </LinearLayout>
+    <TextView android:id="@+id/window_detail" style="@style/StitchBody" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp" />
+</LinearLayout>

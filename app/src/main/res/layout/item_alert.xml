@@ -1,32 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:minHeight="72dp"
-    android:orientation="vertical"
-    android:padding="14dp"
-    android:layout_marginBottom="8dp"
-    android:background="@drawable/bg_mobile_badge"
-    android:foreground="?attr/selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true">
-    <TextView
-        android:id="@+id/tv_alert_priority"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/MobileLabel"
-        android:layout_marginBottom="6dp" />
-    <TextView
-        android:id="@+id/tv_alert_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/MobileSection" />
-    <TextView
-        android:id="@+id/tv_alert_detail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/MobileBody"
-        android:layout_marginTop="4dp" />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="10dp" android:background="@drawable/bg_stitch_inset" android:padding="12dp" android:minHeight="68dp" android:clickable="true" android:focusable="true" android:foreground="?attr/selectableItemBackground">
+    <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical">
+        <TextView android:id="@+id/tv_alert_title" style="@style/StitchBody" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/on_surface" android:fontVariationSettings="'wght' 600" />
+        <TextView android:id="@+id/tv_alert_detail" style="@style/StitchBody" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" />
+    </LinearLayout>
+    <TextView android:id="@+id/tv_alert_priority" style="@style/StitchBadge" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/stitch_badge_caution" android:paddingHorizontal="8dp" android:paddingVertical="4dp" />
 </LinearLayout>

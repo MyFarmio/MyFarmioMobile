@@ -3,52 +3,71 @@ package com.myfarmio.app.data.demo;
 import java.time.LocalDate;
 import java.util.*;
 
-/** Fictional, linked fixtures. Never sent to Supabase. */
+/** Fictional Stitch fixtures, isolated in memory. No credential or remote write. */
 final class DemoFixtures {
     private DemoFixtures() {}
     static Map<String, Object> row(Object... pairs) {
-        Map<String, Object> row = new LinkedHashMap<>();
-        for (int i = 0; i < pairs.length; i += 2) row.put((String) pairs[i], pairs[i + 1]);
+        Map<String,Object> row = new LinkedHashMap<>();
+        for (int i=0;i<pairs.length;i+=2) row.put((String)pairs[i],pairs[i+1]);
         return row;
     }
-    static Map<String, List<Map<String, Object>>> create() {
-        LocalDate today = LocalDate.now();
-        Map<String, List<Map<String, Object>>> all = new LinkedHashMap<>();
-        all.put("fields", new ArrayList<>(Arrays.asList(
-            row("id","demo-plot-north","name","Lote Norte","current_crop","Maíz temprano","area_hectares",42,
-                "status","active","crop_stage","Vegetativo","soil_moisture_percent",28,"zone","Sector Norte",
-                "next_action","Revisar cobertura y fertilización","rotation","Soja → trigo → maíz","_responsible","Laura Gómez"),
-            row("id","demo-plot-south","name","Lote Sur","current_crop","Trigo","area_hectares",31,
-                "status","monitoring","crop_stage","Maduración","soil_moisture_percent",16,"zone","Sector Sur",
-                "next_action","Medir humedad antes de cosechar","_responsible","Martín Pérez"),
-            row("id","demo-plot-east","name","Lote Este","current_crop","Soja","area_hectares",24,
-                "status","active","crop_stage","Floración","soil_moisture_percent",32,"zone","Sector Este",
-                "next_action","Monitorear malezas","_responsible","Laura Gómez")
-        )));
+    static Map<String,List<Map<String,Object>>> create() {
+        Map<String,List<Map<String,Object>>> all = new LinkedHashMap<>();
+        all.put("fields", new ArrayList<>(Arrays.asList(row("id","demo-plot-north","name","Lote Norte",
+            "current_crop","Girasol","area_hectares",4000,"status","monitoring","crop_stage","Floración",
+            "soil_moisture_percent",30,"zone","Sector Sur","progress",95,"estimated_yield","4000",
+            "next_action","Confirmar rotación de cultivo","rotation","Soja → trigo → girasol","_responsible","Laura Gómez"))));
         all.put("tasks", new ArrayList<>(Arrays.asList(
-            row("id","demo-task-moisture","title","Medir humedad del trigo","description","Tomar muestras en tres puntos del lote.",
-                "status","in_progress","priority","high","due_date",today.toString(),"start_date",today.minusDays(1).toString(),
-                "related_entity_id","demo-plot-south","related_entity_name","Lote Sur","_responsible","Martín Pérez","progress",50,
-                "_checklist",new ArrayList<>(Arrays.asList(row("text","Preparar el medidor","done",true),row("text","Registrar las tres muestras","done",false)))),
-            row("id","demo-task-fertilizer","title","Revisar fertilización","description","Validar cobertura antes de coordinar la próxima labor.",
-                "status","pending","priority","urgent","due_date",today.minusDays(1).toString(),
-                "related_entity_id","demo-plot-north","related_entity_name","Lote Norte","_responsible","Laura Gómez","progress",0),
-            row("id","demo-task-weeds","title","Recorrer el lote Este","description","Revisar cabeceras y bordes.",
-                "status","planned","priority","medium","due_date",today.plusDays(2).toString(),
-                "related_entity_id","demo-plot-east","related_entity_name","Lote Este","_responsible","Laura Gómez","progress",0),
-            row("id","demo-task-fence","title","Controlar alambrado","description","Recorrido del perímetro finalizado.",
-                "status","completed","priority","low","due_date",today.minusDays(2).toString(),"_responsible","Martín Pérez","progress",100)
-        )));
-        all.put("livestock", new ArrayList<>(Arrays.asList(
-            row("id","demo-herd-breed","name","Rodeo de cría","category","Vacas","status","stable","_location","Potrero 4","notes","Seguimiento semanal."),
-            row("id","demo-herd-young","name","Recría","category","Vaquillonas","status","monitoring","_location","Potrero 7","notes","Revisar condición corporal.")
-        )));
-        all.put("animals", new ArrayList<>(Arrays.asList(
-            row("id","demo-animal-1048","tag","AR-1048","herd_id","demo-herd-breed","category","Vaca","weight_kg",420,"health_status","healthy","reproductive_status","pregnant","_location","Potrero 4"),
-            row("id","demo-animal-1052","tag","AR-1052","herd_id","demo-herd-breed","category","Vaca","weight_kg",405,"health_status","healthy","reproductive_status","open","_location","Potrero 4"),
-            row("id","demo-animal-2104","tag","AR-2104","herd_id","demo-herd-young","category","Vaquillona","weight_kg",285,"health_status","monitoring","reproductive_status","open","_location","Potrero 7"),
-            row("id","demo-animal-2108","tag","AR-2108","herd_id","demo-herd-young","category","Vaquillona","weight_kg",298,"health_status","healthy","reproductive_status","served","_location","Potrero 7")
-        )));
+            row("id","demo-task-stock","title","Inventario de semillas — reposición","description","Revisar existencias antes de la próxima siembra.",
+                "status","in_progress","priority","high","_responsible","Laura Gómez","progress",0),
+            row("id","demo-task-done","title","Preparar lote para siembra","status","completed","priority","low",
+                "related_entity_id","demo-plot-north","progress",100,"due_date",LocalDate.now().minusDays(2).toString()))));
+        all.put("livestock",new ArrayList<>(Arrays.asList(
+            row("id","demo-herd-four","name","Potrero 4","category","Vacas","status","stable","_location","Potrero este"),
+            row("id","demo-herd-young","name","Rodeo de recría","category","Novillos","status","stable","_location","Corral este"))));
+        List<Map<String,Object>> animals=new ArrayList<>();
+        // Herd totals are derived by DemoRepository, never independent hardcoded counters.
+        for(int i=0;i<60;i++) animals.add(row("id","demo-animal-"+i,"tag",i==0?"AR-1048":"AR-"+(1100+i),
+            "herd_id",i<10?"demo-herd-four":"demo-herd-young","category",i<10?"Vaca":"Novillo",
+            "weight_kg",i==0?130:i<10?208:145,"health_status",i==0?"monitoring":"healthy",
+            "reproductive_status","open","_location",i<10?"Potrero este":"Corral este"));
+        all.put("animals",animals);
+        all.put("inventory",new ArrayList<>(Arrays.asList(
+            row("id","demo-supply-90","name","Insecticida","category","Protección vegetal","quantity",48,
+                "capacity",144,"unit","Frascos","lot","AR-90","expiry","10 oct","status","low","depot","Depósito Central: Sector 2"),
+            row("id","demo-supply-5046","name","Fertilizantes","category","Fertilizantes","quantity",15,
+                "capacity",150,"unit","Litros","lot","UR_5046","expiry","14 nov","status","critical","depot","Depósito Central: Sector 2"))));
+        all.put("inventory_movements",new ArrayList<>(Arrays.asList(
+            row("id","demo-stock-90","record_id","demo-supply-90","name","Insecticida","quantity",48,"unit","Frascos","kind","Stock inicial","date","2026-09-29"),
+            row("id","demo-stock-5046","record_id","demo-supply-5046","name","Fertilizantes","quantity",15,"unit","Litros","kind","Stock inicial","date","2026-09-29"))));
+        all.put("campaign",new ArrayList<>(Arrays.asList(row("name","Campaña demo","projected_tons",0,"visible_jobs",0))));
+        all.put("pasture",new ArrayList<>(Arrays.asList(row("name","Pastoreo y Cargas","detail","Disponibilidad forrajera óptima en parcelas norte y este. Próxima rotación en 6 días."))));
+        all.put("finance",new ArrayList<>(Arrays.asList(
+            row("id","demo-finance-income","description","Venta de girasoles","movement_type","income",
+                "amount",480000,"currency","ARS","status","posted","category","Agricultura","counterparty","Agrosur",
+                "date","2026-09-29","plot","Lote Norte"),
+            row("id","demo-finance-rent","description","Alquiler de lote","movement_type","expense",
+                "amount",150000,"currency","ARS","status","overdue","category","Alquileres","counterparty","Contratista",
+                "date","2026-09-29","plot","Lote Norte"))));
+        all.put("weather",new ArrayList<>(Arrays.asList(row("id","demo-weather","name","Estación Norte",
+            "temperature","24°C","condition","Soleado","updated","Ejemplo local · 15 min","moisture","30%",
+            "wind","12 km/h NO","pressure","1014 hPa","uv","Óptima (4)","rain","18 mm","etp","3.2 mm/día",
+            "water_percent",62,"water_legend","Agua útil: 62%   ·   Déficit hídrico leve",
+            "plot","LOTE NORTE","crop","Girasol Confite","stage","Estadío R5.1 (Apertura de capítulo floral)",
+            "recommendation","Recomendación de ejemplo: mantener riego complementario durante la tarde para evitar estrés hídrico previo a floración plena."))));
+        all.put("windows",new ArrayList<>(Arrays.asList(
+            row("name","Pulverización foliar","detail","Ventana sugerida: 06:00 a 11:00 hs (viento < 14 km/h)","status","FAVORABLE","icon","agriculture"),
+            row("name","Siembra directa","detail","Temperatura suelo: 18.5°C · Humedad suficiente","status","FAVORABLE","icon","grass"),
+            row("name","Cosecha / Trilla","detail","Humedad en grano esperada: 14.8% a partir de 14:00 hs","status","PRECAUCIÓN","icon","local_shipping"))));
+        all.put("climate_alerts",new ArrayList<>(Arrays.asList(row("name","Alerta preventiva: descenso térmico nocturno",
+            "time","JUEVES NOCHE","detail","Escenario de demostración: descenso a 3°C con punto de rocío bajo. Riesgo moderado de helada suave en bajíos del Lote Sur. Preparar resguardos para plantines jóvenes."))));
+        all.put("profile",new ArrayList<>(Arrays.asList(row("id","demo-profile","name","Laura Gómez",
+            "email","laura@example.com","role","Propietaria","provider","DEMO","phone","Sin teléfono cargado",
+            "timezone","America/Argentina/Buenos_Aires","created","28 de mayo de 2026, 18:17",
+            "last_access","30 de septiembre de 2026, 06:38","organization","Mi campo demo",
+            "slug","mi-campo-demo","membership_role","Propietaria titular","membership_title","Sin cargo asignado"))));
+        all.put("rain_notes",new ArrayList<>());
         return all;
     }
 }
+

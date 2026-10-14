@@ -5,12 +5,12 @@
 
     <application
         android:name=".MyFarmioApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/logo_myfarmio"
+        android:icon="@drawable/ic_iconmyfarmio"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/logo_myfarmio"
+        android:roundIcon="@drawable/ic_iconmyfarmio"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyFarmio"
         tools:targetApi="31">

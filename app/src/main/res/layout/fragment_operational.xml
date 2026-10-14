@@ -1,129 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/background">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="8dp"
-        android:gravity="center_vertical">
-        <TextView
-            android:id="@+id/collection_title"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/MobileTitle"
-            android:accessibilityHeading="true" />
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/collection_options"
-            style="@style/MobileQuietButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:contentDescription="Opciones del módulo"
-            app:icon="@drawable/ic_more"
-            app:iconPadding="0dp"
-            app:iconGravity="textStart"
-            android:padding="12dp" />
-    </LinearLayout>
-    <com.google.android.material.button.MaterialButtonToggleGroup
-        android:id="@+id/collection_kind" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp" android:visibility="gone"
-        app:singleSelection="true" app:selectionRequired="true">
-        <com.google.android.material.button.MaterialButton android:id="@+id/kind_herds"
-            style="@style/MobileOutlineButton"
-            android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
-            android:minHeight="48dp" android:text="Rodeos" />
-        <com.google.android.material.button.MaterialButton android:id="@+id/kind_animals"
-            style="@style/MobileOutlineButton"
-            android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
-            android:minHeight="48dp" android:text="Animales" />
-    </com.google.android.material.button.MaterialButtonToggleGroup>
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/MobileInput"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="8dp"
-        app:endIconMode="clear_text"
-        app:startIconDrawable="@drawable/ic_search">
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/collection_search"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="56dp"
-            android:singleLine="true"
-            android:imeOptions="actionSearch"
-            android:inputType="text" />
-    </com.google.android.material.textfield.TextInputLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="16dp"
-        android:gravity="center_vertical">
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/collection_filter"
-            style="@style/MobileQuietButton"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="Filtros"
-            android:gravity="start|center_vertical" />
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/collection_refresh"
-            style="@style/MobileQuietButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Actualizar" />
-    </LinearLayout>
-    <TextView
-        android:id="@+id/collection_notice"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="8dp"
-        android:background="@color/secondary_container"
-        android:textAppearance="@style/MobileBody"
-        android:visibility="gone"
-        android:accessibilityLiveRegion="polite" />
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/collection_swipe"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/collection_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:paddingBottom="16dp" />
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/collection_feedback"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="false">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <include
-                    layout="@layout/include_mobile_skeleton" />
-                <include
-                    layout="@layout/include_mobile_state" />
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/collection_swipe" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/background">
+    <androidx.core.widget.NestedScrollView android:id="@+id/collection_scroll" android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true">
+        <LinearLayout android:id="@+id/collection_content" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp" android:paddingBottom="88dp">
+            <TextView android:id="@+id/collection_eyebrow" style="@style/StitchEyebrow" android:layout_width="match_parent" android:layout_height="wrap_content" />
+            <TextView android:id="@+id/collection_title" style="@style/StitchTitle" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:accessibilityHeading="true" />
+            <TextView android:id="@+id/collection_description" style="@style/StitchBody" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" />
+            <TextView android:id="@+id/collection_notice" style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:visibility="gone" />
+            <LinearLayout android:id="@+id/collection_showcase" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="16dp" android:visibility="gone">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:baselineAligned="false">
+                        <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_marginEnd="6dp" android:layout_height="match_parent" android:orientation="vertical" android:padding="14dp" android:background="@drawable/bg_stitch_dark" android:minHeight="110dp">
+                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                                <ImageView android:layout_width="34dp" android:layout_height="34dp" android:src="@drawable/st_map" app:tint="@color/on_primary_container" android:importantForAccessibility="no" android:padding="7dp" android:background="@drawable/stitch_hero_cell" />
+                                <TextView style="@style/StitchMetricLabel" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="ACTIVO" android:gravity="end" android:textColor="@color/on_primary_container" />
+                            </LinearLayout>
+                            <TextView android:id="@+id/collection_metric_1" style="@style/StitchMetric" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" android:layout_marginTop="10dp" android:textColor="@color/on_primary" />
+                            <TextView android:id="@+id/collection_metric_1_label" style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Ha activas" android:textColor="@color/on_primary_container" />
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_marginStart="6dp" android:layout_height="match_parent" android:orientation="vertical" android:padding="14dp" android:background="@drawable/bg_stitch_card" android:minHeight="110dp">
+                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                                <ImageView android:layout_width="34dp" android:layout_height="34dp" android:src="@drawable/st_agriculture" app:tint="@color/stitch_primary" android:importantForAccessibility="no" android:padding="7dp" android:background="@drawable/stitch_icon_soft" />
+                                <TextView style="@style/StitchMetricLabel" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="ESTIMADO" android:gravity="end" />
+                            </LinearLayout>
+                            <TextView android:id="@+id/collection_metric_2" style="@style/StitchMetric" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" android:layout_marginTop="10dp" />
+                            <TextView android:id="@+id/collection_metric_2_label" style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Cosecha proyectada" />
+                        </LinearLayout>
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:baselineAligned="false" android:layout_marginTop="12dp">
+                        <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_marginEnd="6dp" android:layout_height="match_parent" android:orientation="vertical" android:padding="14dp" android:background="@drawable/bg_stitch_card" android:minHeight="110dp">
+                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                                <ImageView android:layout_width="34dp" android:layout_height="34dp" android:src="@drawable/st_task_alt" app:tint="@color/stitch_primary" android:importantForAccessibility="no" android:padding="7dp" android:background="@drawable/stitch_icon_soft" />
+                                <TextView style="@style/StitchMetricLabel" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="HOY" android:gravity="end" />
+                            </LinearLayout>
+                            <TextView android:id="@+id/collection_metric_3" style="@style/StitchMetric" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" android:layout_marginTop="10dp" />
+                            <TextView android:id="@+id/collection_metric_3_label" style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Labores visibles" />
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_marginStart="6dp" android:layout_height="match_parent" android:orientation="vertical" android:padding="14dp" android:background="@drawable/bg_stitch_card" android:minHeight="110dp">
+                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                                <ImageView android:layout_width="34dp" android:layout_height="34dp" android:src="@drawable/st_water_drop" app:tint="@color/stitch_primary" android:importantForAccessibility="no" android:padding="7dp" android:background="@drawable/stitch_icon_soft" />
+                                <TextView style="@style/StitchMetricLabel" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="ÓPTIMO" android:gravity="end" />
+                            </LinearLayout>
+                            <TextView android:id="@+id/collection_metric_4" style="@style/StitchMetric" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" android:layout_marginTop="10dp" />
+                            <TextView android:id="@+id/collection_metric_4_label" style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Humedad promedio" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
             </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
-    </FrameLayout>
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/collection_create" style="@style/MobileButton"
-        android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp" android:layout_marginBottom="8dp"
-        android:text="Crear en demo" android:visibility="gone" />
-</LinearLayout>
+            <com.google.android.material.textfield.TextInputLayout android:id="@+id/collection_search_box" style="@style/MobileInput" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="18dp" app:hintEnabled="false" app:endIconMode="clear_text" app:startIconDrawable="@drawable/ic_search">
+                <com.google.android.material.textfield.TextInputEditText android:id="@+id/collection_search" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:textSize="13sp" android:fontFamily="@font/inter" android:singleLine="true" android:imeOptions="actionSearch" android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <LinearLayout android:id="@+id/collection_feedback" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                <include layout="@layout/include_mobile_skeleton" />
+                <include layout="@layout/include_mobile_state" />
+            </LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/collection_list" android:layout_width="match_parent" android:layout_height="wrap_content" android:nestedScrollingEnabled="false" android:clipToPadding="false" android:layout_marginTop="16dp" />
+            <LinearLayout android:id="@+id/collection_feature" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_dark" android:padding="16dp" android:layout_marginTop="16dp" android:visibility="gone">
+                <TextView android:id="@+id/collection_feature_eyebrow" style="@style/StitchMetricLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="PRÓXIMA VENTANA" android:textColor="@color/on_primary_container" />
+                <TextView android:id="@+id/collection_feature_title" style="@style/StitchSection" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/on_primary" android:layout_marginTop="14dp" />
+                <TextView android:id="@+id/collection_feature_detail" style="@style/StitchBody" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/on_primary_container" android:layout_marginTop="4dp" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="16dp" android:baselineAligned="false">
+                    <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/stitch_hero_cell" android:padding="12dp" android:layout_marginEnd="4dp">
+                        <TextView android:id="@+id/feature_value_1" style="@style/StitchMetric" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" android:textSize="22sp" android:textColor="@color/on_primary" />
+                        <TextView android:id="@+id/feature_label_1" style="@style/StitchMetricLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/on_primary_container" />
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/stitch_hero_cell" android:padding="12dp" android:layout_marginStart="4dp">
+                        <TextView android:id="@+id/feature_value_2" style="@style/StitchMetric" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" android:textSize="22sp" android:textColor="@color/on_primary" />
+                        <TextView android:id="@+id/feature_label_2" style="@style/StitchMetricLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/on_primary_container" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout android:id="@+id/collection_animals" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"></LinearLayout>
+            <LinearLayout android:id="@+id/collection_extra" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_card" android:padding="16dp" android:layout_marginTop="16dp" android:visibility="gone">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                    <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/st_science" app:tint="@color/stitch_primary" android:importantForAccessibility="no" />
+                    <TextView android:id="@+id/collection_extra_title" style="@style/StitchSection" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Aplicaciones recientes" android:layout_marginStart="8dp" android:layout_marginEnd="8dp" />
+                </LinearLayout>
+                <TextView android:id="@+id/collection_extra_detail" style="@style/StitchBody" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" />
+            </LinearLayout>
+            <LinearLayout android:id="@+id/collection_projection" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_card" android:padding="16dp" android:layout_marginTop="16dp" android:visibility="gone">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                    <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/st_trending_up" app:tint="@color/stitch_primary" android:importantForAccessibility="no" />
+                    <TextView style="@style/StitchSection" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Proyección de cosecha" android:layout_marginStart="8dp" android:layout_marginEnd="8dp" />
+                </LinearLayout>
+                <TextView android:id="@+id/collection_extra_more" style="@style/StitchBody" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" />
+            </LinearLayout>
+            <LinearLayout android:id="@+id/collection_toolbar" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="16dp">
+                <com.google.android.material.button.MaterialButton android:id="@+id/collection_filter" style="@style/StitchButton" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Filtrar" app:icon="@drawable/st_tune" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/collection_options" style="@style/StitchButton" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Opciones" app:icon="@drawable/st_expand_more" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/collection_refresh" style="@style/StitchButton" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Actualizar" app:icon="@drawable/st_history" />
+            </LinearLayout>
+            <com.google.android.material.button.MaterialButtonToggleGroup android:id="@+id/collection_kind" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:visibility="gone" app:singleSelection="true" app:selectionRequired="true">
+                <com.google.android.material.button.MaterialButton android:id="@+id/kind_herds" style="@style/StitchButton" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Rodeos" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/kind_animals" style="@style/StitchButton" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Animales" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+            <com.google.android.material.button.MaterialButton android:id="@+id/collection_create" style="@style/StitchPrimaryButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Crear en demo" app:icon="@drawable/st_add_circle" android:layout_marginTop="12dp" android:visibility="gone" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

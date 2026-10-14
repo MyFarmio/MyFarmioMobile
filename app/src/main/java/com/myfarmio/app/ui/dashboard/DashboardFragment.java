@@ -45,7 +45,7 @@ public class DashboardFragment extends Fragment {
         progressOverlay = view.findViewById(R.id.progress_overlay);
         viewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
         view.findViewById(R.id.dashboard_content).setVisibility(viewModel.state.getValue() == null ? View.GONE : View.VISIBLE);
-        MobileUi.text(view, R.id.tv_dashboard_date, LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE d 'de' MMMM", new Locale("es", "AR"))));
+        MobileUi.text(view, R.id.tv_dashboard_date, "RESUMEN OPERATIVO");
         swipeRefresh.setColorSchemeResources(R.color.primary);
         swipeRefresh.setOnRefreshListener(this::reload);
         view.findViewById(R.id.tv_ver_tareas).setOnClickListener(v -> navigate(R.id.nav_tareas));
@@ -54,6 +54,7 @@ public class DashboardFragment extends Fragment {
         view.findViewById(R.id.dashboard_fields).setOnClickListener(v -> navigate(R.id.nav_campos));
         view.findViewById(R.id.card_livestock).setOnClickListener(v -> navigate(R.id.nav_ganado));
         view.findViewById(R.id.card_finance).setOnClickListener(v -> navigate(R.id.nav_finanzas));
+        view.findViewById(R.id.dashboard_climate).setOnClickListener(v -> navigate(R.id.nav_clima));
         viewModel.isLoading.observe(getViewLifecycleOwner(), loading -> {
             if (workspace.isDemo()) return;
             boolean busy = Boolean.TRUE.equals(loading);
@@ -103,6 +104,7 @@ public class DashboardFragment extends Fragment {
     }
     private void render(DashboardViewModel.DashboardState state) {
         root.findViewById(R.id.dashboard_content).setVisibility(View.VISIBLE);
+        com.myfarmio.app.ui.common.StitchUi.weather(root,workspace);
         boolean plots = !state.unavailableSections.contains("Campos");
         boolean tasks = !state.unavailableSections.contains("Tareas");
         boolean herds = !state.unavailableSections.contains("Ganado");
@@ -116,11 +118,14 @@ public class DashboardFragment extends Fragment {
         MobileUi.text(root, R.id.tv_alert_plots_detail, plots ? state.totalPlots + " lotes · " + RecordText.amount(state.totalHectares) + " ha" : "Consulta no disponible");
         MobileUi.text(root, R.id.tv_critical_tasks, tasks ? String.valueOf(state.criticalTasks) : "—");
         MobileUi.text(root, R.id.tv_critical_tasks_detail, tasks ? state.dueTodayTasks + " vencen hoy" : "Consulta no disponible");
-        MobileUi.text(root, R.id.tv_livestock, herds ? String.valueOf(state.livestockHerds) : "—");
-        MobileUi.text(root, R.id.tv_livestock_detail, herds ? workspace.isDemo() ? state.livestockAnimals + " animales · " + state.livestockCritical + " rodeos en seguimiento" : "Revisar rodeos y seguimiento" : "Consulta no disponible");
+        long tracked = workspace.isDemo() ? workspace.records().list("animals").stream()
+            .filter(animal -> RecordText.attention(RecordText.value(animal,"health_status")) || "treatment".equals(RecordText.value(animal,"health_status"))).count() : 0;
+        MobileUi.text(root, R.id.tv_livestock, herds ? String.valueOf(workspace.isDemo() ? tracked : state.livestockHerds) : "—");
+        MobileUi.text(root, R.id.tv_livestock_detail, herds ? workspace.isDemo() ? tracked + " animales / " + state.livestockHerds + " rodeos" : "Revisar rodeos y seguimiento" : "Consulta no disponible");
         // Existing summary has no currency field. Do not invent a USD denomination.
-        MobileUi.text(root, R.id.tv_finance, finance && !workspace.isDemo() ? RecordText.amount(state.financeBalance) : "—");
-        MobileUi.text(root, R.id.tv_finance_detail, workspace.isDemo() ? "Sin movimientos demo" : finance ? state.financePending + " pendientes · moneda no informada" : "Consulta no disponible");
+        MobileUi.text(root, R.id.tv_finance, finance ? (workspace.isDemo() ? "ARS " : "") + RecordText.amount(state.financeBalance) : "—");
+        MobileUi.text(root, R.id.tv_finance_detail, finance ? state.financePending + (workspace.isDemo() ? " registros pendientes" : " pendientes · moneda no informada") : "Consulta no disponible");
+        MobileUi.text(root, R.id.dashboard_alert_count, state.alerts.size() + " ACTIVAS");
         LinearLayout alerts = root.findViewById(R.id.ll_alerts_container);
         alerts.removeAllViews();
         if (state.alerts.isEmpty()) empty(alerts, tasks && plots ? "No hay alertas en las consultas de tareas y lotes." : "Las alertas están incompletas. Reintentá la consulta.");
@@ -132,8 +137,8 @@ public class DashboardFragment extends Fragment {
             MobileUi.text(card, R.id.tv_alert_title, field && !workspace.isDemo() ? "Lote que requiere atención" : alert.title);
             // The current summary exposes IDs, not record names; avoid showing raw UUIDs.
             MobileUi.text(card, R.id.tv_alert_detail, field || workspace.isDemo() ? alert.detail : "Abrir tareas para revisar el registro");
-            MobileUi.text(card, R.id.tv_alert_priority, "Prioridad " + (alert.priority == null ? "sin informar" : alert.priority.toLowerCase()));
-            card.setOnClickListener(v -> navigate(field ? R.id.nav_campos : R.id.nav_tareas));
+            MobileUi.text(card, R.id.tv_alert_priority, alert.priority == null ? "SIN DATO" : alert.priority.toUpperCase());
+            card.setOnClickListener(v -> navigate(field ? R.id.nav_campos : alert.title.startsWith("Control sanitario") ? R.id.nav_ganado : R.id.nav_tareas));
             alerts.addView(card);
         }
         LinearLayout pulse = root.findViewById(R.id.ll_crop_pulse_container);
@@ -143,7 +148,18 @@ public class DashboardFragment extends Fragment {
             View card = getLayoutInflater().inflate(R.layout.item_crop_pulse, pulse, false);
             MobileUi.text(card, R.id.tv_crop_title, crop.title);
             MobileUi.text(card, R.id.tv_crop_detail, TextUtils.isEmpty(crop.detail) ? "Etapa sin registrar" : crop.detail);
-            // valuePercent is a placeholder in the existing ViewModel, not measured progress.
+            // Never use the backend summary's placeholder percent as a measured value.
+            java.util.Map<String,Object> plot = workspace.isDemo() ? workspace.records().list("fields").stream()
+                .filter(p -> crop.title.contains(RecordText.value(p,"name"))).findFirst().orElse(java.util.Collections.emptyMap()) : java.util.Collections.emptyMap();
+            boolean known=plot.containsKey("progress");
+            com.myfarmio.app.ui.common.StitchUi.progress(card,R.id.crop_progress,RecordText.number(plot,"progress"));
+            MobileUi.text(card,R.id.crop_progress_label,known?RecordText.amount(RecordText.number(plot,"progress"))+"%":"—");
+            MobileUi.text(card,R.id.crop_footer,known?"Avance de campaña":"Avance sin registrar");
+            MobileUi.text(card,R.id.crop_harvest,known?"Cosecha programada":"");
+            if(workspace.isDemo()) {
+                MobileUi.text(card,R.id.tv_crop_title,RecordText.value(plot,"current_crop"));
+                MobileUi.text(card,R.id.tv_crop_detail,RecordText.value(plot,"crop_stage"));
+            }
             pulse.addView(card);
         }
         LinearLayout agenda = root.findViewById(R.id.ll_agenda_container);

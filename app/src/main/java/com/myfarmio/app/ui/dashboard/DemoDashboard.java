@@ -41,7 +41,13 @@ final class DemoDashboard {
         state.livestockHerds=herds.size();
         state.livestockAnimals=repository.list("animals").size();
         for (Map<String,Object> herd:herds) if (attention(value(herd,"status"))) state.livestockCritical++;
-        // No finance/weather fixtures: the view displays availability, never an invented balance.
+        for (Map<String,Object> animal:repository.list("animals")) if (attention(value(animal,"health_status"))) {
+            state.alerts.add(new DashboardViewModel.AlertItem("Control sanitario "+value(animal,"tag"),"Requiere seguimiento sanitario","Media"));
+        }
+        for (Map<String,Object> movement:repository.list("finance")) {
+            if (!"posted".equals(value(movement,"status"))) state.financePending++;
+            state.financeBalance += number(movement,"amount") * ("income".equals(value(movement,"movement_type"))?1:-1);
+        }
         return state;
     }
 }

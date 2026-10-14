@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/dashboard_climate" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp" android:layout_marginTop="16dp" android:background="@drawable/bg_stitch_card" android:clickable="true" android:focusable="true" android:foreground="?attr/selectableItemBackground">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+        <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/st_wb_sunny" app:tint="@color/stitch_primary" android:importantForAccessibility="no" />
+        <TextView style="@style/StitchSection" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Condición Agrometeorológica" android:layout_marginStart="8dp" android:layout_marginEnd="8dp" />
+        <TextView android:id="@+id/weather_status" style="@style/StitchBadge" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sin estación" android:background="@drawable/stitch_badge_success" android:paddingHorizontal="8dp" android:paddingVertical="4dp" />
+    </LinearLayout>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_inset" android:padding="12dp" android:layout_marginTop="12dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+            <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/st_location_on" app:tint="@color/stitch_primary" android:importantForAccessibility="no" />
+            <TextView android:id="@+id/weather_station" style="@style/StitchBody" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Sin estación configurada" android:layout_marginStart="6dp" android:textColor="@color/stitch_primary" android:textStyle="bold" />
+            <TextView android:id="@+id/weather_updated" style="@style/StitchSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        </LinearLayout>
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="12dp" android:background="@color/stitch_divider" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:baselineAligned="false">
+            <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:paddingHorizontal="6dp">
+                <TextView style="@style/StitchMetricLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="TEMPERATURA" />
+                <TextView android:id="@+id/weather_value_0" style="@style/StitchSection" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" android:layout_marginTop="8dp" />
+                <TextView android:id="@+id/weather_detail_0" style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Sin lectura" android:layout_marginTop="4dp" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:paddingHorizontal="6dp">
+                <TextView style="@style/StitchMetricLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="HUMEDAD SUELO" />
+                <TextView android:id="@+id/weather_value_1" style="@style/StitchSection" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" android:layout_marginTop="8dp" />
+                <TextView android:id="@+id/weather_detail_1" style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Sin lectura" android:layout_marginTop="4dp" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:paddingHorizontal="6dp">
+                <TextView style="@style/StitchMetricLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="VIENTO" />
+                <TextView android:id="@+id/weather_value_2" style="@style/StitchSection" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" android:layout_marginTop="8dp" />
+                <TextView android:id="@+id/weather_detail_2" style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Sin lectura" android:layout_marginTop="4dp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

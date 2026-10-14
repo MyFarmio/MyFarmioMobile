@@ -1,20 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/nav_dashboard"
-        android:icon="@drawable/ic_dashboard"
-        android:title="Inicio" />
-    <item
-        android:id="@+id/nav_tareas"
-        android:icon="@drawable/ic_task_alt"
-        android:title="Tareas" />
-    <item
-        android:id="@+id/nav_campos"
-        android:icon="@drawable/ic_map"
-        android:title="Campos" />
-    <item
-        android:id="@+id/nav_more"
-        android:icon="@drawable/ic_more"
-        android:title="Más" />
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/nav_dashboard" android:icon="@drawable/st_grid_view" android:title="Dashboard" />
+    <item android:id="@+id/nav_campos" android:icon="@drawable/st_map" android:title="Campos" />
+    <item android:id="@+id/nav_ganado" android:icon="@drawable/st_pets" android:title="Ganado" />
+    <item android:id="@+id/nav_inventario" android:icon="@drawable/st_inventory_2" android:title="Inventario" />
+    <item android:id="@+id/nav_finanzas" android:icon="@drawable/st_account_balance_wallet" android:title="Finanzas" />
 </menu>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true" android:background="@color/background">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp" android:paddingBottom="88dp">
+        <TextView android:id="@+id/climate_eyebrow" style="@style/StitchEyebrow" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="AGROMETEOROLOGÍA" />
+        <TextView android:id="@+id/climate_title" style="@style/StitchTitle" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Clima para decidir labores" android:layout_marginTop="8dp" android:accessibilityHeading="true" />
+        <TextView android:id="@+id/climate_description" style="@style/StitchBody" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Pronóstico agrometeorológico, riesgo hídrico y ventanas operativas para campo." android:layout_marginTop="4dp" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_card" android:padding="16dp" android:layout_marginTop="16dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical">
+                    <TextView android:id="@+id/climate_location" style="@style/StitchMetricLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="SIN ESTACIÓN" android:textColor="@color/secondary" />
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="8dp">
+                        <TextView android:id="@+id/climate_temperature" style="@style/StitchDisplay" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" />
+                        <TextView android:id="@+id/climate_condition" style="@style/StitchBody" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:textColor="@color/on_surface" />
+                    </LinearLayout>
+                    <TextView android:id="@+id/climate_updated" style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Sin lectura disponible" android:layout_marginTop="4dp" />
+                </LinearLayout>
+                <ImageView android:layout_width="56dp" android:layout_height="56dp" android:src="@drawable/st_wb_sunny" app:tint="@color/stitch_primary" android:importantForAccessibility="no" android:padding="10dp" android:background="@drawable/stitch_icon_soft" />
+            </LinearLayout>
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="12dp" android:background="@color/stitch_divider" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:baselineAligned="false">
+                    <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_marginEnd="6dp" android:layout_height="match_parent" android:orientation="vertical" android:background="@drawable/bg_stitch_inset" android:padding="8dp">
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                            <ImageView android:layout_width="34dp" android:layout_height="34dp" android:src="@drawable/st_water_drop" app:tint="@color/stitch_primary" android:importantForAccessibility="no" android:padding="7dp" android:background="@drawable/stitch_icon_neutral" />
+                            <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginStart="8dp">
+                                <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Humedad suelo" />
+                                <TextView android:id="@+id/climate_value_0" style="@style/StitchBody" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" android:textColor="@color/stitch_primary" android:textStyle="bold" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_marginStart="6dp" android:layout_height="match_parent" android:orientation="vertical" android:background="@drawable/bg_stitch_inset" android:padding="8dp">
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                            <ImageView android:layout_width="34dp" android:layout_height="34dp" android:src="@drawable/st_air" app:tint="@color/stitch_primary" android:importantForAccessibility="no" android:padding="7dp" android:background="@drawable/stitch_icon_neutral" />
+                            <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginStart="8dp">
+                                <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Viento" />
+                                <TextView android:id="@+id/climate_value_1" style="@style/StitchBody" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" android:textColor="@color/stitch_primary" android:textStyle="bold" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:baselineAligned="false" android:layout_marginTop="12dp">
+                    <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_marginEnd="6dp" android:layout_height="match_parent" android:orientation="vertical" android:background="@drawable/bg_stitch_inset" android:padding="8dp">
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                            <ImageView android:layout_width="34dp" android:layout_height="34dp" android:src="@drawable/st_speed" app:tint="@color/stitch_primary" android:importantForAccessibility="no" android:padding="7dp" android:background="@drawable/stitch_icon_neutral" />
+                            <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginStart="8dp">
+                                <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Presión barom." />
+                                <TextView android:id="@+id/climate_value_2" style="@style/StitchBody" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" android:textColor="@color/stitch_primary" android:textStyle="bold" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_marginStart="6dp" android:layout_height="match_parent" android:orientation="vertical" android:background="@drawable/bg_stitch_inset" android:padding="8dp">
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                            <ImageView android:layout_width="34dp" android:layout_height="34dp" android:src="@drawable/st_wb_sunny" app:tint="@color/stitch_primary" android:importantForAccessibility="no" android:padding="7dp" android:background="@drawable/stitch_icon_neutral" />
+                            <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginStart="8dp">
+                                <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Radiación UV" />
+                                <TextView android:id="@+id/climate_value_3" style="@style/StitchBody" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" android:textColor="@color/stitch_primary" android:textStyle="bold" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_card" android:padding="16dp" android:layout_marginTop="16dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/st_calendar_month" app:tint="@color/stitch_primary" android:importantForAccessibility="no" />
+                <TextView style="@style/StitchSection" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Ventanas operativas" android:layout_marginStart="8dp" android:layout_marginEnd="8dp" />
+                <TextView style="@style/StitchBadge" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="HOY" android:background="@drawable/stitch_badge_neutral" android:paddingHorizontal="8dp" android:paddingVertical="4dp" />
+            </LinearLayout>
+            <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Aptitud agrotécnica estimada hoy" android:layout_marginTop="3dp" />
+            <LinearLayout android:id="@+id/climate_windows" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"></LinearLayout>
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_card" android:padding="16dp" android:layout_marginTop="16dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/st_water" app:tint="@color/stitch_primary" android:importantForAccessibility="no" />
+                <TextView style="@style/StitchSection" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Balance hídrico y lluvia" android:layout_marginStart="8dp" android:layout_marginEnd="8dp" />
+                <TextView android:id="@+id/climate_rain" style="@style/StitchSection" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" />
+            </LinearLayout>
+            <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Registro pluviométrico acumulado · últimos 7 días" android:layout_marginTop="4dp" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_inset" android:padding="12dp" android:layout_marginTop="12dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView style="@style/StitchSmall" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Evapotranspiración potencial (ETP)" />
+                    <TextView android:id="@+id/climate_etp" style="@style/StitchSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textStyle="bold" />
+                </LinearLayout>
+                <ProgressBar android:id="@+id/climate_water_progress" style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent" android:layout_height="10dp" android:layout_marginTop="10dp" android:progressDrawable="@drawable/stitch_progress" android:max="100" android:importantForAccessibility="no" />
+                <TextView android:id="@+id/climate_water_legend" style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Sin lectura disponible" android:layout_marginTop="10dp" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_card" android:padding="16dp" android:layout_marginTop="16dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/st_agriculture" app:tint="@color/stitch_primary" android:importantForAccessibility="no" />
+                <TextView style="@style/StitchSection" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Lectura por cultivo" android:layout_marginStart="8dp" android:layout_marginEnd="8dp" />
+                <TextView android:id="@+id/climate_plot" style="@style/StitchBadge" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:background="@drawable/stitch_badge_soft" android:paddingHorizontal="8dp" android:paddingVertical="4dp" />
+            </LinearLayout>
+            <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Monitoreo específico de etapa fenológica" android:layout_marginTop="4dp" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_inset" android:padding="12dp" android:layout_marginTop="12dp">
+                <TextView android:id="@+id/climate_crop" style="@style/StitchSection" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Sin cultivo asociado" />
+                <TextView android:id="@+id/climate_stage" style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" />
+                <TextView android:id="@+id/climate_recommendation" style="@style/StitchBody" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="No hay una recomendación disponible." android:layout_marginTop="12dp" android:padding="12dp" android:background="@color/surface_container_lowest" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_card" android:padding="16dp" android:layout_marginTop="16dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/st_notification_important" app:tint="@color/stitch_primary" android:importantForAccessibility="no" />
+                <TextView style="@style/StitchSection" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Alertas climáticas activas" android:layout_marginStart="8dp" android:layout_marginEnd="8dp" />
+            </LinearLayout>
+            <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Modelado preventivo · 72 horas" android:layout_marginTop="4dp" />
+            <LinearLayout android:id="@+id/climate_alerts" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"></LinearLayout>
+        </LinearLayout>
+        <com.google.android.material.button.MaterialButton android:id="@+id/climate_register" style="@style/StitchPrimaryButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Registrar pluviometría o nota de campo" app:icon="@drawable/st_add_circle" android:layout_marginTop="24dp" />
+        <TextView android:id="@+id/climate_note" style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

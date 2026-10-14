@@ -66,7 +66,34 @@ public abstract class OperationalFragment extends Fragment {
         workspace = new ViewModelProvider(requireActivity()).get(WorkspaceViewModel.class);
         workspace.prepare(SessionManager.getInstance(requireContext()));
         demo = workspace.isDemo();
-        MobileUi.text(view, R.id.collection_title, title());
+        boolean fieldsScreen = module().equals("fields"), livestockScreen = module().equals("livestock");
+        MobileUi.text(view, R.id.collection_title, fieldsScreen ? "Campaña, lotes y labores" : livestockScreen ? "Rodeos, sanidad y pastoreo" : title());
+        if (fieldsScreen || livestockScreen) {
+            view.findViewById(R.id.collection_eyebrow).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.collection_description).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.collection_showcase).setVisibility(fieldsScreen ? View.VISIBLE : View.GONE);
+            view.findViewById(R.id.collection_projection).setVisibility(fieldsScreen ? View.VISIBLE : View.GONE);
+            view.findViewById(R.id.collection_feature).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.collection_extra).setVisibility(View.VISIBLE);
+            MobileUi.text(view, R.id.collection_eyebrow, fieldsScreen ? "GESTIÓN DE CAMPOS" : "GESTIÓN GANADERA");
+            MobileUi.text(view, R.id.collection_description, fieldsScreen
+                ? "Seguimiento operativo de superficie, aplicaciones y proyecciones de cosecha."
+                : "Inventario animal, reproducción, pesajes, movimientos y disponibilidad forrajera.");
+        }
+        if (livestockScreen) {
+            LinearLayout content = view.findViewById(R.id.collection_content);
+            View feature = view.findViewById(R.id.collection_feature);
+            content.removeView(feature);
+            content.addView(feature, content.indexOfChild(view.findViewById(R.id.collection_feedback)));
+        }
+        if (fieldsScreen) {
+            // Keep the original search available with the secondary tools, without
+            // inserting a toolbar between Stitch's KPI grid and its plot cards.
+            LinearLayout content = view.findViewById(R.id.collection_content);
+            View searchBox = view.findViewById(R.id.collection_search_box);
+            content.removeView(searchBox);
+            content.addView(searchBox, content.indexOfChild(view.findViewById(R.id.collection_toolbar)));
+        }
         TextInputEditText search = view.findViewById(R.id.collection_search);
         search.setHint(searchHint());
         search.setText(query);
@@ -105,7 +132,7 @@ public abstract class OperationalFragment extends Fragment {
             boolean changedMode = demo != workspace.isDemo();
             demo = workspace.isDemo();
             if (changedMode) { animals = false; clear(); }
-            root.findViewById(R.id.collection_create).setVisibility(demo ? View.VISIBLE : View.GONE);
+            root.findViewById(R.id.collection_create).setVisibility(demo && module().equals("tasks") ? View.VISIBLE : View.GONE);
             root.findViewById(R.id.collection_kind).setVisibility(demo && module().equals("livestock") ? View.VISIBLE : View.GONE);
             render();
             if (!demo) load(false);
@@ -147,17 +174,19 @@ public abstract class OperationalFragment extends Fragment {
         root.findViewById(R.id.mobile_skeleton).setVisibility(initial ? View.VISIBLE : View.GONE);
         root.findViewById(R.id.mobile_state).setVisibility(noRows ? View.VISIBLE : View.GONE);
         SwipeRefreshLayout swipe = root.findViewById(R.id.collection_swipe);
-        swipe.setVisibility(initial || noRows ? View.GONE : View.VISIBLE);
+        swipe.setVisibility(View.VISIBLE);
+        root.findViewById(R.id.collection_list).setVisibility(initial || noRows ? View.GONE : View.VISIBLE);
         swipe.setRefreshing(!demo && state.loading && !source.isEmpty());
         root.findViewById(R.id.collection_refresh).setEnabled(demo || !state.loading);
         TextView notice = root.findViewById(R.id.collection_notice);
-        String message = demo ? "DEMO · Cambios solo durante esta sesión"
+        String message = demo ? ""
             : state.error != null && !source.isEmpty() ? state.error + " Se conserva la última consulta." : "";
         notice.setText(message);
         notice.setVisibility(message.isEmpty() ? View.GONE : View.VISIBLE);
         int filters = (status.isEmpty() ? 0 : 1) + (priority.isEmpty() ? 0 : 1)
             + (due.isEmpty() ? 0 : 1) + (related.isEmpty() ? 0 : 1) + (responsible.isEmpty() ? 0 : 1);
         MobileUi.text(root, R.id.collection_filter, filters == 0 ? "Todos · Filtrar" : "Filtros activos (" + filters + ")");
+        bindStitchShowcase(initial || (!demo && state.error != null && source.isEmpty()));
         if (noRows) {
             if (!demo && state.error != null && source.isEmpty()) {
                 MobileUi.state(root, "No pudimos cargar " + title().toLowerCase(), state.error, "Reintentar", () -> load(true));
@@ -176,6 +205,69 @@ public abstract class OperationalFragment extends Fragment {
                 pendingListState = null;
             }
         }
+    }
+    private void bindStitchShowcase(boolean unavailable) {
+        if (module().equals("tasks")) return;
+        boolean fields = module().equals("fields");
+        if (fields) {
+            double area=0, moisture=0; int count=0;
+            for(Map<String,Object> row:source) {
+                area+=number(row,"area_hectares");
+                if(row.containsKey("soil_moisture_percent")) { moisture+=number(row,"soil_moisture_percent"); count++; }
+            }
+            MobileUi.text(root,R.id.collection_metric_1,unavailable?"—":amount(area)+" ha");
+            Map<String,Object> campaign=StitchUi.demo(workspace,"campaign");
+            MobileUi.text(root,R.id.collection_metric_2,demo?amount(number(campaign,"projected_tons"))+" t":"—");
+            MobileUi.text(root,R.id.collection_metric_3,demo?amount(number(campaign,"visible_jobs")):"—");
+            MobileUi.text(root,R.id.collection_metric_4,unavailable||count==0?"—":amount(moisture/count)+"%");
+            Map<String,Object> first=source.isEmpty()?java.util.Collections.emptyMap():source.get(0);
+            MobileUi.text(root,R.id.collection_feature_eyebrow,"PRÓXIMA VENTANA");
+            MobileUi.text(root,R.id.collection_feature_title,source.isEmpty()?"Campos en seguimiento":or(first,"name","Lote")+" listo para decidir");
+            MobileUi.text(root,R.id.collection_feature_detail,or(first,"next_action","Sin próxima acción registrada"));
+            MobileUi.text(root,R.id.feature_value_1,first.containsKey("progress")?amount(number(first,"progress"))+"%":"—");
+            MobileUi.text(root,R.id.feature_label_1,"AVANCE");
+            MobileUi.text(root,R.id.feature_value_2,or(first,"estimated_yield","—"));
+            MobileUi.text(root,R.id.feature_label_2,"RINDE");
+            MobileUi.text(root,R.id.collection_extra_title,"Aplicaciones recientes");
+            MobileUi.text(root,R.id.collection_extra_detail,demo?"Sin aplicaciones pendientes":"Sin aplicaciones disponibles");
+            MobileUi.text(root,R.id.collection_extra_more,demo?"En estimación agronómica":"Sin proyección disponible");
+        } else {
+            List<Map<String,Object>> herds=demo?workspace.records().list("livestock"):source;
+            List<Map<String,Object>> tracked=new ArrayList<>();
+            if(demo) for(Map<String,Object> animal:workspace.records().list("animals"))
+                if(attention(value(animal,"health_status"))||value(animal,"health_status").equals("treatment")) tracked.add(animal);
+            Map<String,Object> first=herds.isEmpty()?java.util.Collections.emptyMap():herds.get(0);
+            MobileUi.text(root,R.id.collection_feature_eyebrow,"PRÓXIMO CONTROL SANITARIO");
+            MobileUi.text(root,R.id.collection_feature_title,or(first,"name","Seguimiento ganadero"));
+            MobileUi.text(root,R.id.collection_feature_detail,demo?"Monitoreo sanitario y control de pesaje programado para el lote.":"Revisá los rodeos y sus datos registrados.");
+            MobileUi.text(root,R.id.feature_value_1,first.containsKey("quantity")?amount(number(first,"quantity")):"—");
+            MobileUi.text(root,R.id.feature_label_1,"ANIMALES");
+            MobileUi.text(root,R.id.feature_value_2,first.containsKey("average_weight_kg")?amount(number(first,"average_weight_kg"))+" kg":"—");
+            MobileUi.text(root,R.id.feature_label_2,"PESO PROMEDIO");
+            LinearLayout cards=root.findViewById(R.id.collection_animals); cards.removeAllViews();
+            if(!animals) {
+                View heading=getLayoutInflater().inflate(R.layout.item_stitch_collection_header,cards,false);
+                MobileUi.text(heading,R.id.summary_value,"Animal a seguir");
+                MobileUi.text(heading,R.id.summary_count,demo?tracked.size()+" destacados":"Sin consulta");
+                cards.addView(heading);
+                for(Map<String,Object> animal:tracked) {
+                    View card=getLayoutInflater().inflate(R.layout.item_stitch_animal,cards,false);
+                    StitchUi.animal(card,animal);
+                    card.setOnClickListener(v -> {
+                        MobileUi.Sheet current=openSheet(or(animal,"tag","Animal"));
+                        DemoRecordDetails.bind(current,"animals",animal,workspace.records(),() -> {
+                            animals=true; ((com.google.android.material.button.MaterialButtonToggleGroup)root.findViewById(R.id.collection_kind)).check(R.id.kind_animals);
+                            edit(animal);
+                        },this::render);
+                        current.show();
+                    });
+                    cards.addView(card);
+                }
+            }
+            MobileUi.text(root,R.id.collection_extra_title,"Pastoreo y Cargas");
+            MobileUi.text(root,R.id.collection_extra_detail,or(StitchUi.demo(workspace,"pasture"),"detail","Sin información de pastoreo disponible."));
+        }
+        // TODO: Conectar aplicaciones, proyecciones y pastoreo conservando estos estados vacíos.
     }
     private boolean accepts(Map<String, Object> row) {
         if (!status.isEmpty() && !status.equals(value(row, animals ? "health_status" : "status"))) return false;
@@ -274,6 +366,23 @@ public abstract class OperationalFragment extends Fragment {
         });
         current.dialog.setOnDismissListener(dialog -> editor = null);
         current.show();
+    }
+    /** Called by the shared Stitch speed dial after navigating to a collection. */
+    public void quickCreate(boolean createAnimal) {
+        if (root == null || workspace == null) return;
+        if (module().equals("livestock") && createAnimal) {
+            animals = true;
+            com.google.android.material.button.MaterialButtonToggleGroup kinds = root.findViewById(R.id.collection_kind);
+            if (kinds != null) kinds.check(R.id.kind_animals);
+            render();
+        }
+        if (workspace.isDemo()) edit(new java.util.LinkedHashMap<>());
+        else {
+            MobileUi.Sheet current = openSheet("Nuevo " + (createAnimal ? "animal" : "lote"));
+            current.row("Solo consulta", "La creación real aún no está conectada en Android. Los registros de la web no se modificarán.");
+            current.primary("Entendido", current::dismiss);
+            current.show();
+        }
     }
     private String responsible(Map<String, Object> row) {
         if (!value(row, "_responsible").isEmpty()) return value(row, "_responsible");
@@ -388,20 +497,51 @@ public abstract class OperationalFragment extends Fragment {
     }
     private final class RecordAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         @Override public int getItemCount() { return visible.isEmpty() ? 0 : visible.size() + 1; }
-        @Override public int getItemViewType(int position) { return position == 0 ? 0 : 1; }
+        @Override public int getItemViewType(int position) { return position == 0 ? 0 : module().equals("fields") ? 2 : module().equals("livestock") ? (animals ? 4 : 3) : 1; }
         @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int type) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(type == 0 ? R.layout.item_mobile_summary : R.layout.item_mobile_record, parent, false);
+            int layout = type == 0 ? (module().equals("tasks") ? R.layout.item_mobile_summary : R.layout.item_stitch_collection_header)
+                : type == 2 ? R.layout.item_stitch_plot : type == 3 ? R.layout.item_stitch_herd : type == 4 ? R.layout.item_stitch_animal : R.layout.item_mobile_record;
+            View view = LayoutInflater.from(parent.getContext()).inflate(layout, parent, false);
             return new RecyclerView.ViewHolder(view) {};
         }
         @Override public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             View card = holder.itemView;
             if (position == 0) {
+                if (!module().equals("tasks")) {
+                    card.setVisibility(module().equals("fields") ? View.GONE : View.VISIBLE);
+                    card.getLayoutParams().height=module().equals("fields")?0:ViewGroup.LayoutParams.WRAP_CONTENT;
+                    MobileUi.text(card,R.id.summary_value,animals?"Animales registrados":"Rodeos y Lotes Activos");
+                    MobileUi.text(card,R.id.summary_count,visible.size()+(animals?" animales":" rodeos"));
+                    return;
+                }
                 MobileUi.text(card, R.id.summary_value, summary());
                 MobileUi.text(card, R.id.summary_context, summaryContext());
                 MobileUi.text(card, R.id.summary_count, visible.size() + " de " + source.size() + " registros · " + (demo ? "Demo editable" : "Solo consulta"));
                 return;
             }
             Map<String, Object> row = visible.get(position - 1);
+            if (module().equals("fields")) { StitchUi.plot(card,row); card.setOnClickListener(v -> detail(row)); return; }
+            if (module().equals("livestock")) {
+                if (animals) StitchUi.animal(card,row);
+                else {
+                    MobileUi.text(card,R.id.record_title,or(row,"name","Sin nombre"));
+                    MobileUi.text(card,R.id.record_category,or(row,"category","Rodeo").toUpperCase());
+                    StitchUi.badge(card,R.id.record_status,label(value(row,"status")).toUpperCase(),attention(value(row,"status")),false);
+                    MobileUi.text(card,R.id.record_quantity,amount(number(row,"quantity")));
+                    MobileUi.text(card,R.id.record_weight,row.containsKey("average_weight_kg")?amount(number(row,"average_weight_kg"))+" kg":"—");
+                    MobileUi.text(card,R.id.record_location,herdNote(row,"location"));
+                    card.findViewById(R.id.record_edit).setVisibility(demo?View.VISIBLE:View.GONE);
+                    card.findViewById(R.id.record_delete).setVisibility(demo?View.VISIBLE:View.GONE);
+                    card.findViewById(R.id.record_edit).setOnClickListener(v -> edit(row));
+                    card.findViewById(R.id.record_delete).setOnClickListener(v -> new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+                        .setTitle("¿Eliminar este rodeo de la demo?").setMessage(or(row,"name","Rodeo"))
+                        .setNegativeButton("Cancelar",null).setPositiveButton("Eliminar",(d,w)-> {
+                            try { workspace.records().delete("livestock",value(row,"id")); }
+                            catch(IllegalArgumentException error) { MobileUi.Sheet warning=openSheet("No se puede eliminar"); warning.row("Rodeo con animales",error.getMessage()); warning.show(); }
+                        }).show());
+                }
+                card.setOnClickListener(v -> detail(row)); return;
+            }
             String state = value(row, animals ? "health_status" : "status");
             boolean risk = attention(state) || (module().equals("tasks") && overdue(row, LocalDate.now()));
             TextView badge = card.findViewById(R.id.record_status);
@@ -412,6 +552,7 @@ public abstract class OperationalFragment extends Fragment {
             String signal = "", subtitle = "", meta = "";
             ProgressBar progress = card.findViewById(R.id.record_progress);
             progress.setVisibility(View.GONE);
+            card.findViewById(R.id.record_metrics).setVisibility(module().equals("tasks") ? View.GONE : View.VISIBLE);
             if (module().equals("tasks")) {
                 signal = value(row, "priority").isEmpty() ? "" : "Prioridad " + label(value(row, "priority")).toLowerCase();
                 subtitle = or(row, "related_entity_name", value(row, "description"));
@@ -426,11 +567,17 @@ public abstract class OperationalFragment extends Fragment {
                 signal = row.get("area_hectares") == null ? "" : amount(number(row, "area_hectares")) + " ha";
                 subtitle = join(or(row, "current_crop", "Sin cultivo"), value(row, "crop_stage"));
                 meta = or(row, "next_action", "Sin próxima acción registrada");
+                MobileUi.text(card, R.id.record_metric_one, "ETAPA\n" + or(row, "crop_stage", "—"));
+                MobileUi.text(card, R.id.record_metric_two, "HUMEDAD\n" + (row.get("soil_moisture_percent") == null ? "—" : amount(number(row, "soil_moisture_percent")) + "%"));
+                MobileUi.text(card, R.id.record_metric_three, "RINDE\n" + or(row, "estimated_yield", "—"));
             } else {
                 signal = animals ? (row.containsKey("weight_kg") ? amount(number(row,"weight_kg")) + " kg" : "") : row.get("quantity") == null ? "" : amount(number(row, "quantity")) + " animales";
                 subtitle = join(value(row, "category"), herdNote(row, "location"));
                 meta = animals ? value(row,"_herd_name") + " · " + label(value(row,"reproductive_status")) : row.get("average_weight_kg") == null
                     ? "Peso promedio sin registrar" : "Peso promedio · " + amount(number(row, "average_weight_kg")) + " kg";
+                MobileUi.text(card, R.id.record_metric_one, animals ? "CATEGORÍA\n" + or(row, "category", "—") : "CABEZAS\n" + (row.get("quantity") == null ? "—" : amount(number(row, "quantity"))));
+                MobileUi.text(card, R.id.record_metric_two, "PESO MEDIO\n" + (row.get("average_weight_kg") == null ? "—" : amount(number(row, "average_weight_kg")) + " kg"));
+                MobileUi.text(card, R.id.record_metric_three, "UBICACIÓN\n" + (herdNote(row, "location").isEmpty() ? "—" : herdNote(row, "location")));
             }
             MobileUi.text(card, R.id.record_signal, signal);
             MobileUi.text(card, R.id.record_subtitle, subtitle);

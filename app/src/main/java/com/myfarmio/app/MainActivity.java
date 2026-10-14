@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
             Insets keyboard = insets.getInsets(WindowInsetsCompat.Type.ime());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, Math.max(systemBars.bottom, keyboard.bottom));
             android.view.View navigation = findViewById(R.id.bottom_nav);
-            if (navigation != null) navigation.setVisibility(insets.isVisible(WindowInsetsCompat.Type.ime())
+            if (navigation != null) navigation.setVisibility(insets.isVisible(WindowInsetsCompat.Type.ime()) || Boolean.TRUE.equals(navigation.getTag(R.id.nav_perfil))
                 ? android.view.View.GONE : android.view.View.VISIBLE);
             // The activity owns the safe area; do not pad the bottom navigation a second time.
             return WindowInsetsCompat.CONSUMED;

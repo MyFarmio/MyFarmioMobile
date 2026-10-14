@@ -16,10 +16,10 @@
         android:orientation="vertical"
         android:padding="24dp">
         <ImageView
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_marginTop="24dp"
-            android:src="@drawable/ic_brand_mark"
+            android:src="@drawable/ic_iconmyfarmio"
             android:importantForAccessibility="no" />
         <TextView
             android:layout_width="match_parent"
@@ -31,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Tu campo, más cerca"
+            android:text="Tu campo, más cerca."
             android:textAppearance="@style/MobileTitle"
             android:accessibilityHeading="true" />
         <TextView

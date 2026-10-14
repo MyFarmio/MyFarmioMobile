@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true" android:background="@color/background">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp" android:paddingBottom="88dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_card" android:padding="16dp" android:layout_marginTop="0dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                <TextView android:id="@+id/profile_avatar" android:layout_width="52dp" android:layout_height="52dp" android:background="@drawable/bg_stitch_avatar" android:gravity="center" android:textColor="@color/on_primary" android:textSize="22sp" />
+                <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginStart="12dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                        <TextView android:id="@+id/profile_role_badge" style="@style/StitchBadge" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:background="@drawable/stitch_badge_success" android:paddingHorizontal="8dp" android:paddingVertical="4dp" />
+                        <TextView android:id="@+id/profile_provider_badge" style="@style/StitchBadge" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:background="@drawable/stitch_badge_neutral" android:paddingHorizontal="8dp" android:paddingVertical="4dp" />
+                    </LinearLayout>
+                    <TextView android:id="@+id/profile_name" style="@style/StitchSection" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="20sp" android:layout_marginTop="6dp" />
+                    <TextView android:id="@+id/profile_email" style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" />
+                </LinearLayout>
+            </LinearLayout>
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="12dp" android:background="@color/stitch_divider" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/st_domain" app:tint="@color/stitch_primary" android:importantForAccessibility="no" />
+                <TextView android:id="@+id/profile_organization" style="@style/StitchSmall" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:layout_marginStart="8dp" />
+            </LinearLayout>
+            <com.google.android.material.button.MaterialButton android:id="@+id/profile_edit" style="@style/StitchButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Editar perfil" app:icon="@drawable/st_edit" android:layout_marginTop="12dp" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_card" android:padding="16dp" android:layout_marginTop="16dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/st_badge" app:tint="@color/stitch_primary" android:importantForAccessibility="no" />
+                <TextView android:id="@+id/profile_identity_title" style="@style/StitchSection" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Datos personales" android:layout_marginStart="8dp" android:layout_marginEnd="8dp" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_inset" android:padding="12dp" android:layout_marginTop="12dp">
+                <TextView style="@style/StitchMetricLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="NOMBRE COMPLETO" android:textSize="9sp" android:fontVariationSettings="'wght' 500" />
+                <TextView android:id="@+id/profile_personal_0" style="@style/StitchBody" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" android:layout_marginTop="8dp" android:textColor="@color/on_surface" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_inset" android:padding="12dp" android:layout_marginTop="12dp">
+                <TextView style="@style/StitchMetricLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="CARGO DE PERFIL" android:textSize="9sp" android:fontVariationSettings="'wght' 500" />
+                <TextView android:id="@+id/profile_personal_1" style="@style/StitchBody" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" android:layout_marginTop="8dp" android:textColor="@color/on_surface" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_inset" android:padding="12dp" android:layout_marginTop="12dp">
+                <TextView style="@style/StitchMetricLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="TELÉFONO" android:textSize="9sp" android:fontVariationSettings="'wght' 500" />
+                <TextView android:id="@+id/profile_personal_2" style="@style/StitchBody" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" android:layout_marginTop="8dp" android:textColor="@color/on_surface" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_inset" android:padding="12dp" android:layout_marginTop="12dp">
+                <TextView style="@style/StitchMetricLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="ZONA HORARIA" android:textSize="9sp" android:fontVariationSettings="'wght' 500" />
+                <TextView android:id="@+id/profile_personal_3" style="@style/StitchBody" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" android:layout_marginTop="8dp" android:textColor="@color/on_surface" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_inset" android:padding="12dp" android:layout_marginTop="12dp">
+                <TextView style="@style/StitchMetricLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="CREACIÓN DE CUENTA" android:textSize="9sp" android:fontVariationSettings="'wght' 500" />
+                <TextView android:id="@+id/profile_personal_4" style="@style/StitchBody" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" android:layout_marginTop="8dp" android:textColor="@color/on_surface" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_inset" android:padding="12dp" android:layout_marginTop="12dp">
+                <TextView style="@style/StitchMetricLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="ÚLTIMO ACCESO" android:textSize="9sp" android:fontVariationSettings="'wght' 500" />
+                <TextView android:id="@+id/profile_personal_5" style="@style/StitchBody" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" android:layout_marginTop="8dp" android:textColor="@color/on_surface" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_card" android:padding="16dp" android:layout_marginTop="16dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/st_card_membership" app:tint="@color/stitch_primary" android:importantForAccessibility="no" />
+                <TextView style="@style/StitchSection" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Membresía activa" android:layout_marginStart="8dp" android:layout_marginEnd="8dp" />
+                <TextView android:id="@+id/profile_membership_status" style="@style/StitchBadge" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:background="@drawable/stitch_badge_success" android:paddingHorizontal="8dp" android:paddingVertical="4dp" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="14dp" android:paddingBottom="10dp">
+                <TextView style="@style/StitchSmall" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Organización" android:layout_marginEnd="12dp" />
+                <TextView android:id="@+id/profile_member_0" style="@style/StitchSmall" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="—" android:gravity="end" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="14dp" android:paddingBottom="10dp">
+                <TextView style="@style/StitchSmall" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Identificador (Slug)" android:layout_marginEnd="12dp" />
+                <TextView android:id="@+id/profile_member_1" style="@style/StitchSmall" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="—" android:gravity="end" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="14dp" android:paddingBottom="10dp">
+                <TextView style="@style/StitchSmall" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Rol de usuario" android:layout_marginEnd="12dp" />
+                <TextView android:id="@+id/profile_member_2" style="@style/StitchSmall" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="—" android:gravity="end" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="14dp" android:paddingBottom="10dp">
+                <TextView style="@style/StitchSmall" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Cargo de membresía" android:layout_marginEnd="12dp" />
+                <TextView android:id="@+id/profile_member_3" style="@style/StitchSmall" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="—" android:gravity="end" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="14dp" android:paddingBottom="10dp">
+                <TextView style="@style/StitchSmall" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Alta en organización" android:layout_marginEnd="12dp" />
+                <TextView android:id="@+id/profile_member_4" style="@style/StitchSmall" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="—" android:gravity="end" />
+            </LinearLayout>
+            <com.google.android.material.button.MaterialButton android:id="@+id/profile_billing" style="@style/StitchButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Administrar facturación y planes" app:icon="@drawable/st_account_balance_wallet" android:layout_marginTop="12dp" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_card" android:padding="16dp" android:layout_marginTop="16dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/st_shield" app:tint="@color/stitch_primary" android:importantForAccessibility="no" />
+                <TextView style="@style/StitchSection" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Accesos habilitados" android:layout_marginStart="8dp" android:layout_marginEnd="8dp" />
+                <TextView android:id="@+id/profile_permission_badge" style="@style/StitchBadge" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:background="@drawable/stitch_badge_neutral" android:paddingHorizontal="8dp" android:paddingVertical="4dp" />
+            </LinearLayout>
+            <TextView android:id="@+id/profile_permissions_detail" style="@style/StitchBody" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="8dp" android:baselineAligned="false">
+                    <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_marginEnd="4dp" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_inset" android:padding="10dp">
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                            <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/st_grid_view" app:tint="@color/stitch_primary" android:importantForAccessibility="no" />
+                            <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginStart="8dp">
+                                <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Dashboard" android:textColor="@color/on_surface" />
+                                <TextView android:id="@+id/profile_permission_0" style="@style/StitchMetricLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Sin información" android:textSize="8sp" android:layout_marginTop="3dp" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_marginStart="4dp" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_inset" android:padding="10dp">
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                            <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/st_map" app:tint="@color/stitch_primary" android:importantForAccessibility="no" />
+                            <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginStart="8dp">
+                                <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Campos" android:textColor="@color/on_surface" />
+                                <TextView android:id="@+id/profile_permission_1" style="@style/StitchMetricLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Sin información" android:textSize="8sp" android:layout_marginTop="3dp" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="8dp" android:baselineAligned="false">
+                    <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_marginEnd="4dp" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_inset" android:padding="10dp">
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                            <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/st_pets" app:tint="@color/stitch_primary" android:importantForAccessibility="no" />
+                            <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginStart="8dp">
+                                <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Ganado" android:textColor="@color/on_surface" />
+                                <TextView android:id="@+id/profile_permission_2" style="@style/StitchMetricLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Sin información" android:textSize="8sp" android:layout_marginTop="3dp" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_marginStart="4dp" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_inset" android:padding="10dp">
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                            <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/st_inventory_2" app:tint="@color/stitch_primary" android:importantForAccessibility="no" />
+                            <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginStart="8dp">
+                                <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Inventario" android:textColor="@color/on_surface" />
+                                <TextView android:id="@+id/profile_permission_3" style="@style/StitchMetricLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Sin información" android:textSize="8sp" android:layout_marginTop="3dp" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="8dp" android:baselineAligned="false">
+                    <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_marginEnd="4dp" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_inset" android:padding="10dp">
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                            <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/st_account_balance_wallet" app:tint="@color/stitch_primary" android:importantForAccessibility="no" />
+                            <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginStart="8dp">
+                                <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Finanzas" android:textColor="@color/on_surface" />
+                                <TextView android:id="@+id/profile_permission_4" style="@style/StitchMetricLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Sin información" android:textSize="8sp" android:layout_marginTop="3dp" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_marginStart="4dp" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_inset" android:padding="10dp">
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                            <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/st_wb_sunny" app:tint="@color/stitch_primary" android:importantForAccessibility="no" />
+                            <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginStart="8dp">
+                                <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Clima y Tareas" android:textColor="@color/on_surface" />
+                                <TextView android:id="@+id/profile_permission_5" style="@style/StitchMetricLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Sin información" android:textSize="8sp" android:layout_marginTop="3dp" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_card" android:padding="16dp" android:layout_marginTop="16dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/st_lock" app:tint="@color/stitch_primary" android:importantForAccessibility="no" />
+                <TextView style="@style/StitchSection" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Zona de Cuenta" android:layout_marginStart="8dp" android:layout_marginEnd="8dp" />
+            </LinearLayout>
+            <com.google.android.material.button.MaterialButton android:id="@+id/profile_sessions" style="@style/StitchButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Sesiones activas y dispositivos vinculados" app:icon="@drawable/st_devices" android:layout_marginTop="12dp" app:backgroundTint="@android:color/transparent" app:strokeWidth="0dp" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/profile_password" style="@style/StitchButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Cambiar contraseña y métodos de acceso" app:icon="@drawable/st_key" app:backgroundTint="@android:color/transparent" app:strokeWidth="0dp" />
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="12dp" android:background="@color/stitch_divider" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/profile_logout" style="@style/StitchButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Cerrar sesión" app:icon="@drawable/st_logout" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/profile_mode" style="@style/StitchButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Explorar demostración" android:visibility="gone" android:layout_marginTop="12dp" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="28dp">
+            <ImageView android:layout_width="32dp" android:layout_height="32dp" android:layout_gravity="center" android:src="@drawable/ic_iconmyfarmio" android:contentDescription="MyFarmio" />
+            <TextView style="@style/StitchSection" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="MyFarmio" android:gravity="center" android:layout_marginTop="6dp" />
+            <TextView style="@style/StitchMetricLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="PLATAFORMA INTEGRAL DE GESTIÓN AGROPECUARIA" android:gravity="center" android:layout_marginTop="12dp" />
+            <TextView android:id="@+id/profile_footer" style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:layout_marginTop="8dp" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

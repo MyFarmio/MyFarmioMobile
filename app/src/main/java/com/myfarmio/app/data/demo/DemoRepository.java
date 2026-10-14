@@ -54,7 +54,7 @@ public final class DemoRepository implements RecordRepository {
     @Override public Map<String, Object> save(String module, Map<String, Object> input) {
         if (!records.containsKey(module)) throw new IllegalArgumentException("Módulo demo no disponible.");
         Map<String, Object> row = copy(input);
-        String key = "tasks".equals(module) ? "title" : "animals".equals(module) ? "tag" : "name";
+        String key = "tasks".equals(module) ? "title" : "animals".equals(module) ? "tag" : "finance".equals(module) ? "description" : "name";
         if (text(row,key).trim().isEmpty()) throw new IllegalArgumentException("Completá el nombre o identificación.");
         if ("tasks".equals(module) && !text(row,"related_entity_id").isEmpty() && find("fields",text(row,"related_entity_id")) == null)
             throw new IllegalArgumentException("El lote seleccionado ya no está disponible.");
@@ -67,6 +67,14 @@ public final class DemoRepository implements RecordRepository {
         String id = text(row,"id");
         if (id.isEmpty()) { id = "demo-" + UUID.randomUUID(); row.put("id",id); }
         Map<String, Object> previous = find(module,id);
+        if ("inventory".equals(module)) {
+            double quantity = row.get("quantity") instanceof Number ? ((Number)row.get("quantity")).doubleValue() : 0;
+            double before = previous != null && previous.get("quantity") instanceof Number ? ((Number)previous.get("quantity")).doubleValue() : 0;
+            if (previous == null || quantity != before) records.get("inventory_movements").add(0, DemoFixtures.row(
+                "id","demo-stock-"+UUID.randomUUID(),"record_id",id,"name",text(row,"name"),
+                "quantity",quantity-before,"unit",text(row,"unit"),"kind",previous==null?"Stock inicial":"Ajuste local",
+                "date",java.time.LocalDate.now().toString()));
+        }
         if (previous != null) records.get(module).remove(previous);
         records.get(module).add(0,row);
         changed.run();

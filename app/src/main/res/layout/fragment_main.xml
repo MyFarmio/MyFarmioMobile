@@ -1,77 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/background">
-    <LinearLayout android:layout_width="0dp" android:layout_height="0dp" android:orientation="vertical"
-        app:layout_constraintWidth_max="960dp" app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="64dp"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="4dp"
-        android:background="@color/surface_container_lowest">
-        <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/ic_brand_mark"
-            android:importantForAccessibility="no" />
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginStart="10dp">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="MyFarmio"
-                android:textAppearance="@style/MobileSection" />
-            <TextView
-                android:id="@+id/header_organization"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/MobileBody"
-                android:textSize="12sp"
-                android:maxLines="1"
-                android:ellipsize="end" />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@color/background">
+    <LinearLayout android:id="@+id/main_header" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:gravity="center_vertical" android:paddingHorizontal="12dp" android:background="@color/background">
+        <ImageView android:id="@+id/header_logo" android:layout_width="44dp" android:layout_height="44dp" android:padding="8dp" android:src="@drawable/ic_iconmyfarmio" android:contentDescription="MyFarmio" />
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="0dp" android:orientation="vertical">
+            <TextView android:id="@+id/header_brand" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="MyFarmio" android:textColor="@color/primary" android:textSize="18sp" android:textStyle="bold" android:fontFamily="@font/manrope" />
+            <TextView android:id="@+id/header_organization" android:layout_width="match_parent" android:layout_height="wrap_content" android:maxLines="1" android:ellipsize="end" android:textSize="11sp" android:textColor="@color/on_surface_variant" android:fontFamily="@font/inter" />
         </LinearLayout>
-        <ImageButton
-            android:id="@+id/header_profile"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_profile"
-            android:contentDescription="Abrir mi perfil" />
+        <TextView android:id="@+id/header_weather" android:layout_width="wrap_content" android:layout_height="44dp" android:minWidth="62dp" android:gravity="center" android:paddingHorizontal="8dp" android:background="@drawable/stitch_header_weather" android:fontFamily="@font/inter" android:textSize="12sp" android:text="—" android:drawableStart="@drawable/ic_weather_stitch" android:drawablePadding="4dp" android:textColor="@color/primary" android:textStyle="bold" android:contentDescription="Abrir clima" />
+        <TextView android:id="@+id/header_profile" android:layout_width="44dp" android:layout_height="44dp" android:layout_marginStart="8dp" android:gravity="center" android:background="@drawable/stitch_header_avatar" android:text="L" android:textColor="@color/on_primary" android:textStyle="bold" android:contentDescription="Abrir perfil" />
     </LinearLayout>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/surface_container_high" />
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/main_nav_host"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:name="androidx.navigation.fragment.NavHostFragment"
-        app:navGraph="@navigation/nav_main_graph"
-        app:defaultNavHost="false" />
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_nav"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/surface_container_lowest"
-        app:itemIconSize="22dp"
-        app:itemTextAppearanceActive="@style/TextAppearance.MyFarmio.LabelMedium"
-        app:labelVisibilityMode="labeled"
-        app:itemIconTint="@color/bottom_nav_color_state"
-        app:itemTextColor="@color/bottom_nav_color_state"
-        app:menu="@menu/bottom_nav_menu" />
+    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/surface_variant" />
+    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <androidx.fragment.app.FragmentContainerView android:id="@+id/main_nav_host" android:layout_width="match_parent" android:layout_height="match_parent" android:name="androidx.navigation.fragment.NavHostFragment" app:navGraph="@navigation/nav_main_graph" app:defaultNavHost="false" />
+        <View android:id="@+id/fab_scrim" android:layout_width="match_parent" android:layout_height="match_parent" android:background="#73000000" android:visibility="gone" android:clickable="true" />
+        <LinearLayout android:id="@+id/fab_actions" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="bottom|end" android:layout_marginEnd="16dp" android:layout_marginBottom="78dp" android:gravity="end" android:orientation="vertical" android:visibility="gone">
+            <com.google.android.material.button.MaterialButton android:id="@+id/fab_field" style="@style/StitchDialButton" android:layout_width="wrap_content" android:layout_height="48dp" android:layout_marginBottom="8dp" android:backgroundTint="@color/surface_container_lowest" android:text="Campo" android:textColor="@color/on_background" app:icon="@drawable/st_map" app:iconGravity="textEnd" app:iconTint="@color/primary" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/fab_animal" style="@style/StitchDialButton" android:layout_width="wrap_content" android:layout_height="48dp" android:layout_marginBottom="8dp" android:backgroundTint="@color/surface_container_lowest" android:text="Animal" android:textColor="@color/on_background" app:icon="@drawable/st_pets" app:iconGravity="textEnd" app:iconTint="@color/primary" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/fab_supply" style="@style/StitchDialButton" android:layout_width="wrap_content" android:layout_height="48dp" android:layout_marginBottom="8dp" android:backgroundTint="@color/surface_container_lowest" android:text="Insumo" android:textColor="@color/on_background" app:icon="@drawable/st_inventory_2" app:iconGravity="textEnd" app:iconTint="@color/primary" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/fab_movement" style="@style/StitchDialButton" android:layout_width="wrap_content" android:layout_height="48dp" android:layout_marginBottom="8dp" android:backgroundTint="@color/surface_container_lowest" android:text="Movimiento" android:textColor="@color/on_background" app:icon="@drawable/st_account_balance_wallet" app:iconGravity="textEnd" app:iconTint="@color/primary" />
+        </LinearLayout>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton android:id="@+id/main_fab" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="bottom|end" android:layout_marginEnd="16dp" android:layout_marginBottom="16dp" android:contentDescription="Abrir acciones rápidas" android:src="@drawable/ic_plus_stitch" app:backgroundTint="@color/stitch_primary" app:tint="@color/on_primary" app:fabSize="normal" />
+    </FrameLayout>
+    <com.google.android.material.bottomnavigation.BottomNavigationView android:id="@+id/bottom_nav" android:layout_width="match_parent" android:layout_height="64dp" android:background="@color/surface_container_lowest" app:itemIconSize="22dp" app:labelVisibilityMode="labeled" app:itemBackground="@drawable/stitch_nav_background" app:itemHorizontalTranslationEnabled="false" app:itemTextAppearanceActive="@style/StitchNavText" app:itemTextAppearanceInactive="@style/StitchNavText" app:itemPaddingTop="8dp" app:itemPaddingBottom="8dp" app:itemIconTint="@color/bottom_nav_color_state" app:itemTextColor="@color/bottom_nav_color_state" app:menu="@menu/bottom_nav_menu" />
 </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>

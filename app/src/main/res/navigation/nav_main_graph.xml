@@ -30,4 +30,6 @@
     <fragment android:id="@+id/nav_finanzas" android:name="com.myfarmio.app.ui.main.SecondaryFragment" android:label="Finanzas">
         <argument android:name="module" app:argType="string" android:defaultValue="finance" />
     </fragment>
+    <fragment android:id="@+id/nav_clima" android:name="com.myfarmio.app.ui.main.ClimateFragment" android:label="Clima" />
+    <fragment android:id="@+id/nav_perfil" android:name="com.myfarmio.app.ui.main.ProfileFragment" android:label="Perfil" />
 </navigation>

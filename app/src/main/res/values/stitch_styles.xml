@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Only post-login views use these styles. Welcome/Login keep their original theme. -->
+    <style name="StitchBody">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:fontVariationSettings">"'wght' 400"</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:lineSpacingExtra">3dp</item>
+        <item name="android:textColor">@color/on_surface_variant</item>
+    </style>
+    <style name="StitchTitle" parent="StitchBody">
+        <item name="android:fontFamily">@font/manrope</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:fontVariationSettings">"'wght' 800"</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/on_surface</item>
+        <item name="android:letterSpacing">-0.025</item>
+    </style>
+    <style name="StitchSection" parent="StitchTitle">
+        <item name="android:textSize">17sp</item>
+        <item name="android:fontVariationSettings">"'wght' 700"</item>
+        <item name="android:letterSpacing">-0.01</item>
+    </style>
+    <style name="StitchMetric" parent="StitchTitle">
+        <item name="android:textSize">26sp</item>
+    </style>
+    <style name="StitchDisplay" parent="StitchMetric">
+        <item name="android:textSize">34sp</item>
+    </style>
+    <style name="StitchEyebrow" parent="StitchBody">
+        <item name="android:textSize">11sp</item>
+        <item name="android:fontVariationSettings">"'wght' 700"</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.04</item>
+        <item name="android:textColor">@color/secondary</item>
+    </style>
+    <style name="StitchMetricLabel" parent="StitchEyebrow">
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">@color/on_surface_variant</item>
+    </style>
+    <style name="StitchBadge" parent="StitchMetricLabel">
+        <item name="android:textSize">10sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:letterSpacing">0.02</item>
+        <item name="android:maxWidth">104dp</item>
+    </style>
+    <style name="StitchSmall" parent="StitchBody">
+        <item name="android:textSize">11sp</item>
+        <item name="android:lineSpacingExtra">2dp</item>
+    </style>
+    <style name="StitchButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:minHeight">44dp</item>
+        <item name="android:minWidth">44dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:paddingHorizontal">12dp</item>
+        <item name="android:paddingVertical">10dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/stitch_primary</item>
+        <item name="backgroundTint">@color/surface_container</item>
+        <item name="strokeColor">@color/outline_variant</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cornerRadius">8dp</item>
+        <item name="iconSize">18dp</item>
+        <item name="iconTint">@color/stitch_primary</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">6dp</item>
+    </style>
+    <style name="StitchPrimaryButton" parent="StitchButton">
+        <item name="android:textColor">@color/on_primary</item>
+        <item name="android:textStyle">bold</item>
+        <item name="backgroundTint">@color/stitch_primary</item>
+        <item name="iconTint">@color/on_primary</item>
+        <item name="strokeWidth">0dp</item>
+    </style>
+    <style name="StitchDialButton" parent="StitchButton">
+        <item name="cornerRadius">28dp</item>
+        <item name="backgroundTint">@color/surface_container_lowest</item>
+        <item name="strokeWidth">0dp</item>
+        <item name="android:elevation">3dp</item>
+        <item name="iconGravity">textEnd</item>
+        <item name="android:paddingHorizontal">16dp</item>
+    </style>
+    <style name="StitchNavText" parent="StitchSmall">
+        <item name="android:textSize">10sp</item>
+        <item name="android:lineSpacingExtra">0dp</item>
+        <item name="android:fontVariationSettings">"'wght' 500"</item>
+    </style>
+</resources>
