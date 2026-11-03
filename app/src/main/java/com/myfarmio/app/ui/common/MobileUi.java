@@ -38,6 +38,20 @@ public final class MobileUi {
             view.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(180).start();
         }
     }
+    public static void transitionPage(View view) {
+        view.animate().cancel();
+        if (!ValueAnimator.areAnimatorsEnabled()) {
+            view.setAlpha(1f); view.setTranslationY(0f);
+            return;
+        }
+        float offset = dp(view.getContext(), 10);
+        view.setAlpha(0f);
+        view.setTranslationY(offset);
+        view.animate().alpha(1f).translationY(0f)
+            .setDuration(220L)
+            .setInterpolator(new android.view.animation.DecelerateInterpolator())
+            .start();
+    }
     public static int detailIcon(String module) {
         switch(module) {
             case "fields": return R.drawable.st_grass;

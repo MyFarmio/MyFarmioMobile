@@ -148,7 +148,8 @@ public abstract class OperationalFragment extends Fragment {
         }
     }
     private void load(boolean force) {
-        model.load(activeModule(), SessionManager.getInstance(requireContext()).getOrganizationId(), force);
+        SessionManager session = SessionManager.getInstance(requireContext());
+        model.load(activeModule(), session.getUserId(), session.getOrganizationId(), force);
     }
     private void refresh() {
         if (demo) {
@@ -363,7 +364,7 @@ public abstract class OperationalFragment extends Fragment {
         RecordRepository repository;
         if (demo) repository = workspace.records();
         else {
-            SupabaseRecordRepository remote = new SupabaseRecordRepository(SessionManager.getInstance(requireContext()));
+            SupabaseRecordRepository remote = new SupabaseRecordRepository(requireContext(), SessionManager.getInstance(requireContext()));
             remote.seed("livestock", herdCache);
             remote.seed("fields", module().equals("fields") ? source : java.util.Collections.emptyList());
             repository = remote;
@@ -482,7 +483,7 @@ public abstract class OperationalFragment extends Fragment {
             current.danger("Eliminar", () -> new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
                 .setTitle("¿Eliminar registro?").setMessage("Se ocultará de la lista en la web y en mobile.")
                 .setNegativeButton("Cancelar", null).setPositiveButton("Eliminar", (dialog, which) -> {
-                    SupabaseRecordRepository remote = new SupabaseRecordRepository(SessionManager.getInstance(requireContext()));
+                    SupabaseRecordRepository remote = new SupabaseRecordRepository(requireContext(), SessionManager.getInstance(requireContext()));
                     remote.deleteAsync(activeModule(), value(row, "id"), error -> {
                         if (error != null) android.widget.Toast.makeText(requireContext(), error, android.widget.Toast.LENGTH_LONG).show();
                         else { current.dismiss(); load(true); }

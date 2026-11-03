@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">MyFarmio</string>
+    <string name="nav_home">Inicio</string>
+    <string name="nav_fields">Campos</string>
+    <string name="nav_livestock">Ganado</string>
+    <string name="nav_inventory">Stock</string>
+    <string name="nav_finance">Finanzas</string>
     <string name="email_hint">Correo</string>
     <string name="password_hint">Contraseña</string>
     <string name="login_button">Ingresar</string>
@@ -221,6 +226,46 @@
     <string name="demo_capacity_error">El objetivo debe ser mayor a cero.</string>
     <string name="demo_general_category">General</string>
     <string name="demo_saved">Guardado en la demo local</string>
+    <string name="climate_update_button">Consultar clima</string>
+    <string name="climate_update_loading">Actualizando…</string>
+    <string name="climate_location_permission_explanation">Usamos la ubicación de este dispositivo solo para consultar el clima. No la guardamos.</string>
+    <string name="climate_location_permission_prompt">Permití ubicación aproximada o precisa para consultar el pronóstico local.</string>
+    <string name="climate_location_precise_prompt">En el emulador, permití ubicación precisa para obtener la posición GPS. La aproximada también se puede usar.</string>
+    <string name="climate_location_permission_denied">Necesitamos la ubicación aproximada para consultar el clima.</string>
+    <string name="climate_location_searching">Buscando ubicación aproximada…</string>
+    <string name="climate_location_enable">Activá la ubicación del dispositivo y volvé a intentar.</string>
+    <string name="climate_location_timeout">No encontramos la ubicación. Revisá que esté activada y reintentá.</string>
+    <string name="climate_location_permission_error">No tenemos permiso para consultar la ubicación. Podés habilitarlo desde el botón.</string>
+    <string name="climate_location_error">No pudimos obtener la ubicación. Revisá la configuración del dispositivo.</string>
+    <string name="climate_location_current">Ubicación actual</string>
+    <string name="climate_no_data">Sin datos</string>
+    <string name="climate_fetching">Buscando pronóstico…</string>
+    <string name="climate_connection_error">No se pudo consultar el clima. Revisá tu conexión y reintentá.</string>
+    <string name="climate_service_error">El servicio meteorológico no respondió. Reintentá en unos minutos.</string>
+    <string name="climate_response_error">No pudimos leer el pronóstico. Reintentá.</string>
+    <string name="climate_weather_source">Estimación de Open-Meteo para estas coordenadas; no es una medición de estación.</string>
+    <string name="climate_weather_forecast_note">Pronóstico actualizado desde el servicio meteorológico.</string>
+    <string name="climate_weather_alerts_empty">No hay alertas meteorológicas disponibles.</string>
+    <string name="climate_water_soil_legend">Humedad de suelo estimada 0–7 cm · %1$s</string>
+    <string name="climate_rain_daily_caption">Lluvia y ETP estimadas para hoy</string>
+    <string name="climate_general_plot">GENERAL</string>
+    <string name="climate_no_crop">Sin cultivo asociado</string>
+    <string name="climate_no_plot">No hay un lote seleccionado.</string>
+    <string name="climate_crop_recommendation_unavailable">La recomendación por cultivo requiere datos del lote.</string>
+    <string name="climate_dashboard_label">Clima local</string>
+    <string name="climate_dashboard_tap">Tocá para consultar</string>
+    <string name="climate_no_reading">Sin lectura</string>
+    <string name="climate_air_humidity">Humedad del aire</string>
+    <string name="climate_wind">Viento</string>
+    <string name="climate_no_forecast">Abrí Clima para consultar el pronóstico</string>
+    <string name="climate_status_loading">ACTUALIZANDO</string>
+    <string name="climate_status_no_data">SIN DATOS</string>
+    <string name="climate_status_error">SIN CONEXIÓN</string>
+    <string name="offline_status_action">Tocá para reintentar la sincronización</string>
+    <string name="offline_no_connection">Sin conexión · los cambios se guardan en este dispositivo</string>
+    <string name="offline_pending_count">Sin conexión · %1$d cambios pendientes</string>
+    <string name="offline_syncing_count">Sincronizando %1$d cambios…</string>
+    <string name="offline_failed_count">%1$d cambios necesitan reintento · Tocá acá</string>
     <string-array name="demo_movement_types">
         <item>Ingreso</item><item>Gasto</item>
     </string-array>

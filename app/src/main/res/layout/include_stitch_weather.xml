@@ -19,7 +19,7 @@
                 <TextView android:id="@+id/weather_detail_0" style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Sin lectura" android:layout_marginTop="4dp" />
             </LinearLayout>
             <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:paddingHorizontal="6dp">
-                <TextView style="@style/StitchMetricLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="HUMEDAD SUELO" />
+                <TextView style="@style/StitchMetricLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="HUMEDAD AIRE" />
                 <TextView android:id="@+id/weather_value_1" style="@style/StitchSection" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" android:layout_marginTop="8dp" />
                 <TextView android:id="@+id/weather_detail_1" style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Sin lectura" android:layout_marginTop="4dp" />
             </LinearLayout>

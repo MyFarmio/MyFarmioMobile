@@ -5,6 +5,8 @@ import android.content.res.Configuration;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import com.myfarmio.app.auth.SessionManager;
+import com.myfarmio.app.data.offline.OfflineStore;
+import com.myfarmio.app.data.offline.OfflineSyncScheduler;
 import com.myfarmio.app.network.SupabaseConfig;
 
 public class MyFarmioApplication extends Application {
@@ -13,6 +15,8 @@ public class MyFarmioApplication extends Application {
         super.onCreate();
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         SupabaseConfig.setSessionManager(SessionManager.getInstance(this));
+        OfflineStore.get(this);
+        OfflineSyncScheduler.schedule(this);
     }
 
     @Override

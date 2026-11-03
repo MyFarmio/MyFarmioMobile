@@ -23,7 +23,7 @@
                         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
                             <ImageView android:layout_width="34dp" android:layout_height="34dp" android:src="@drawable/st_water_drop" app:tint="@color/stitch_primary" android:importantForAccessibility="no" android:padding="7dp" android:background="@drawable/stitch_icon_neutral" />
                             <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginStart="8dp">
-                                <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Humedad suelo" />
+                                <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/climate_air_humidity" />
                                 <TextView android:id="@+id/climate_value_0" style="@style/StitchBody" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" android:textColor="@color/stitch_primary" android:textStyle="bold" />
                             </LinearLayout>
                         </LinearLayout>
@@ -75,7 +75,7 @@
                 <TextView style="@style/StitchSection" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Balance hídrico y lluvia" android:layout_marginStart="8dp" android:layout_marginEnd="8dp" />
                 <TextView android:id="@+id/climate_rain" style="@style/StitchSection" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" />
             </LinearLayout>
-            <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Registro pluviométrico acumulado · últimos 7 días" android:layout_marginTop="4dp" />
+            <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/climate_rain_daily_caption" android:layout_marginTop="4dp" />
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_inset" android:padding="12dp" android:layout_marginTop="12dp">
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
                     <TextView style="@style/StitchSmall" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Evapotranspiración potencial (ETP)" />
@@ -106,7 +106,7 @@
             <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Modelado preventivo · 72 horas" android:layout_marginTop="4dp" />
             <LinearLayout android:id="@+id/climate_alerts" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"></LinearLayout>
         </LinearLayout>
-        <com.google.android.material.button.MaterialButton android:id="@+id/climate_register" style="@style/StitchPrimaryButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Registrar pluviometría o nota de campo" app:icon="@drawable/st_add_circle" android:layout_marginTop="24dp" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/climate_register" style="@style/StitchPrimaryButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/climate_update_button" app:icon="@drawable/st_add_circle" android:layout_marginTop="24dp" />
         <TextView android:id="@+id/climate_note" style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

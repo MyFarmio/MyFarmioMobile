@@ -4,6 +4,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.myfarmio.app.R;
+import com.myfarmio.app.data.weather.WeatherViewModel;
 import java.util.*;
 
 /** XML binders only; fictional data is isolated in the demo repository. */
@@ -23,16 +24,17 @@ public final class StitchUi {
     public static void progress(View root,int id,double value) {
         ((ProgressBar)root.findViewById(id)).setProgress((int)Math.max(0,Math.min(100,value)));
     }
-    public static void weather(View root,WorkspaceViewModel workspace) {
-        Map<String,Object> data=demo(workspace,"weather");
-        text(root,R.id.weather_station,or(data,"name","Sin estación configurada"));
-        text(root,R.id.weather_updated,workspace.isDemo()?"Ejemplo local":"Sin lectura");
-        text(root,R.id.weather_status,workspace.isDemo()?"ÓPTIMO":"SIN DATOS");
-        int[] values={R.id.weather_value_0,R.id.weather_value_1,R.id.weather_value_2};
-        String[] keys={"temperature","moisture","wind"};
-        int[] details={R.id.weather_detail_0,R.id.weather_detail_1,R.id.weather_detail_2};
-        String[] descriptions={"Soleado","En rango","Calmo (NO)"};
-        for(int i=0;i<3;i++) { text(root,values[i],or(data,keys[i],"—")); text(root,details[i],workspace.isDemo()?descriptions[i]:"Sin lectura"); }
+    public static void weather(View root, WeatherViewModel.State state) {
+        boolean hasData = state != null && !"—".equals(state.temperature);
+        text(root,R.id.weather_station,hasData?state.location:root.getContext().getString(R.string.climate_dashboard_label));
+        text(root,R.id.weather_updated,hasData?state.updated:root.getContext().getString(R.string.climate_dashboard_tap));
+        text(root,R.id.weather_status,state == null ? root.getContext().getString(R.string.climate_status_no_data) : state.loading ? root.getContext().getString(R.string.climate_status_loading) : state.error == null ? state.condition.toUpperCase() : root.getContext().getString(R.string.climate_status_error));
+        text(root,R.id.weather_value_0,hasData?state.temperature:"—");
+        text(root,R.id.weather_detail_0,hasData?state.condition:root.getContext().getString(R.string.climate_no_forecast));
+        text(root,R.id.weather_value_1,hasData?state.humidity:"—");
+        text(root,R.id.weather_detail_1,hasData?root.getContext().getString(R.string.climate_air_humidity):root.getContext().getString(R.string.climate_no_reading));
+        text(root,R.id.weather_value_2,hasData?state.wind:"—");
+        text(root,R.id.weather_detail_2,hasData?root.getContext().getString(R.string.climate_wind):root.getContext().getString(R.string.climate_no_reading));
     }
     public static void plot(View card,Map<String,Object> row) {
         text(card,R.id.record_title,or(row,"name","Sin nombre"));

@@ -54,9 +54,8 @@ public class SupabaseConfig {
                 @Override
                 public Response intercept(Chain chain) throws IOException {
                     Request original = chain.request();
-                    Request.Builder requestBuilder = original.newBuilder()
-                        .header("apikey", SUPABASE_ANON_KEY)
-                        .header("Prefer", "return=representation");
+                    Request.Builder requestBuilder = original.newBuilder().header("apikey", SUPABASE_ANON_KEY);
+                    if (original.header("Prefer") == null) requestBuilder.header("Prefer", "return=representation");
 
                     // Si hay token de sesión, lo agregamos
                     if (authToken != null && !authToken.isEmpty()) {

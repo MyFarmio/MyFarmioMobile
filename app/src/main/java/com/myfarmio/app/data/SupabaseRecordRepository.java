@@ -2,7 +2,13 @@ package com.myfarmio.app.data;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import com.myfarmio.app.auth.SessionManager;
+import com.myfarmio.app.data.offline.OfflineStore;
+import com.myfarmio.app.data.offline.OfflineSyncScheduler;
 import com.myfarmio.app.data.demo.RecordRepository;
 import com.myfarmio.app.network.SupabaseApiService;
 import com.myfarmio.app.network.SupabaseConfig;
@@ -16,10 +22,14 @@ import retrofit2.Response;
 /** CRUD against the same Supabase tables used by the web app. */
 public final class SupabaseRecordRepository implements RecordRepository {
     private final SessionManager session;
+    private final Context context;
+    private final OfflineStore offline;
     private final Handler main = new Handler(Looper.getMainLooper());
     private final Map<String, List<Map<String, Object>>> lookups = new HashMap<>();
 
-    public SupabaseRecordRepository(SessionManager session) { this.session = session; }
+    public SupabaseRecordRepository(Context context, SessionManager session) {
+        this.context = context.getApplicationContext(); this.session = session; this.offline = OfflineStore.get(this.context);
+    }
 
     public void seed(String module, List<Map<String, Object>> rows) { lookups.put(module, rows == null ? Collections.emptyList() : rows); }
     @Override public List<Map<String, Object>> list(String module) { return lookups.getOrDefault(module, Collections.emptyList()); }
@@ -57,6 +67,7 @@ public final class SupabaseRecordRepository implements RecordRepository {
         for (Map.Entry<String, Object> entry : source.entrySet()) {
             if (allowed.contains(entry.getKey()) && !entry.getKey().startsWith("_")) out.put(entry.getKey(), entry.getValue());
         }
+        if (source.get("id") != null) out.put("id", source.get("id"));
         if ("finance".equals(module)) {
             String movement = text(source.get("movement_type"));
             String category = text(source.get("category"));
@@ -140,23 +151,40 @@ public final class SupabaseRecordRepository implements RecordRepository {
         if (!SupabaseConfig.isConfigured()) { main.post(() -> result.complete(null, "Falta configurar el proyecto Supabase.")); return; }
         String org = session.getOrganizationId();
         if (org == null || org.trim().isEmpty()) { main.post(() -> result.complete(null, "No hay una organización activa en esta sesión.")); return; }
+        String user = session.getUserId();
+        if (user == null || user.trim().isEmpty()) { main.post(() -> result.complete(null, "No hay una sesión activa para guardar este registro.")); return; }
         String table = table(module);
         Object rawId = record.get("id");
-        String id = rawId == null ? "" : String.valueOf(rawId);
-        boolean create = id.trim().isEmpty();
+        String id = rawId == null ? "" : String.valueOf(rawId).trim();
+        boolean create = id.isEmpty();
+        if (create) id = UUID.randomUUID().toString();
+        record.put("id", id);
+        final String recordId = id;
         Map<String, Object> payload = clean(module, record, create);
+        payload.put("id", id);
+        Map<String, Object> displayRecord = new LinkedHashMap<>(record);
+        String operation = create ? "create" : "update";
+        if (!hasUsableNetwork()) {
+            queueSave(user, org, module, recordId, operation, payload, displayRecord, result);
+            return;
+        }
         SupabaseApiService api = SupabaseConfig.getRetrofit().create(SupabaseApiService.class);
         Call<List<Map<String, Object>>> call = create
             ? api.createRecord(table, payload)
-            : api.updateRecord(table, filters(org, id), payload);
+            : api.updateRecord(table, filters(org, recordId), payload);
         call.enqueue(new Callback<List<Map<String, Object>>>() {
             @Override public void onResponse(Call<List<Map<String, Object>>> call, Response<List<Map<String, Object>>> response) {
-                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
-                    main.post(() -> result.complete(response.body().get(0), null));
+                if (response.isSuccessful()) {
+                    Map<String,Object> saved = response.body() != null && !response.body().isEmpty()
+                        ? response.body().get(0) : displayRecord;
+                    offline.cacheServerRow(user, org, module, normalize(module, saved));
+                    main.post(() -> result.complete(saved, null));
+                } else if (response.code() == 408 || response.code() == 429 || response.code() >= 500) {
+                    queueSave(user, org, module, recordId, operation, payload, displayRecord, result);
                 } else { String message = error(response.code()); main.post(() -> result.complete(null, message)); }
             }
             @Override public void onFailure(Call<List<Map<String, Object>>> call, Throwable error) {
-                main.post(() -> result.complete(null, "No se pudo guardar. Revisá la conexión e intentá de nuevo."));
+                queueSave(user, org, module, recordId, operation, payload, displayRecord, result);
             }
         });
     }
@@ -165,20 +193,68 @@ public final class SupabaseRecordRepository implements RecordRepository {
         if (!SupabaseConfig.isConfigured()) { main.post(() -> result.complete("Falta configurar el proyecto Supabase.")); return; }
         String org = session.getOrganizationId();
         if (org == null || org.trim().isEmpty()) { main.post(() -> result.complete("No hay una organización activa en esta sesión.")); return; }
+        String user = session.getUserId();
+        if (user == null || user.trim().isEmpty()) { main.post(() -> result.complete("No hay una sesión activa para eliminar este registro.")); return; }
+        if (!hasUsableNetwork()) {
+            queueDelete(user, module, org, id, result);
+            return;
+        }
         Map<String, Object> deleted = new HashMap<>();
         deleted.put("deleted_at", Instant.now().toString());
-        deleted.put("updated_by", session.getUserId());
+        deleted.put("updated_by", user);
         SupabaseApiService api = SupabaseConfig.getRetrofit().create(SupabaseApiService.class);
         Call<List<Map<String, Object>>> call = api.updateRecord(table(module), filters(org, id), deleted);
         call.enqueue(new Callback<List<Map<String, Object>>>() {
             @Override public void onResponse(Call<List<Map<String, Object>>> call, Response<List<Map<String, Object>>> response) {
-                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) main.post(() -> result.complete(null));
+                if (response.isSuccessful()) {
+                    offline.removeCachedRow(user, org, module, id);
+                    main.post(() -> result.complete(null));
+                }
+                else if (response.code() == 408 || response.code() == 429 || response.code() >= 500) queueDelete(user, module, org, id, result);
                 else { String message = response.isSuccessful() ? "El registro ya no existe o no está disponible para tu organización." : error(response.code()); main.post(() -> result.complete(message)); }
             }
             @Override public void onFailure(Call<List<Map<String, Object>>> call, Throwable error) {
-                main.post(() -> result.complete("No se pudo eliminar. Revisá la conexión e intentá de nuevo."));
+                queueDelete(user, module, org, id, result);
             }
         });
+    }
+
+    private void queueSave(String user, String organization, String module, String id, String operation, Map<String,Object> payload,
+                           Map<String,Object> displayRecord, Result result) {
+        try {
+            offline.queueSave(user, organization, module, id, operation, payload, displayRecord);
+            OfflineSyncScheduler.schedule(context);
+            Map<String,Object> saved = new LinkedHashMap<>(displayRecord); saved.put("_sync_status", "pending");
+            main.post(() -> result.complete(saved, null));
+        } catch (RuntimeException storageError) {
+            main.post(() -> result.complete(null, "No se pudo guardar en este dispositivo. Revisá el espacio disponible."));
+        }
+    }
+
+    private void queueDelete(String user, String module, String organization, String id, DeleteResult result) {
+        try {
+            Map<String,Object> deleted = new LinkedHashMap<>();
+            deleted.put("id", id); deleted.put("deleted_at", Instant.now().toString()); deleted.put("updated_by", user);
+            offline.queueDelete(user, organization, module, id, deleted);
+            OfflineSyncScheduler.schedule(context);
+            main.post(() -> result.complete(null));
+        } catch (RuntimeException storageError) {
+            main.post(() -> result.complete("No se pudo guardar la eliminación en este dispositivo."));
+        }
+    }
+
+    private Map<String,Object> normalize(String module, Map<String,Object> row) {
+        return "finance".equals(module) ? normalizeFinanceRow(row) : row;
+    }
+
+    private boolean hasUsableNetwork() {
+        ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (manager == null) return false;
+        Network network = manager.getActiveNetwork();
+        if (network == null) return false;
+        NetworkCapabilities capabilities = manager.getNetworkCapabilities(network);
+        return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
     }
 
     private Map<String, String> filters(String org, String id) {

@@ -9,7 +9,6 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,18 +41,7 @@ public class SplashFragment extends Fragment {
 
         boolean loggedIn = SessionManager.getInstance(requireContext()).isLoggedIn();
         splashAnimation = view.findViewById(R.id.splash_animation);
-        View brandGroup = view.findViewById(R.id.splash_brand_group);
-
         if (ValueAnimator.areAnimatorsEnabled()) {
-            brandGroup.setAlpha(0f);
-            brandGroup.setTranslationY(8f * getResources().getDisplayMetrics().density);
-            brandGroup.animate()
-                    .alpha(1f)
-                    .translationY(0f)
-                    .setDuration(420L)
-                    .setInterpolator(new DecelerateInterpolator())
-                    .start();
-
             splashAnimation.enableMergePathsForKitKatAndAbove(true);
             splashAnimation.setRepeatCount(0);
             splashAnimation.setSpeed(1.35f);
@@ -66,7 +54,6 @@ public class SplashFragment extends Fragment {
             splashAnimation.playAnimation();
             handler.postDelayed(() -> openNextScreen(view, loggedIn), SPLASH_FALLBACK_MS);
         } else {
-            brandGroup.setAlpha(1f);
             handler.postDelayed(() -> openNextScreen(view, loggedIn), REDUCED_MOTION_DELAY_MS);
         }
     }

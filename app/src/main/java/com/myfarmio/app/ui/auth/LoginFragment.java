@@ -2,6 +2,8 @@ package com.myfarmio.app.ui.auth;
 
 import android.content.Context;
 import android.content.Intent;
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Patterns;
@@ -12,6 +14,9 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -24,6 +29,17 @@ import com.myfarmio.app.ui.common.MobileUi;
 public class LoginFragment extends Fragment {
     private LoginViewModel viewModel;
     private MobileUi.Sheet sheet;
+    private ActivityResultLauncher<String[]> locationPermission;
+    private boolean loginTransitionStarted;
+
+    @Override public void onCreate(@Nullable Bundle state) {
+        super.onCreate(state);
+        locationPermission = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), grants -> {
+            // Weather is optional; continue signing in even when location is denied.
+            navigateToMain();
+        });
+    }
+
     @Nullable @Override public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup parent, @Nullable Bundle state) {
         return inflater.inflate(R.layout.fragment_login, parent, false);
     }
@@ -51,7 +67,7 @@ public class LoginFragment extends Fragment {
         viewModel.loginSuccess.observe(getViewLifecycleOwner(), success -> {
             if (Boolean.TRUE.equals(success) && Navigation.findNavController(view).getCurrentDestination() != null
                 && Navigation.findNavController(view).getCurrentDestination().getId() == R.id.loginFragment) {
-                Navigation.findNavController(view).navigate(R.id.action_login_to_main);
+                continueAfterLogin();
             }
         });
         submit.setOnClickListener(v -> {
@@ -109,6 +125,23 @@ public class LoginFragment extends Fragment {
         InputMethodManager keyboard = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         View focused = requireActivity().getCurrentFocus();
         if (keyboard != null && focused != null) keyboard.hideSoftInputFromWindow(focused.getWindowToken(), 0);
+    }
+    private void continueAfterLogin() {
+        if (loginTransitionStarted || !isAdded()) return;
+        loginTransitionStarted = true;
+        boolean coarse = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED;
+        boolean fine = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED;
+        if (coarse || fine) navigateToMain();
+        else locationPermission.launch(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION});
+    }
+    private void navigateToMain() {
+        if (!isAdded() || getView() == null) return;
+        androidx.navigation.NavController navigation = Navigation.findNavController(requireView());
+        if (navigation.getCurrentDestination() != null && navigation.getCurrentDestination().getId() == R.id.loginFragment) {
+            navigation.navigate(R.id.action_login_to_main);
+        }
     }
     @Override public void onDestroyView() {
         if (sheet != null) { sheet.dismiss(); sheet = null; }

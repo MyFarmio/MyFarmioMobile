@@ -77,6 +77,12 @@ public interface SupabaseApiService {
     @POST("rest/v1/{table}")
     Call<List<Map<String, Object>>> createRecord(@Path("table") String table, @Body Map<String, Object> body);
 
+    @Headers({"Prefer: resolution=merge-duplicates,return=representation"})
+    @POST("rest/v1/{table}")
+    Call<List<Map<String, Object>>> upsertRecord(@Path("table") String table,
+                                                  @Query(value = "on_conflict", encoded = true) String conflict,
+                                                  @Body Map<String, Object> body);
+
     @PATCH("rest/v1/{table}")
     Call<List<Map<String, Object>>> updateRecord(@Path("table") String table, @QueryMap Map<String, String> query,
                                                   @Body Map<String, Object> body);

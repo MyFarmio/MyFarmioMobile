@@ -20,6 +20,7 @@ import com.myfarmio.app.R;
 import com.myfarmio.app.auth.SessionManager;
 import com.myfarmio.app.ui.common.MobileUi;
 import com.myfarmio.app.ui.common.RecordText;
+import com.myfarmio.app.data.weather.WeatherViewModel;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -32,6 +33,7 @@ public class DashboardFragment extends Fragment {
     private MobileUi.Sheet sheet;
     private View root;
     private com.myfarmio.app.ui.common.WorkspaceViewModel workspace;
+    private WeatherViewModel weatherViewModel;
 
     @Nullable @Override public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle state) {
         return inflater.inflate(R.layout.fragment_dashboard, container, false);
@@ -41,6 +43,10 @@ public class DashboardFragment extends Fragment {
         root = view;
         workspace = new ViewModelProvider(requireActivity()).get(com.myfarmio.app.ui.common.WorkspaceViewModel.class);
         workspace.prepare(SessionManager.getInstance(requireContext()));
+        weatherViewModel = new ViewModelProvider(requireActivity()).get(WeatherViewModel.class);
+        weatherViewModel.state().observe(getViewLifecycleOwner(), state -> {
+            if (root != null) com.myfarmio.app.ui.common.StitchUi.weather(root, state);
+        });
         swipeRefresh = view.findViewById(R.id.swipe_refresh);
         progressOverlay = view.findViewById(R.id.progress_overlay);
         viewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
@@ -104,13 +110,17 @@ public class DashboardFragment extends Fragment {
     }
     private void render(DashboardViewModel.DashboardState state) {
         root.findViewById(R.id.dashboard_content).setVisibility(View.VISIBLE);
-        com.myfarmio.app.ui.common.StitchUi.weather(root,workspace);
+        com.myfarmio.app.ui.common.StitchUi.weather(root,weatherViewModel.state().getValue());
         boolean plots = !state.unavailableSections.contains("Campos");
         boolean tasks = !state.unavailableSections.contains("Tareas");
         boolean herds = !state.unavailableSections.contains("Ganado");
         boolean finance = !state.unavailableSections.contains("Finanzas");
         root.findViewById(R.id.mobile_state).setVisibility(View.GONE);
-        if (!state.unavailableSections.isEmpty()) {
+        boolean coreDataUnavailable = state.unavailableSections.contains("Campos")
+            || state.unavailableSections.contains("Tareas")
+            || state.unavailableSections.contains("Ganado")
+            || state.unavailableSections.contains("Finanzas");
+        if (coreDataUnavailable) {
             MobileUi.state(root, "Resumen parcial", "No se pudo consultar: " + TextUtils.join(", ", state.unavailableSections)
                 + ". Un guion indica un dato no disponible.", "Reintentar", this::reload);
         }

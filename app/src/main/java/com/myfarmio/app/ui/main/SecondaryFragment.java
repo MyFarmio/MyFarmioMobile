@@ -82,7 +82,10 @@ public class SecondaryFragment extends Fragment {
         workspace.revision.observe(getViewLifecycleOwner(),revision->{render(); if(!workspace.isDemo())reload();});
         if(!workspace.isDemo()) reload();
     }
-    private void reload() { model.load(finance?"finance":"inventory",SessionManager.getInstance(requireContext()).getOrganizationId(),true); }
+    private void reload() {
+        SessionManager session=SessionManager.getInstance(requireContext());
+        model.load(finance?"finance":"inventory",session.getUserId(),session.getOrganizationId(),true);
+    }
     private List<Map<String,Object>> rows() {
         List<Map<String,Object>> result=new ArrayList<>();
         if(workspace.isDemo()) result.addAll(workspace.records().list(finance?"finance":"inventory"));
@@ -117,7 +120,7 @@ public class SecondaryFragment extends Fragment {
         MobileUi.Sheet current=open((row.isEmpty()?"Nuevo":"Editar")+(finance?" movimiento":" insumo"));
         if(workspace.isDemo()) StitchDemoEditor.bind(current,workspace,module,row);
         else {
-            RecordRepository repository=new SupabaseRecordRepository(SessionManager.getInstance(requireContext()));
+            RecordRepository repository=new SupabaseRecordRepository(requireContext(), SessionManager.getInstance(requireContext()));
             new com.myfarmio.app.ui.common.RecordEditor(current,module,row,repository,()->{
                 Toast.makeText(requireContext(),"Guardado",Toast.LENGTH_SHORT).show(); reload();
             });
@@ -143,7 +146,7 @@ public class SecondaryFragment extends Fragment {
             current.primary("Editar",()->{current.dismiss();edit(row);});
             current.danger("Eliminar",()->new MaterialAlertDialogBuilder(requireContext()).setTitle("¿Eliminar registro?")
                 .setMessage("Se ocultará de la lista en la web y en mobile.").setNegativeButton("Cancelar",null)
-                .setPositiveButton("Eliminar",(d,w)->new SupabaseRecordRepository(SessionManager.getInstance(requireContext()))
+                .setPositiveButton("Eliminar",(d,w)->new SupabaseRecordRepository(requireContext(), SessionManager.getInstance(requireContext()))
                     .deleteAsync(finance?"finance":"inventory",value(row,"id"),error->{
                         if(error!=null) Toast.makeText(requireContext(),error,Toast.LENGTH_LONG).show();
                         else {current.dismiss();reload();}
