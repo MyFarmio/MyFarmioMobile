@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/history_swipe"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:background="@color/background">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:paddingBottom="88dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Historial"
+                android:textAppearance="@style/StitchTitle"
+                android:accessibilityHeading="true" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Movimientos de tu organización"
+                android:textAppearance="@style/StitchBody" />
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/history_filters"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:singleSelection="true"
+                app:selectionRequired="true">
+                <com.google.android.material.button.MaterialButton android:id="@+id/history_filter_all" style="@style/StitchButton" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Todos" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/history_filter_income" style="@style/StitchButton" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Ingresos" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/history_filter_expense" style="@style/StitchButton" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Gastos" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+            <ProgressBar android:id="@+id/history_loading" android:layout_width="40dp" android:layout_height="40dp" android:layout_gravity="center" android:layout_margin="20dp" android:visibility="gone" />
+            <LinearLayout android:id="@+id/history_records" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="12dp" />
+            <include layout="@layout/include_mobile_state" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/history_load_more" style="@style/StitchButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="Cargar más" android:visibility="gone" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

@@ -19,15 +19,24 @@ public final class DemoRecordDetails {
     public static void bind(MobileUi.Sheet sheet,String module,Map<String,Object> source,RecordRepository repository,Runnable edit,Runnable deleted) {
         Map<String,Object> row=DemoRepository.copy(source);
         sheet.row("DEMOSTRACIÓN", "Guardado solo en memoria durante esta sesión.");
-        String section="";
+        String title=or(row,"title",or(row,"name",or(row,"description",value(row,"tag"))));
+        String status="animals".equals(module)?value(row,"health_status"):value(row,"status");
+        sheet.detailHeader(MobileUi.detailIcon(module),title,label(status),MobileUi.detailStatusColor(status));
+        if ("fields".equals(module)) sheet.metricRow(R.drawable.st_grass,R.string.detail_crop,value(row,"current_crop"),R.drawable.st_map,R.string.detail_area,row.get("area_hectares")==null?"":amount(number(row,"area_hectares"))+" ha");
+        else if ("livestock".equals(module)) sheet.metricRow(R.drawable.st_pets,R.string.detail_animals,row.get("quantity")==null?"":amount(number(row,"quantity")),R.drawable.st_speed,R.string.detail_average_weight,row.get("average_weight_kg")==null?"":amount(number(row,"average_weight_kg"))+" kg");
+        else if ("animals".equals(module)) sheet.metricRow(R.drawable.st_speed,R.string.detail_weight,row.get("weight_kg")==null?"":amount(number(row,"weight_kg"))+" kg",R.drawable.st_pets,R.string.detail_category,value(row,"category"));
+        else if ("finance".equals(module)) sheet.metricRow(R.drawable.st_payments,R.string.detail_amount,amount(number(row,"amount")),R.drawable.st_calendar_month,R.string.detail_date,dateLabel(value(row,"date")));
+        else if ("inventory".equals(module)) sheet.metricRow(R.drawable.st_inventory_2,R.string.detail_quantity,amount(number(row,"current_quantity"))+" "+value(row,"unit"),R.drawable.st_schedule,R.string.detail_expiry,dateLabel(value(row,"expiry_date")));
+        else if ("tasks".equals(module)) sheet.metricRow(R.drawable.st_schedule,R.string.detail_expiry,dateLabel(value(row,"due_date")),R.drawable.st_task_alt,R.string.detail_progress,amount(number(row,"progress"))+"%");
+        int section=0;
         for (RecordFormSchema.Field field:RecordFormSchema.fields(module)) {
-            if (!section.equals(field.section)) { section=field.section; sheet.heading(section); }
+            if (section!=field.sectionRes) { section=field.sectionRes; sheet.heading(sheet.body.getContext().getString(section)); }
             String text=value(row,field.key);
             if ("related_entity_id".equals(field.key)) text=value(row,"related_entity_name");
             else if ("herd_id".equals(field.key)) text=value(row,"_herd_name");
             else if (RecordFormSchema.DATE.equals(field.kind)) text=dateLabel(text);
             else if (RecordFormSchema.SELECT.equals(field.kind)) text=text.isEmpty() ? "" : label(text);
-            sheet.row(field.label,text);
+            sheet.row(sheet.body.getContext().getString(field.labelRes),text);
         }
         if ("livestock".equals(module)) {
             sheet.row("Animales registrados",amount(number(row,"quantity")));

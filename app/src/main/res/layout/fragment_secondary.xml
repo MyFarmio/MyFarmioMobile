@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true" android:background="@color/background">
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/secondary_swipe" android:layout_width="match_parent" android:layout_height="match_parent">
+<androidx.core.widget.NestedScrollView android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true" android:background="@color/background">
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp" android:paddingBottom="88dp">
         <TextView android:id="@+id/secondary_eyebrow" style="@style/StitchEyebrow" android:layout_width="match_parent" android:layout_height="wrap_content" />
         <TextView android:id="@+id/secondary_title" style="@style/StitchTitle" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:accessibilityHeading="true" />
@@ -15,16 +16,16 @@
                                 <ImageView android:layout_width="34dp" android:layout_height="34dp" android:src="@drawable/st_spa" app:tint="@color/stitch_primary" android:importantForAccessibility="no" android:padding="7dp" android:background="@drawable/stitch_icon_success" />
                                 <TextView android:id="@+id/category_seeds_count" style="@style/StitchDisplay" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="—" android:gravity="end" />
                             </LinearLayout>
-                            <TextView style="@style/StitchSection" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Semillas" android:textSize="15sp" android:layout_marginTop="10dp" />
-                            <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Lotes y bolsas" android:layout_marginTop="4dp" />
+                            <TextView style="@style/StitchSection" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Total" android:textSize="15sp" android:layout_marginTop="10dp" />
+                            <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Insumos" android:layout_marginTop="4dp" />
                         </LinearLayout>
                         <LinearLayout android:id="@+id/category_fertilizer" android:layout_width="0dp" android:layout_weight="1" android:layout_marginStart="6dp" android:layout_height="match_parent" android:orientation="vertical" android:padding="14dp" android:background="@drawable/bg_stitch_card" android:minHeight="112dp" android:clickable="true" android:focusable="true" android:foreground="?attr/selectableItemBackground">
                             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
                                 <ImageView android:layout_width="34dp" android:layout_height="34dp" android:src="@drawable/st_water_drop" app:tint="@color/stitch_primary" android:importantForAccessibility="no" android:padding="7dp" android:background="@drawable/stitch_icon_caution" />
                                 <TextView android:id="@+id/category_fertilizer_count" style="@style/StitchDisplay" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="—" android:gravity="end" />
                             </LinearLayout>
-                            <TextView style="@style/StitchSection" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Fertilizantes" android:textSize="15sp" android:layout_marginTop="10dp" />
-                            <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Sólidos y líquidos" android:layout_marginTop="4dp" />
+                            <TextView style="@style/StitchSection" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Disponibles" android:textSize="15sp" android:layout_marginTop="10dp" />
+                            <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Estado OK" android:layout_marginTop="4dp" />
                         </LinearLayout>
                     </LinearLayout>
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:baselineAligned="false" android:layout_marginTop="12dp">
@@ -33,16 +34,16 @@
                                 <ImageView android:layout_width="34dp" android:layout_height="34dp" android:src="@drawable/st_vaccines" app:tint="@color/stitch_primary" android:importantForAccessibility="no" android:padding="7dp" android:background="@drawable/stitch_icon_neutral" />
                                 <TextView android:id="@+id/category_health_count" style="@style/StitchDisplay" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="—" android:gravity="end" />
                             </LinearLayout>
-                            <TextView style="@style/StitchSection" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Sanidad animal" android:textSize="15sp" android:layout_marginTop="10dp" />
-                            <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Vacunas y dosis" android:layout_marginTop="4dp" />
+                            <TextView style="@style/StitchSection" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Bajo" android:textSize="15sp" android:layout_marginTop="10dp" />
+                            <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Reponer pronto" android:layout_marginTop="4dp" />
                         </LinearLayout>
                         <LinearLayout android:id="@+id/category_fuel" android:layout_width="0dp" android:layout_weight="1" android:layout_marginStart="6dp" android:layout_height="match_parent" android:orientation="vertical" android:padding="14dp" android:background="@drawable/bg_stitch_card" android:minHeight="112dp" android:clickable="true" android:focusable="true" android:foreground="?attr/selectableItemBackground">
                             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
                                 <ImageView android:layout_width="34dp" android:layout_height="34dp" android:src="@drawable/st_local_gas_station" app:tint="@color/stitch_primary" android:importantForAccessibility="no" android:padding="7dp" android:background="@drawable/stitch_icon_success" />
                                 <TextView android:id="@+id/category_fuel_count" style="@style/StitchDisplay" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="—" android:gravity="end" />
                             </LinearLayout>
-                            <TextView style="@style/StitchSection" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Combustible" android:textSize="15sp" android:layout_marginTop="10dp" />
-                            <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Gasoil y aceites" android:layout_marginTop="4dp" />
+                            <TextView style="@style/StitchSection" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Críticos" android:textSize="15sp" android:layout_marginTop="10dp" />
+                            <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Atención inmediata" android:layout_marginTop="4dp" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
@@ -80,10 +81,12 @@
         </LinearLayout>
         <LinearLayout android:id="@+id/finance_content" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="16dp">
-                <com.google.android.material.button.MaterialButton android:id="@+id/secondary_filter" style="@style/StitchButton" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Filtros" app:icon="@drawable/st_tune" />
-                <com.google.android.material.button.MaterialButton android:id="@+id/finance_period" style="@style/StitchButton" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Período" app:icon="@drawable/st_expand_more" android:layout_marginHorizontal="6dp" />
-                <com.google.android.material.button.MaterialButton android:id="@+id/secondary_export" style="@style/StitchButton" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Exportar" app:icon="@drawable/st_download" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/secondary_filter" style="@style/MobileOutlineButton" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/finance_filter_button" app:icon="@drawable/st_tune" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/finance_period" style="@style/MobileOutlineButton" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/finance_period_button" app:icon="@drawable/st_calendar_month" android:layout_marginHorizontal="6dp" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/secondary_export" style="@style/MobileButton" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/finance_export_button" app:icon="@drawable/st_download" />
+                <ProgressBar android:id="@+id/finance_export_progress" style="?android:attr/progressBarStyleSmall" android:layout_width="22dp" android:layout_height="22dp" android:layout_marginStart="6dp" android:indeterminateTint="@color/primary" android:visibility="gone" />
             </LinearLayout>
+            <com.google.android.material.chip.ChipGroup android:id="@+id/finance_active_chips" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:visibility="gone" app:singleLine="false" />
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_dark" android:padding="16dp" android:layout_marginTop="16dp">
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
                     <ImageView android:layout_width="34dp" android:layout_height="34dp" android:src="@drawable/st_account_balance_wallet" app:tint="@color/on_primary_container" android:importantForAccessibility="no" android:padding="7dp" android:background="@drawable/stitch_hero_cell" />
@@ -103,21 +106,21 @@
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="16dp" android:baselineAligned="false">
                 <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_marginEnd="6dp" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_card" android:padding="16dp">
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
-                        <ImageView android:layout_width="34dp" android:layout_height="34dp" android:src="@drawable/st_monitoring" app:tint="@color/stitch_primary" android:importantForAccessibility="no" android:padding="7dp" android:background="@drawable/stitch_icon_soft" />
-                        <TextView style="@style/StitchMetricLabel" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="MARGEN BRUTO" android:layout_marginStart="8dp" />
+                        <ImageView android:layout_width="34dp" android:layout_height="34dp" android:src="@drawable/st_trending_up" app:tint="@color/status_completed" android:importantForAccessibility="no" android:padding="7dp" android:background="@drawable/stitch_icon_success" />
+                        <TextView style="@style/StitchMetricLabel" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/finance_balance_title" android:layout_marginStart="8dp" />
                     </LinearLayout>
-                    <TextView android:id="@+id/finance_metric_1" style="@style/StitchMetric" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" android:textSize="21sp" android:layout_marginTop="12dp" android:textColor="@color/stitch_primary" />
-                    <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Balance del período" android:layout_marginTop="4dp" />
+                    <TextView android:id="@+id/finance_metric_1" style="@style/StitchMetric" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" android:textSize="21sp" android:layout_marginTop="12dp" android:textColor="@color/status_completed" />
+                    <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/finance_balance_caption" android:layout_marginTop="4dp" />
                     <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="12dp" android:background="@color/stitch_divider" />
                     <TextView android:id="@+id/finance_metric_1_detail" style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" />
                 </LinearLayout>
                 <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_marginStart="6dp" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_card" android:padding="16dp">
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
-                        <ImageView android:layout_width="34dp" android:layout_height="34dp" android:src="@drawable/st_shopping_bag" app:tint="@color/stitch_primary" android:importantForAccessibility="no" android:padding="7dp" android:background="@drawable/stitch_icon_caution" />
-                        <TextView style="@style/StitchMetricLabel" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="COSTOS COMP." android:layout_marginStart="8dp" />
+                        <ImageView android:layout_width="34dp" android:layout_height="34dp" android:src="@drawable/st_south_east" app:tint="@color/error" android:importantForAccessibility="no" android:padding="7dp" android:background="@drawable/stitch_icon_error" />
+                        <TextView style="@style/StitchMetricLabel" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/finance_pending_title" android:layout_marginStart="8dp" />
                     </LinearLayout>
-                    <TextView android:id="@+id/finance_metric_2" style="@style/StitchMetric" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" android:textSize="21sp" android:layout_marginTop="12dp" android:textColor="@color/secondary" />
-                    <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Pendientes y vencidos" android:layout_marginTop="4dp" />
+                    <TextView android:id="@+id/finance_metric_2" style="@style/StitchMetric" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" android:textSize="21sp" android:layout_marginTop="12dp" android:textColor="@color/error" />
+                    <TextView style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/finance_pending_caption" android:layout_marginTop="4dp" />
                     <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="12dp" android:background="@color/stitch_divider" />
                     <TextView android:id="@+id/finance_metric_2_detail" style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" />
                 </LinearLayout>
@@ -150,10 +153,9 @@
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
                     <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/st_sync_alt" app:tint="@color/stitch_primary" android:importantForAccessibility="no" />
                     <TextView style="@style/StitchSection" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Transacciones recientes" android:layout_marginStart="8dp" android:layout_marginEnd="8dp" />
-                    <com.google.android.material.button.MaterialButton android:id="@+id/finance_all" style="@style/StitchButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ver todo" app:strokeWidth="0dp" app:backgroundTint="@android:color/transparent" />
                 </LinearLayout>
                 <LinearLayout android:id="@+id/secondary_records" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"></LinearLayout>
-                <com.google.android.material.button.MaterialButton android:id="@+id/finance_history" style="@style/StitchButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Explorar histórico completo" app:icon="@drawable/st_history" android:layout_marginTop="12dp" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/finance_history" style="@style/StitchButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Historial" app:icon="@drawable/st_history" android:layout_marginTop="12dp" />
             </LinearLayout>
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_card" android:padding="16dp" android:layout_marginTop="16dp">
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
@@ -175,3 +177,4 @@
         </LinearLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

@@ -97,6 +97,10 @@
             name="boxCornerRadiusBottomEnd">14dp</item>
         <item
             name="boxBackgroundColor">@color/surface_container_lowest</item>
+        <item name="startIconTint">@color/secondary</item>
+        <item name="hintTextColor">@color/on_surface_variant</item>
+        <item name="boxStrokeColor">@color/outline_variant</item>
+        <item name="android:fontFamily">@font/inter</item>
     </style>
     <style
         name="MobileBadge"

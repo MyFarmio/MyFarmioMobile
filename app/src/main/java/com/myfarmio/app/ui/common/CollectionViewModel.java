@@ -24,17 +24,27 @@ public class CollectionViewModel extends ViewModel {
     public final MutableLiveData<State> state = new MutableLiveData<>(new State(new ArrayList<>(), false, false, null));
     private Call<List<Map<String, Object>>> pending;
     private String organization;
+    private String currentModule;
     public void load(String module, String orgId, boolean force) {
         State current = state.getValue();
-        if (current == null || current.loading) return;
+        if (current == null) current = new State(new ArrayList<>(), false, false, null);
+        boolean changed = !java.util.Objects.equals(orgId, organization) || !java.util.Objects.equals(module, currentModule);
+        if (changed && pending != null) pending.cancel();
+        if (!changed && current.loading) return;
         if (orgId == null || orgId.trim().isEmpty()) {
             state.setValue(new State(new ArrayList<>(), false, false,
                 "No hay una organización activa en esta sesión. Volvé a iniciar sesión para consultar tus datos."));
             return;
         }
-        if (!orgId.equals(organization)) {
+        if (!SupabaseConfig.isConfigured()) {
+            state.setValue(new State(new ArrayList<>(), false, false,
+                "Falta configurar la URL y la clave anon del proyecto Supabase."));
+            return;
+        }
+        if (changed) {
             current = new State(new ArrayList<>(), false, false, null);
             organization = orgId;
+            currentModule = module;
         }
         if (current.loaded && !force) return;
         final State previous = current;
@@ -42,7 +52,9 @@ public class CollectionViewModel extends ViewModel {
         switch (module) {
             case "tasks": pending = api.getTasks("eq." + orgId, "is.null", "*"); break;
             case "fields": pending = api.getPlots("eq." + orgId, "is.null", "*"); break;
-            case "finance": pending = api.getFinance("eq." + orgId, "is.null", "*"); break;
+            case "animals": pending = api.getAnimals("eq." + orgId, "is.null", "*"); break;
+            case "finance": pending = api.getFinance("eq." + orgId, "is.null", "*", "date.desc,created_at.desc,id.desc"); break;
+            case "inventory": pending = api.getInventory("eq." + orgId, "is.null", "*"); break;
             default: pending = api.getHerds("eq." + orgId, "is.null", "*"); break;
         }
         state.setValue(new State(previous.rows, true, previous.loaded, null));

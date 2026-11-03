@@ -22,7 +22,7 @@ public class MobileLayoutsTest {
             LayoutInflater inflater = LayoutInflater.from(themed);
             int[] layouts = {R.layout.fragment_dashboard, R.layout.fragment_tasks, R.layout.fragment_fields,
                 R.layout.fragment_livestock, R.layout.fragment_secondary,
-                R.layout.fragment_climate, R.layout.fragment_profile, R.layout.fragment_login, R.layout.sheet_mobile,
+                R.layout.fragment_climate, R.layout.fragment_profile, R.layout.fragment_login, R.layout.fragment_finance_history, R.layout.sheet_mobile,
                 R.layout.item_mobile_record, R.layout.item_mobile_summary,
                 R.layout.item_stitch_plot, R.layout.item_stitch_herd, R.layout.item_stitch_animal,
                 R.layout.item_stitch_supply, R.layout.item_stitch_transaction,

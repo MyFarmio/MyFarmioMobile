@@ -46,6 +46,16 @@
         <item name="textAppearanceBodyMedium">@style/TextAppearance.MyFarmio.BodyMedium</item>
         <item name="textAppearanceLabelMedium">@style/TextAppearance.MyFarmio.LabelMedium</item>
     </style>
+    <style name="Theme.MyFarmio.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_iconmyfarmio</item>
+        <item name="windowSplashScreenAnimationDuration">400</item>
+        <item name="postSplashScreenTheme">@style/Theme.MyFarmio</item>
+        <item name="android:statusBarColor">@color/splash_background</item>
+        <item name="android:navigationBarColor">@color/splash_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
 
     <!-- Tipografías -->
     <style name="TextAppearance.MyFarmio.DisplayLarge" parent="TextAppearance.Material3.DisplayLarge">

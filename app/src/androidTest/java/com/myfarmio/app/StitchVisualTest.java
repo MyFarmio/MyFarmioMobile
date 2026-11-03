@@ -16,24 +16,18 @@ import org.junit.runner.RunWith;
 import java.io.*;
 import static org.junit.Assert.*;
 
-/** Opt-in UI smoke/capture test. Never replaces a real user's session. */
+/** Opt-in UI smoke/capture test. Uses an existing real session and never changes backend data. */
 @RunWith(AndroidJUnit4.class)
 public class StitchVisualTest {
     private final Instrumentation instrumentation=InstrumentationRegistry.getInstrumentation();
-    @Test public void demoLoginNavigationScreensAndSpeedDial() throws Exception {
-        Assume.assumeTrue("Pass -e visualDemo true on a disposable emulator",Boolean.parseBoolean(InstrumentationRegistry.getArguments().getString("visualDemo","false")));
+    @Test public void authenticatedNavigationScreensAndSpeedDial() throws Exception {
+        Assume.assumeTrue("Pass -e visualDemo true on a configured emulator",Boolean.parseBoolean(InstrumentationRegistry.getArguments().getString("visualDemo","false")));
         SessionManager session=SessionManager.getInstance(instrumentation.getTargetContext());
-        Assume.assumeTrue("Do not alter real sessions",!session.isLoggedIn()||"demo-user-id".equals(session.getUserId()));
+        Assume.assumeTrue("Requires an existing non-demo session",session.isLoggedIn()&&!"demo-user-id".equals(session.getUserId()));
         try(ActivityScenario<MainActivity> scenario=ActivityScenario.launch(MainActivity.class)) {
             Thread.sleep(1200); instrumentation.waitForIdleSync();
-            if(!session.isLoggedIn()) {
-                scenario.onActivity(activity->((NavHostFragment)activity.getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment)).getNavController().navigate(R.id.loginFragment));
-                instrumentation.waitForIdleSync();
-                scenario.onActivity(activity->{assertNotNull(activity.findViewById(R.id.button_demo));activity.findViewById(R.id.button_demo).performClick();});
-                Thread.sleep(1200);instrumentation.waitForIdleSync();
-            }
-            int[] routes={R.id.nav_dashboard,R.id.nav_campos,R.id.nav_ganado,R.id.nav_inventario,R.id.nav_finanzas,R.id.nav_clima,R.id.nav_perfil};
-            String[] names={"dashboard","campos","ganado","inventario","finanzas","clima","perfil"};
+            int[] routes={R.id.nav_dashboard,R.id.nav_campos,R.id.nav_ganado,R.id.nav_tareas,R.id.nav_inventario,R.id.nav_finanzas,R.id.nav_finance_history,R.id.nav_clima,R.id.nav_perfil};
+            String[] names={"dashboard","campos","ganado","tareas","inventario","finanzas","historial","clima","perfil"};
             for(int i=0;i<routes.length;i++) {
                 final int route=routes[i];
                 scenario.onActivity(activity->host(activity).getNavController().navigate(route));

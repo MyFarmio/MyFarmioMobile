@@ -97,6 +97,10 @@ public class DashboardViewModel extends AndroidViewModel {
             error.postValue("Organization id is required");
             return;
         }
+        if (!SupabaseConfig.isConfigured()) {
+            error.postValue("Falta configurar la URL y la clave anon del proyecto Supabase.");
+            return;
+        }
 
         isLoading.postValue(true);
         error.postValue(null);
@@ -226,7 +230,7 @@ public class DashboardViewModel extends AndroidViewModel {
         });
 
         // Finance (optional)
-        Call<List<Map<String, Object>>> financeCall = api.getFinance("eq." + orgId, "is.null", "id,movement_type,amount,status");
+        Call<List<Map<String, Object>>> financeCall = api.getFinance("eq." + orgId, "is.null", "id,movement_type,amount,status", "date.desc,created_at.desc,id.desc");
         financeCall.enqueue(new Callback<List<Map<String, Object>>>() {
             @Override
             public void onResponse(Call<List<Map<String, Object>>> call, Response<List<Map<String, Object>>> response) {
