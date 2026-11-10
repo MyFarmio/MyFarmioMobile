@@ -7,6 +7,7 @@ import androidx.security.crypto.MasterKey;
 import com.myfarmio.app.network.SupabaseConfig;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.security.KeyStore;
 
 public class SessionManager {
 
@@ -18,27 +19,62 @@ public class SessionManager {
     private static final String KEY_USER_NAME = "user_name";
     private static final String KEY_ORG_ID = "organization_id";
     private static final String KEY_ORG_NAME = "organization_name";
+    private static final String KEY_OAUTH_VERIFIER = "oauth_verifier";
 
     private SharedPreferences prefs;
     private static SessionManager instance;
 
     private SessionManager(Context context) {
         try {
-            MasterKey masterKey = new MasterKey.Builder(context)
-                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                .build();
-
-            prefs = EncryptedSharedPreferences.create(
-                context,
-                PREFS_NAME,
-                masterKey,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            );
-        } catch (GeneralSecurityException | IOException e) {
-            // Fallback a SharedPreferences normales si falla el cifrado
-            prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+            // App data can be cleared while the Android Keystore alias survives on
+            // some devices. That orphaned key blocks MasterKey during startup.
+            if (context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getAll().isEmpty()) {
+                deleteMasterKey();
+            }
+            prefs = createEncryptedPreferences(context);
+            // EncryptedSharedPreferences opens lazily. Reading once here detects
+            // restored/corrupt ciphertext before it can crash the splash screen.
+            prefs.getAll();
+        } catch (GeneralSecurityException | IOException | RuntimeException damagedPreferences) {
+            context.deleteSharedPreferences(PREFS_NAME);
+            deleteMasterKey();
+            try {
+                prefs = createEncryptedPreferences(context);
+            } catch (GeneralSecurityException | IOException encryptionUnavailable) {
+                // Keep an unreadable encrypted file separate from the emergency store.
+                prefs = context.getSharedPreferences(PREFS_NAME + "_fallback", Context.MODE_PRIVATE);
+            }
         }
+        String storedUserId = prefs.getString(KEY_USER_ID, null);
+        String storedToken = prefs.getString(KEY_ACCESS_TOKEN, null);
+        if ("demo-user-id".equals(storedUserId) || "user-test-001".equals(storedUserId)
+            || storedToken != null && (storedToken.startsWith("demo-") || storedToken.startsWith("fake_token_"))) {
+            prefs.edit().clear().apply();
+        }
+    }
+
+    private void deleteMasterKey() {
+        try {
+            KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+            keyStore.load(null);
+            keyStore.deleteEntry(MasterKey.DEFAULT_MASTER_KEY_ALIAS);
+        } catch (Exception ignored) {
+            // The separate fallback preferences below still let the app start.
+        }
+    }
+
+    private SharedPreferences createEncryptedPreferences(Context context)
+            throws GeneralSecurityException, IOException {
+        MasterKey masterKey = new MasterKey.Builder(context)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build();
+        return EncryptedSharedPreferences.create(
+            context,
+            PREFS_NAME,
+            masterKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        );
     }
 
     public static synchronized SessionManager getInstance(Context context) {
@@ -98,8 +134,18 @@ public class SessionManager {
         return prefs.getString(KEY_ORG_NAME, null);
     }
 
+    public void savePendingOAuth(String verifier) { prefs.edit().putString(KEY_OAUTH_VERIFIER, verifier).apply(); }
+
+    public String getPendingOAuthVerifier() { return prefs.getString(KEY_OAUTH_VERIFIER, null); }
+    public void clearPendingOAuth() { prefs.edit().remove(KEY_OAUTH_VERIFIER).apply(); }
+
     public void clearSession() {
         prefs.edit().clear().apply();
         SupabaseConfig.clearAuthToken();
+    }
+
+    public void updateAuthTokens(String accessToken, String refreshToken) {
+        prefs.edit().putString(KEY_ACCESS_TOKEN, accessToken).putString(KEY_REFRESH_TOKEN, refreshToken).apply();
+        SupabaseConfig.setAuthToken(accessToken);
     }
 }

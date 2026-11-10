@@ -1,98 +1,150 @@
 package com.myfarmio.app.ui.auth;
 
 import android.content.Context;
+import android.content.Intent;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.LinearLayout;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.appcompat.content.res.AppCompatResources;
-
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.myfarmio.app.R;
+import com.myfarmio.app.ui.common.MobileUi;
 
 public class LoginFragment extends Fragment {
-
     private LoginViewModel viewModel;
+    private MobileUi.Sheet sheet;
+    private ActivityResultLauncher<String[]> locationPermission;
+    private boolean loginTransitionStarted;
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_login, container, false);
+    @Override public void onCreate(@Nullable Bundle state) {
+        super.onCreate(state);
+        locationPermission = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), grants -> {
+            // Weather is optional; continue signing in even when location is denied.
+            navigateToMain();
+        });
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        TextInputEditText inputEmail = view.findViewById(R.id.input_email);
-        TextInputEditText inputPassword = view.findViewById(R.id.input_password);
-        MaterialButton buttonSubmit = view.findViewById(R.id.button_submit);
-        LinearLayout buttonGoogle = view.findViewById(R.id.button_google);
-        viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
-
+    @Nullable @Override public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup parent, @Nullable Bundle state) {
+        return inflater.inflate(R.layout.fragment_login, parent, false);
+    }
+    @Override public void onViewCreated(@NonNull View view, @Nullable Bundle state) {
+        super.onViewCreated(view, state);
+        TextInputEditText email = view.findViewById(R.id.input_email);
+        TextInputEditText password = view.findViewById(R.id.input_password);
+        TextInputLayout emailLayout = view.findViewById(R.id.login_email_layout);
+        TextInputLayout passwordLayout = view.findViewById(R.id.login_password_layout);
+        MaterialButton submit = view.findViewById(R.id.button_submit);
+        MaterialButton google = view.findViewById(R.id.button_google);
+        viewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
         viewModel.isLoading.observe(getViewLifecycleOwner(), loading -> {
-            boolean busy = loading != null && loading;
-            buttonSubmit.setEnabled(!busy);
-            buttonGoogle.setEnabled(!busy);
-            buttonSubmit.setText(busy ? "" : getString(R.string.enter_system));
-            buttonSubmit.setIcon(busy ? null : AppCompatResources.getDrawable(requireContext(), R.drawable.ic_flecha_derecha_circulo));
-            buttonSubmit.setIconGravity(MaterialButton.ICON_GRAVITY_TEXT_END);
-            buttonSubmit.setIconPadding(10);
-            buttonSubmit.setIconSize(20);
+            boolean busy = Boolean.TRUE.equals(loading);
+            google.setEnabled(!busy);
+            submit.setEnabled(!busy); email.setEnabled(!busy); password.setEnabled(!busy);
+            submit.setText(busy ? R.string.login_loading_action : R.string.enter_system);
+            view.findViewById(R.id.login_progress).setVisibility(busy ? View.VISIBLE : View.INVISIBLE);
         });
-
-        viewModel.errorMessage.observe(getViewLifecycleOwner(), msg -> {
-            View errorView = view.findViewById(R.id.text_error_general);
-            if (msg != null && !msg.isEmpty()) {
-                errorView.setVisibility(View.VISIBLE);
-                ((android.widget.TextView) errorView).setText(msg);
-            } else {
-                errorView.setVisibility(View.GONE);
-            }
+        viewModel.errorMessage.observe(getViewLifecycleOwner(), message -> {
+            boolean present = message != null && !message.isEmpty();
+            view.findViewById(R.id.text_error_general).setVisibility(present ? View.VISIBLE : View.GONE);
+            MobileUi.text(view, R.id.text_error_general, message);
         });
-
         viewModel.loginSuccess.observe(getViewLifecycleOwner(), success -> {
-            if (success != null && success) {
-                NavController navController = Navigation.findNavController(view);
-                navController.navigate(R.id.action_login_to_main);
+            if (Boolean.TRUE.equals(success) && Navigation.findNavController(view).getCurrentDestination() != null
+                && Navigation.findNavController(view).getCurrentDestination().getId() == R.id.loginFragment) {
+                continueAfterLogin();
             }
         });
-
-        buttonSubmit.setOnClickListener(v -> {
-            hideKeyboard();
-
-            String email = inputEmail.getText() != null ? inputEmail.getText().toString().trim() : "";
-            String password = inputPassword.getText() != null ? inputPassword.getText().toString() : "";
-
-            if (email.isEmpty() || password.isEmpty()) {
-                viewModel.errorMessage.setValue(getString(R.string.login_error_fields));
+        submit.setOnClickListener(v -> {
+            if (Boolean.TRUE.equals(viewModel.isLoading.getValue())) return;
+            String mail = email.getText() == null ? "" : email.getText().toString().trim();
+            String secret = password.getText() == null ? "" : password.getText().toString();
+            emailLayout.setError(null); passwordLayout.setError(null);
+            boolean validEmail = Patterns.EMAIL_ADDRESS.matcher(mail).matches();
+            if (!validEmail) emailLayout.setError(getString(R.string.login_email_invalid));
+            if (secret.isEmpty()) passwordLayout.setError(getString(R.string.login_password_missing));
+            if (!validEmail || secret.isEmpty()) {
+                if (!validEmail) email.requestFocus(); else password.requestFocus();
                 return;
             }
-
-            viewModel.login(email, password, requireContext());
+            hideKeyboard();
+            // Preserve existing login service, session storage and error mapping.
+            viewModel.login(mail, secret, requireContext());
         });
-
-        buttonGoogle.setOnClickListener(v ->
-            Toast.makeText(requireContext(), getString(R.string.google_button_soon), Toast.LENGTH_SHORT).show()
-        );
+        password.setOnEditorActionListener((v, action, event) -> {
+            if (action == EditorInfo.IME_ACTION_DONE) { submit.performClick(); return true; }
+            return false;
+        });
+        view.findViewById(R.id.button_recovery_help).setOnClickListener(v -> {
+            hideKeyboard();
+            if (sheet != null) sheet.dismiss();
+            sheet = new MobileUi.Sheet(requireContext(), "Recuperar acceso");
+            sheet.row("Desde la versión web", "La recuperación de contraseña todavía no está conectada en Android. Usá la opción de recuperación de la web de MyFarmio.");
+            sheet.row("Tu contraseña", "No se envía ninguna solicitud al abrir esta ayuda.");
+            // TODO: Conectar recuperación cuando exista el flujo autorizado en Android.
+            sheet.show();
+        });
+        google.setOnClickListener(v -> {
+            if (Boolean.TRUE.equals(viewModel.isLoading.getValue())) return;
+            hideKeyboard();
+            try {
+                Uri authorizationUrl = viewModel.startGoogleOAuth(requireContext());
+                startActivity(new Intent(Intent.ACTION_VIEW, authorizationUrl));
+            } catch (Exception error) {
+                viewModel.cancelGoogleIfPending(requireContext());
+                viewModel.errorMessage.setValue(error instanceof android.content.ActivityNotFoundException
+                    ? getString(R.string.login_browser_missing) : getString(R.string.login_google_error));
+            }
+        });
+        MobileUi.enter(view.findViewById(R.id.login_card));
+        MobileUi.enter(view.findViewById(R.id.login_logo));
     }
-
+    @Override public void onResume() {
+        super.onResume();
+        android.net.Uri callback = requireActivity().getIntent() == null ? null : requireActivity().getIntent().getData();
+        boolean returningFromAuth = callback != null && "com.myfarmio.app".equals(callback.getScheme())
+            && "auth".equals(callback.getHost()) && "/callback".equals(callback.getPath());
+        if (viewModel != null && !returningFromAuth) viewModel.cancelGoogleIfPending(requireContext());
+    }
     private void hideKeyboard() {
-        InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        View focused = getActivity() != null ? getActivity().getCurrentFocus() : null;
-        if (focused != null && imm != null) {
-            imm.hideSoftInputFromWindow(focused.getWindowToken(), 0);
+        InputMethodManager keyboard = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        View focused = requireActivity().getCurrentFocus();
+        if (keyboard != null && focused != null) keyboard.hideSoftInputFromWindow(focused.getWindowToken(), 0);
+    }
+    private void continueAfterLogin() {
+        if (loginTransitionStarted || !isAdded()) return;
+        loginTransitionStarted = true;
+        boolean coarse = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED;
+        boolean fine = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED;
+        if (coarse || fine) navigateToMain();
+        else locationPermission.launch(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION});
+    }
+    private void navigateToMain() {
+        if (!isAdded() || getView() == null) return;
+        androidx.navigation.NavController navigation = Navigation.findNavController(requireView());
+        if (navigation.getCurrentDestination() != null && navigation.getCurrentDestination().getId() == R.id.loginFragment) {
+            navigation.navigate(R.id.action_login_to_main);
         }
+    }
+    @Override public void onDestroyView() {
+        if (sheet != null) { sheet.dismiss(); sheet = null; }
+        super.onDestroyView();
     }
 }

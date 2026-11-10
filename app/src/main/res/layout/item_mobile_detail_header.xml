@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" style="@style/MobileCard"
+    android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="12dp">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal" android:padding="16dp">
+        <ImageView android:id="@+id/detail_header_icon" android:layout_width="48dp" android:layout_height="48dp" android:padding="12dp" android:background="@drawable/bg_mobile_detail_icon" android:importantForAccessibility="no" />
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:orientation="vertical">
+            <TextView android:id="@+id/detail_header_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/MobileSection" android:maxLines="2" android:ellipsize="end" />
+            <com.google.android.material.chip.Chip android:id="@+id/detail_header_status" style="@style/Widget.Material3.Chip.Assist" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:checkable="false" android:clickable="false" android:focusable="false" android:visibility="gone" />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

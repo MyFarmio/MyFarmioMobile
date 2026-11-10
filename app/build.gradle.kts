@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -15,7 +17,35 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Configure in local.properties (ignored by Git); never commit project keys.
+        val mobileLocalProperties = Properties().apply {
+            val localFile = rootProject.file("local.properties")
+            if (localFile.isFile) localFile.inputStream().use { load(it) }
+        }
+        val supabaseUrl = providers.gradleProperty("MYFARMIO_SUPABASE_URL")
+            .orElse(providers.environmentVariable("MYFARMIO_SUPABASE_URL"))
+            // Accept the original local.properties names as well, so existing
+            // developer setups are picked up without renaming local secrets.
+            .orElse(providers.provider {
+                mobileLocalProperties.getProperty("MYFARMIO_SUPABASE_URL")
+                    ?: mobileLocalProperties.getProperty("SUPABASE_URL", "")
+            }).get()
+        val supabaseAnonKey = providers.gradleProperty("MYFARMIO_SUPABASE_ANON_KEY")
+            .orElse(providers.environmentVariable("MYFARMIO_SUPABASE_ANON_KEY"))
+            .orElse(providers.provider {
+                mobileLocalProperties.getProperty("MYFARMIO_SUPABASE_ANON_KEY")
+                    ?: mobileLocalProperties.getProperty("SUPABASE_ANON_KEY", "")
+            }).get()
+
+        // Emit valid Java string literals even if a configured value contains
+        // a quote or backslash.
+        fun javaStringLiteral(value: String) = "\"${value.replace("\\", "\\\\").replace("\"", "\\\"")}\""
+        buildConfigField("String", "SUPABASE_URL", javaStringLiteral(supabaseUrl))
+        buildConfigField("String", "SUPABASE_ANON_KEY", javaStringLiteral(supabaseAnonKey))
     }
+
+    buildFeatures { buildConfig = true }
 
     buildTypes {
         release {
@@ -38,12 +68,23 @@ android {
     }
 }
 
+// The generated BuildConfig depends on local.properties, but AGP does not
+// otherwise know that this file affects the values above. Mark it as an input
+// so changing Supabase settings regenerates the APK configuration.
+tasks.configureEach {
+    if (name.endsWith("BuildConfig")) {
+        inputs.file(rootProject.file("local.properties"))
+    }
+}
+
 dependencies {
 
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation("com.airbnb.android:lottie:6.7.1")
+    implementation("androidx.core:core-splashscreen:1.0.1")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
@@ -76,4 +117,5 @@ dependencies {
 
     // SwipeRefreshLayout
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    implementation("androidx.work:work-runtime:2.9.1")
 }

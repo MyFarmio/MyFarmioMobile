@@ -1,14 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/nav_dashboard"
-        android:icon="@drawable/ic_panel_control"
-        android:title="Dashboard" />
-    <item
-        android:id="@+id/nav_tareas"
-        android:icon="@drawable/ic_lista_tareas"
-        android:title="Tareas" />
-    <item
-        android:id="@+id/nav_campos"
-        android:icon="@drawable/ic_planta_semillero"
-        android:title="Campos" />
+    <item android:id="@+id/nav_tareas" android:icon="@drawable/st_task_alt" android:title="@string/tasks_title" />
+    <item android:id="@+id/nav_campos" android:icon="@drawable/st_map" android:title="@string/nav_fields" />
+    <item android:id="@+id/nav_ganado" android:icon="@drawable/st_pets" android:title="@string/nav_livestock" />
+    <item android:id="@+id/nav_inventario" android:icon="@drawable/st_inventory_2" android:title="@string/nav_inventory" />
+    <item android:id="@+id/nav_finanzas" android:icon="@drawable/st_account_balance_wallet" android:title="@string/nav_finance" />
 </menu>

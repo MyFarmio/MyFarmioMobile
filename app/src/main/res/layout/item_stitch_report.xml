@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_inset" android:padding="12dp" android:layout_marginTop="12dp">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+        <TextView android:id="@+id/report_name" style="@style/StitchSection" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:textSize="14sp" />
+        <TextView android:id="@+id/report_status" style="@style/StitchBadge" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="LOCAL" android:background="@drawable/stitch_badge_success" android:paddingHorizontal="8dp" android:paddingVertical="4dp" />
+    </LinearLayout>
+    <TextView android:id="@+id/report_period" style="@style/StitchSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" />
+    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="12dp" android:background="@color/stitch_divider" />
+    <TextView android:id="@+id/report_balance" style="@style/StitchBody" android:layout_width="match_parent" android:layout_height="wrap_content" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="12dp">
+        <com.google.android.material.button.MaterialButton android:id="@+id/report_download" style="@style/StitchPrimaryButton" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Descargar PDF" app:icon="@drawable/st_download" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/report_view" style="@style/StitchButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ver" android:layout_marginStart="8dp" />
+    </LinearLayout>
+</LinearLayout>

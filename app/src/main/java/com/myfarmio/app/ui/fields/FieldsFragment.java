@@ -1,21 +1,12 @@
 package com.myfarmio.app.ui.fields;
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
+import com.myfarmio.app.ui.common.OperationalFragment;
 import com.myfarmio.app.R;
 
-public class FieldsFragment extends Fragment {
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_fields, container, false);
-    }
+/** Native Campos presentation backed by the existing read endpoint. */
+public class FieldsFragment extends OperationalFragment {
+    @Override protected int screenLayout() { return R.layout.fragment_fields; }
+    @Override protected String module() { return "fields"; }
+    @Override protected String title() { return "Campos"; }
+    @Override protected String searchHint() { return "Buscar lote, cultivo o zona"; }
 }

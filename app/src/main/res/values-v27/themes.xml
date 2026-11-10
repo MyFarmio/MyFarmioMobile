@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Base.Theme.MyFarmio" parent="Theme.Material3.DayNight.NoActionBar" />
+    <!-- This app ships a light palette only; avoid mixing dark widgets with light surfaces. -->
+    <style
+        name="Base.Theme.MyFarmio"
+        parent="Theme.Material3.Light.NoActionBar" />
 </resources>

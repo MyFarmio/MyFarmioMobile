@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_stitch_card" android:padding="16dp" android:layout_marginBottom="12dp" android:clickable="true" android:focusable="true" android:foreground="?attr/selectableItemBackground">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+        <TextView android:id="@+id/record_category" style="@style/StitchBadge" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/stitch_badge_neutral" android:paddingHorizontal="8dp" android:paddingVertical="4dp" />
+        <TextView android:id="@+id/record_title" style="@style/StitchSection" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:layout_marginHorizontal="8dp" />
+        <TextView android:id="@+id/record_status" style="@style/StitchBadge" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/stitch_badge_success" android:paddingHorizontal="8dp" android:paddingVertical="4dp" />
+    </LinearLayout>
+    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="12dp" android:background="@color/stitch_divider" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:baselineAligned="false">
+        <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical">
+            <TextView android:id="@+id/record_quantity" style="@style/StitchDisplay" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" />
+            <TextView style="@style/StitchMetricLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="CABEZAS" android:layout_marginTop="6dp" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical">
+            <TextView android:id="@+id/record_weight" style="@style/StitchDisplay" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="—" android:gravity="end" />
+            <TextView style="@style/StitchMetricLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="PESO PROMEDIO" android:gravity="end" android:layout_marginTop="6dp" />
+        </LinearLayout>
+    </LinearLayout>
+    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="12dp" android:background="@color/stitch_divider" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+        <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/st_location_on" app:tint="@color/stitch_primary" android:importantForAccessibility="no" />
+        <TextView android:id="@+id/record_location" style="@style/StitchBody" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:layout_marginStart="4dp" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/record_edit" style="@style/StitchButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Editar" android:layout_marginStart="8dp" app:strokeWidth="0dp" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/record_delete" style="@style/StitchButton" android:layout_width="44dp" android:layout_height="wrap_content" android:text="" app:icon="@drawable/st_delete" android:contentDescription="Eliminar rodeo" android:layout_marginStart="4dp" app:iconPadding="0dp" android:padding="10dp" app:backgroundTint="@color/error_container" app:iconTint="@color/error" app:strokeWidth="0dp" />
+    </LinearLayout>
+</LinearLayout>

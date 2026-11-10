@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="stitch_primary">#002B02</color>
+    <color name="stitch_selected">#EAF6DF</color>
+    <color name="stitch_success">#D7EED1</color>
+    <color name="stitch_divider">#E1E3DE</color>
+    <color name="stitch_caution">#FFD0C1</color>
+    <color name="stitch_warning_surface">#FFF2ED</color>
+    <color name="stitch_hero_cell">#224721</color>
+</resources>
