@@ -1,136 +1,199 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="@color/background"
-    android:clipToPadding="false">
-    <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent" android:layout_height="wrap_content">
-    <LinearLayout
-        android:layout_width="0dp"
-        app:layout_constraintWidth_max="560dp" app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp">
-        <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginTop="24dp"
-            android:src="@drawable/ic_iconmyfarmio"
-            android:importantForAccessibility="no" />
-        <TextView
-            android:layout_width="match_parent"
+    android:background="@drawable/bg_login"
+    android:clipToPadding="false"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/login_card"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="MyFarmio"
-            android:textAppearance="@style/MobileLabel" />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Tu campo, más cerca."
-            android:textAppearance="@style/MobileTitle"
-            android:accessibilityHeading="true" />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Ingresá con tu cuenta para continuar con la operación de tu campo."
-            android:textAppearance="@style/MobileBody" />
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/login_email_layout"
-            style="@style/MobileInput"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:hint="Correo electrónico"
-            app:errorEnabled="true">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/input_email"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="20dp"
+            app:cardBackgroundColor="@color/surface_container_lowest"
+            app:cardCornerRadius="28dp"
+            app:cardElevation="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_max="500dp"
+            app:strokeColor="@color/outline_variant"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="56dp"
-                android:inputType="textEmailAddress"
-                android:autofillHints="emailAddress"
-                android:imeOptions="actionNext"
-                android:singleLine="true" />
-        </com.google.android.material.textfield.TextInputLayout>
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/login_password_layout"
-            style="@style/MobileInput"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Contraseña"
-            app:endIconMode="password_toggle"
-            app:errorEnabled="true">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/input_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="56dp"
-                android:inputType="textPassword"
-                android:autofillHints="password"
-                android:imeOptions="actionDone"
-                android:singleLine="true"
-                android:saveEnabled="false" />
-        </com.google.android.material.textfield.TextInputLayout>
-        <TextView
-            android:id="@+id/text_error_general"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="14dp"
-            android:background="@drawable/bg_error"
-            android:textAppearance="@style/MobileBody"
-            android:textColor="@color/on_error_container"
-            android:visibility="gone"
-            android:accessibilityLiveRegion="assertive" />
-        <ProgressBar
-            android:id="@+id/login_progress"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:indeterminate="true"
-            android:indeterminateTint="@color/primary"
-            android:layout_marginTop="12dp"
-            android:visibility="invisible"
-            android:contentDescription="Iniciando sesión" />
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_submit"
-            style="@style/MobileButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="Ingresar"
-            android:accessibilityLiveRegion="polite" />
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_recovery_help"
-            style="@style/MobileQuietButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="¿Olvidaste tu contraseña?" />
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_google" style="@style/MobileOutlineButton"
-            android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp"
-            android:text="Ingresar con Google" android:enabled="false"
-            android:contentDescription="Ingresar con Google. Próximamente, no disponible." />
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:text="Google estará disponible próximamente." android:textAppearance="@style/MobileBody"
-            android:gravity="center" android:layout_marginTop="4dp" />
-        <View android:layout_width="match_parent" android:layout_height="1dp"
-            android:background="@color/outline_variant" android:layout_marginVertical="24dp" />
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:text="Conocé MyFarmio antes de empezar" android:textAppearance="@style/MobileSection" />
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:text="Recorré un campo de ejemplo. Los cambios de la demo no se guardan en tu organización."
-            android:textAppearance="@style/MobileBody" android:layout_marginTop="8dp" />
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_demo" style="@style/MobileOutlineButton"
-            android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp"
-            android:layout_marginTop="16dp" android:text="Explorar demostración" />
-    </LinearLayout>
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingHorizontal="26dp"
+                android:paddingTop="28dp"
+                android:paddingBottom="24dp">
+
+                <ImageView
+                    android:id="@+id/login_logo"
+                    android:layout_width="76dp"
+                    android:layout_height="76dp"
+                    android:contentDescription="@string/app_name"
+                    android:src="@drawable/ic_iconmyfarmio" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:accessibilityHeading="true"
+                    android:gravity="center"
+                    android:text="@string/login_title"
+                    android:textAppearance="@style/MobileTitle" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
+                    android:text="@string/login_subtitle"
+                    android:textAppearance="@style/MobileBody" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/login_email_layout"
+                    style="@style/MobileInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:hint="@string/login_email_label"
+                    app:errorEnabled="true"
+                    app:startIconDrawable="@drawable/st_mail"
+                    app:startIconTint="@color/secondary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/input_email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:autofillHints="emailAddress"
+                        android:imeOptions="actionNext"
+                        android:inputType="textEmailAddress"
+                        android:minHeight="56dp"
+                        android:singleLine="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/login_password_layout"
+                    style="@style/MobileInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="@string/password_hint"
+                    app:endIconMode="password_toggle"
+                    app:errorEnabled="true"
+                    app:startIconDrawable="@drawable/st_key"
+                    app:startIconTint="@color/secondary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/input_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:autofillHints="password"
+                        android:imeOptions="actionDone"
+                        android:inputType="textPassword"
+                        android:minHeight="56dp"
+                        android:saveEnabled="false"
+                        android:singleLine="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/button_recovery_help"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:gravity="end|center_vertical"
+                    android:minHeight="44dp"
+                    android:paddingVertical="8dp"
+                    android:text="@string/login_recovery"
+                    android:textColor="@color/primary"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/text_error_general"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_error"
+                    android:accessibilityLiveRegion="assertive"
+                    android:padding="12dp"
+                    android:textAppearance="@style/MobileBody"
+                    android:textColor="@color/on_error_container"
+                    android:visibility="gone" />
+
+                <ProgressBar
+                    android:id="@+id/login_progress"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="3dp"
+                    android:layout_marginTop="8dp"
+                    android:contentDescription="@string/login_loading"
+                    android:indeterminate="true"
+                    android:indeterminateTint="@color/primary"
+                    android:visibility="invisible" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_submit"
+                    style="@style/MobileButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:minHeight="54dp"
+                    android:accessibilityLiveRegion="polite"
+                    android:text="@string/enter_system" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1"
+                        android:background="@color/outline_variant" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="12dp"
+                        android:text="@string/separator_o"
+                        android:textAppearance="@style/MobileBody" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1"
+                        android:background="@color/outline_variant" />
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_google"
+                    style="@style/MobileOutlineButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:contentDescription="@string/continue_google"
+                    android:minHeight="52dp"
+                    android:text="@string/continue_google"
+                    app:icon="@drawable/ic_google"
+                    app:iconGravity="textStart"
+                    app:iconPadding="8dp"
+                    app:iconTint="@null" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

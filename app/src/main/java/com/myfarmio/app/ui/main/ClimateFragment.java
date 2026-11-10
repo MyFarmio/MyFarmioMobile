@@ -1,69 +1,192 @@
 package com.myfarmio.app.ui.main;
-import static com.myfarmio.app.ui.common.RecordText.*;
+
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
-import android.view.*;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import androidx.annotation.*;
+import android.widget.TextView;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import com.myfarmio.app.R;
-import com.myfarmio.app.auth.SessionManager;
-import com.myfarmio.app.ui.common.*;
-import java.util.*;
+import com.myfarmio.app.data.weather.WeatherViewModel;
 
 public class ClimateFragment extends Fragment {
-    private MobileUi.Sheet sheet;
-    private WorkspaceViewModel workspace;
+    private WeatherViewModel weather;
     private View root;
-    @Nullable @Override public View onCreateView(@NonNull LayoutInflater inflater,@Nullable ViewGroup parent,@Nullable Bundle state) {
-        return inflater.inflate(R.layout.fragment_climate,parent,false);
-    }
-    @Override public void onViewCreated(@NonNull View view,@Nullable Bundle state) {
-        root=view;
-        workspace=new ViewModelProvider(requireActivity()).get(WorkspaceViewModel.class);
-        workspace.prepare(SessionManager.getInstance(requireContext()));
-        workspace.revision.observe(getViewLifecycleOwner(),revision->render());
-        view.findViewById(R.id.climate_register).setOnClickListener(v->{
-            if(sheet!=null) sheet.dismiss();
-            sheet=new MobileUi.Sheet(requireContext(),"Pluviometría y nota de campo");
-            if(workspace.isDemo()) StitchDemoEditor.bind(sheet,workspace,"rain_notes",Collections.emptyMap());
-            else { sheet.row("Sin conexión a una estación","No hay una estación disponible para registrar esta lectura."); sheet.primary("Entendido",sheet::dismiss); }
-            sheet.show();
+    private ActivityResultLauncher<String[]> locationPermission;
+    private LocationManager locationManager;
+    private LocationListener locationListener;
+    private boolean finePermissionRequested;
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private Runnable locationTimeout;
+
+    @Override public void onCreate(@Nullable Bundle state) {
+        super.onCreate(state);
+        locationPermission = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), grants -> {
+            boolean granted = Boolean.TRUE.equals(grants.get(Manifest.permission.ACCESS_COARSE_LOCATION))
+                || Boolean.TRUE.equals(grants.get(Manifest.permission.ACCESS_FINE_LOCATION));
+            if (granted) locate();
+            else showMessage(getString(R.string.climate_location_permission_denied));
         });
     }
-    private void render() {
-        Map<String,Object> data=StitchUi.demo(workspace,"weather");
-        int[] ids={R.id.climate_temperature,R.id.climate_condition,R.id.climate_updated,R.id.climate_value_0,R.id.climate_value_1,
-            R.id.climate_value_2,R.id.climate_value_3,R.id.climate_rain,R.id.climate_etp,R.id.climate_water_legend,
-            R.id.climate_plot,R.id.climate_crop,R.id.climate_stage,R.id.climate_recommendation};
-        String[] keys={"temperature","condition","updated","moisture","wind","pressure","uv","rain","etp","water_legend","plot","crop","stage","recommendation"};
-        for(int i=0;i<ids.length;i++) MobileUi.text(root,ids[i],or(data,keys[i],"Sin lectura disponible"));
-        MobileUi.text(root,R.id.climate_location,workspace.isDemo()?"EJEMPLO LOCAL · LOTE NORTE":"SIN ESTACIÓN");
-        StitchUi.progress(root,R.id.climate_water_progress,number(data,"water_percent"));
-        LinearLayout windows=root.findViewById(R.id.climate_windows); windows.removeAllViews();
-        LinearLayout alerts=root.findViewById(R.id.climate_alerts); alerts.removeAllViews();
-        if(workspace.isDemo()) {
-            for(Map<String,Object> item:workspace.records().list("windows")) {
-                View row=getLayoutInflater().inflate(R.layout.item_stitch_window,windows,false);
-                MobileUi.text(row,R.id.window_title,value(item,"name")); MobileUi.text(row,R.id.window_detail,value(item,"detail"));
-                StitchUi.badge(row,R.id.window_status,value(item,"status"),value(item,"status").equals("PRECAUCIÓN"),false);
-                android.widget.ImageView icon=(android.widget.ImageView)((android.view.ViewGroup)((android.view.ViewGroup)row).getChildAt(0)).getChildAt(0);
-                icon.setImageResource(value(item,"icon").equals("grass")?R.drawable.st_grass:value(item,"icon").equals("local_shipping")?R.drawable.st_local_shipping:R.drawable.st_agriculture);
-                windows.addView(row);
-            }
-            for(Map<String,Object> item:workspace.records().list("climate_alerts")) {
-                View row=getLayoutInflater().inflate(R.layout.item_stitch_climate_alert,alerts,false);
-                MobileUi.text(row,R.id.alert_title,value(item,"name")); MobileUi.text(row,R.id.alert_time,value(item,"time")); MobileUi.text(row,R.id.alert_body,value(item,"detail")); alerts.addView(row);
-            }
-        } else {
-            empty(windows,"No hay ventanas operativas disponibles."); empty(alerts,"Sin alertas climáticas consultadas.");
-        }
-        MobileUi.text(root,R.id.climate_note,workspace.isDemo()?"Demo local · "+workspace.records().list("rain_notes").size()+" notas guardadas durante esta sesión. No son mediciones de tu campo.":"Agregá una estación desde la web para consultar tus lecturas.");
-        // TODO: Conectar lecturas, ventanas y pluviometría sin mezclar la demo con datos reales.
-    }
-    private void empty(LinearLayout parent,String message) {
-        android.widget.TextView text=new android.widget.TextView(requireContext()); text.setTextAppearance(R.style.StitchBody); text.setText(message); text.setPadding(0,16,0,0); parent.addView(text);
-    }
-    @Override public void onDestroyView() { if(sheet!=null) { sheet.dismiss(); sheet=null; } root=null; super.onDestroyView(); }
-}
 
+    @Nullable @Override public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup parent, @Nullable Bundle state) {
+        return inflater.inflate(R.layout.fragment_climate, parent, false);
+    }
+
+    @Override public void onViewCreated(@NonNull View view, @Nullable Bundle state) {
+        root = view;
+        weather = new ViewModelProvider(requireActivity()).get(WeatherViewModel.class);
+        weather.state().observe(getViewLifecycleOwner(), this::render);
+        view.findViewById(R.id.climate_register).setOnClickListener(v -> refresh());
+        WeatherViewModel.State current = weather.state().getValue();
+        if (current == null) showMessage(getString(R.string.climate_location_permission_explanation));
+    }
+
+    private void refresh() {
+        if (!isAdded()) return;
+        boolean coarse = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED;
+        boolean fine = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED;
+        if (!coarse && !fine) {
+            showMessage(getString(R.string.climate_location_permission_prompt));
+            locationPermission.launch(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION});
+            return;
+        }
+        if (coarse && !fine && !finePermissionRequested) {
+            finePermissionRequested = true;
+            showMessage(getString(R.string.climate_location_precise_prompt));
+            locationPermission.launch(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION});
+            return;
+        }
+        locate();
+    }
+
+    private void locate() {
+        if (!isAdded() || root == null) return;
+        locationManager = (LocationManager) requireContext().getSystemService(Context.LOCATION_SERVICE);
+        if (locationManager == null) {
+            showMessage(getString(R.string.climate_location_enable));
+            return;
+        }
+        try {
+            boolean fine = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED;
+            List<String> providers = new ArrayList<>();
+            if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) providers.add(LocationManager.NETWORK_PROVIDER);
+            if (fine && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) providers.add(LocationManager.GPS_PROVIDER);
+            if (providers.isEmpty()) {
+                showMessage(getString(R.string.climate_location_enable));
+                return;
+            }
+            Location last = null;
+            for (String provider : providers) {
+                Location candidate = locationManager.getLastKnownLocation(provider);
+                if (candidate != null && (last == null || candidate.getTime() > last.getTime())) last = candidate;
+            }
+            if (last != null && System.currentTimeMillis() - last.getTime() < 5 * 60 * 1000L) {
+                fetch(last); return;
+            }
+            showMessage(getString(R.string.climate_location_searching));
+            locationListener = new LocationListener() {
+                @Override public void onLocationChanged(@NonNull Location location) {
+                    stopLocationUpdates();
+                    fetch(location);
+                }
+                @Override public void onProviderDisabled(@NonNull String provider) {
+                    stopLocationUpdates(); showMessage(getString(R.string.climate_location_enable));
+                }
+                @Override public void onProviderEnabled(@NonNull String provider) { }
+                @Override public void onStatusChanged(String provider, int status, Bundle extras) { }
+            };
+            for (String provider : providers) {
+                locationManager.requestLocationUpdates(provider, 0L, 0f, locationListener, Looper.getMainLooper());
+            }
+            locationTimeout = () -> {
+                stopLocationUpdates();
+                showMessage(getString(R.string.climate_location_timeout));
+            };
+            handler.postDelayed(locationTimeout, 15_000L);
+        } catch (SecurityException exception) {
+            showMessage(getString(R.string.climate_location_permission_error));
+        } catch (RuntimeException exception) {
+            showMessage(getString(R.string.climate_location_error));
+        }
+    }
+
+    private void fetch(Location location) {
+        if (weather != null) weather.load(location.getLatitude(), location.getLongitude());
+    }
+
+    private void render(WeatherViewModel.State state) {
+        if (root == null || state == null) return;
+        text(R.id.climate_location, state.location.toUpperCase());
+        text(R.id.climate_temperature, state.temperature);
+        text(R.id.climate_condition, state.condition);
+        text(R.id.climate_updated, state.updated);
+        text(R.id.climate_value_0, state.humidity);
+        text(R.id.climate_value_1, state.wind);
+        text(R.id.climate_value_2, state.pressure);
+        text(R.id.climate_value_3, state.uv);
+        text(R.id.climate_rain, state.rain);
+        text(R.id.climate_etp, state.et0);
+        text(R.id.climate_water_legend, getString(R.string.climate_water_soil_legend, state.soilMoisture));
+        root.findViewById(R.id.climate_water_progress).setVisibility(state.soilMoisture.startsWith("Sin ") ? View.GONE : View.VISIBLE);
+        com.myfarmio.app.ui.common.StitchUi.progress(root, R.id.climate_water_progress, state.soilPercent);
+        text(R.id.climate_plot, getString(R.string.climate_general_plot));
+        text(R.id.climate_crop, getString(R.string.climate_no_crop));
+        text(R.id.climate_stage, getString(R.string.climate_no_plot));
+        text(R.id.climate_recommendation, getString(R.string.climate_crop_recommendation_unavailable));
+        LinearLayout windows = root.findViewById(R.id.climate_windows);
+        LinearLayout alerts = root.findViewById(R.id.climate_alerts);
+        windows.removeAllViews(); alerts.removeAllViews();
+        empty(windows, getString(R.string.climate_weather_forecast_note));
+        empty(alerts, getString(R.string.climate_weather_alerts_empty));
+        if (state.error != null) showMessage(state.error);
+        else if (!state.loading) showMessage(getString(R.string.climate_weather_source));
+        com.google.android.material.button.MaterialButton button = root.findViewById(R.id.climate_register);
+        button.setEnabled(!state.loading);
+        button.setText(state.loading ? R.string.climate_update_loading : R.string.climate_update_button);
+    }
+
+    private void text(int id, String value) {
+        TextView view = root.findViewById(id);
+        view.setText(value == null || value.isEmpty() ? "—" : value);
+    }
+    private void showMessage(String message) {
+        if (root != null) text(R.id.climate_note, message);
+    }
+    private void empty(LinearLayout parent, String message) {
+        TextView text = new TextView(requireContext());
+        text.setTextAppearance(R.style.StitchBody); text.setText(message); text.setPadding(0, 16, 0, 0);
+        parent.addView(text);
+    }
+    private void stopLocationUpdates() {
+        if (locationTimeout != null) { handler.removeCallbacks(locationTimeout); locationTimeout = null; }
+        if (locationManager != null && locationListener != null) {
+            try { locationManager.removeUpdates(locationListener); } catch (SecurityException ignored) { }
+            locationListener = null;
+        }
+    }
+    @Override public void onDestroyView() {
+        stopLocationUpdates(); root = null; super.onDestroyView();
+    }
+}

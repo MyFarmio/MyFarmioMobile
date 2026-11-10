@@ -1,11 +1,13 @@
 package com.myfarmio.app.ui.main;
 
 import android.os.Bundle;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -21,6 +23,10 @@ import com.myfarmio.app.auth.SessionManager;
 import com.myfarmio.app.ui.common.MobileUi;
 import com.myfarmio.app.ui.common.OperationalFragment;
 import com.myfarmio.app.ui.common.WorkspaceViewModel;
+import com.myfarmio.app.data.weather.WeatherViewModel;
+import com.myfarmio.app.data.offline.OfflineConnectivity;
+import com.myfarmio.app.data.offline.OfflineStore;
+import com.myfarmio.app.data.offline.OfflineSyncScheduler;
 
 /** Post-login Stitch shell. Navigation and the existing child destinations remain native. */
 public class MainFragment extends Fragment {
@@ -32,6 +38,10 @@ public class MainFragment extends Fragment {
     private View root;
     private boolean speedDialOpen;
     private androidx.activity.OnBackPressedCallback dialBack;
+    private ConnectivityManager connectivityManager;
+    private ConnectivityManager.NetworkCallback networkCallback;
+    private OfflineStore offlineStore;
+    private SessionManager session;
 
     @Nullable @Override public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup parent, @Nullable Bundle state) {
         return inflater.inflate(R.layout.fragment_main, parent, false);
@@ -40,28 +50,50 @@ public class MainFragment extends Fragment {
     @Override public void onViewCreated(@NonNull View view, @Nullable Bundle state) {
         super.onViewCreated(view, state);
         root = view;
-        SessionManager session = SessionManager.getInstance(requireContext());
+        session = SessionManager.getInstance(requireContext());
+        offlineStore = OfflineStore.get(requireContext());
+        TextView offlineStatus = view.findViewById(R.id.offline_status);
+        offlineStatus.setOnClickListener(v -> {
+            if (offlineStore == null || session == null) return;
+            offlineStore.retryFailed(session.getUserId(), session.getOrganizationId());
+            OfflineSyncScheduler.schedule(requireContext());
+            updateOfflineStatus(view);
+        });
+        offlineStore.revision().observe(getViewLifecycleOwner(), revision -> updateOfflineStatus(view));
+        updateOfflineStatus(view);
+        connectivityManager = (ConnectivityManager) requireContext().getSystemService(android.content.Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            networkCallback = new ConnectivityManager.NetworkCallback() {
+                @Override public void onAvailable(@NonNull Network network) { view.post(() -> {
+                    updateOfflineStatus(view);
+                    if (isAdded()) OfflineSyncScheduler.schedule(requireContext());
+                }); }
+                @Override public void onLost(@NonNull Network network) { view.post(() -> updateOfflineStatus(view)); }
+                @Override public void onCapabilitiesChanged(@NonNull Network network, @NonNull NetworkCapabilities capabilities) { view.post(() -> updateOfflineStatus(view)); }
+            };
+            try { connectivityManager.registerDefaultNetworkCallback(networkCallback); }
+            catch (RuntimeException ignored) { networkCallback = null; }
+        }
         workspace = new ViewModelProvider(requireActivity()).get(WorkspaceViewModel.class);
         workspace.prepare(session);
-        String organization = session.getOrganizationName();
+        updateOfflineStatus(view);
+        WeatherViewModel weather = new ViewModelProvider(requireActivity()).get(WeatherViewModel.class);
+        weather.state().observe(getViewLifecycleOwner(), current -> {
+            String temperature = current == null ? "—" : current.temperature;
+            MobileUi.text(view, R.id.header_weather, temperature);
+        });
         workspace.revision.observe(getViewLifecycleOwner(), revision -> {
-            java.util.Map<String,Object> weather = com.myfarmio.app.ui.common.StitchUi.demo(workspace,"weather");
-            MobileUi.text(view,R.id.header_weather,com.myfarmio.app.ui.common.RecordText.or(weather,"temperature","—"));
             if(workspace.isDemo()) {
                 String demoName=com.myfarmio.app.ui.common.RecordText.or(com.myfarmio.app.ui.common.StitchUi.demo(workspace,"profile"),"name","Demo");
                 MobileUi.text(view,R.id.header_profile,demoName.substring(0,1).toUpperCase());
             }
-            if (navController == null || navController.getCurrentDestination() == null
-                || (navController.getCurrentDestination().getId() != R.id.nav_clima && navController.getCurrentDestination().getId() != R.id.nav_perfil))
-                MobileUi.text(view, R.id.header_organization, workspace.isDemo() ? "Mi campo demo · DEMO LOCAL"
-                    : organization == null || organization.isEmpty() ? "Sin organización activa" : organization);
         });
         String name = workspace.isDemo() ? com.myfarmio.app.ui.common.RecordText.or(com.myfarmio.app.ui.common.StitchUi.demo(workspace,"profile"),"name","Demo") : session.getUserName();
         if (name != null && !name.trim().isEmpty()) ((TextView) view.findViewById(R.id.header_profile)).setText(name.trim().substring(0, 1).toUpperCase());
         view.findViewById(R.id.header_profile).setOnClickListener(v -> destination(R.id.nav_perfil));
         view.findViewById(R.id.header_weather).setOnClickListener(v -> destination(R.id.nav_clima));
-        view.findViewById(R.id.header_logo).setOnClickListener(v -> {
-            if (navController != null && !navController.popBackStack()) destination(R.id.nav_dashboard);
+        view.findViewById(R.id.header_back).setOnClickListener(v -> {
+            if (navController != null && !navController.navigateUp()) destination(R.id.nav_dashboard);
         });
         host = (NavHostFragment) getChildFragmentManager().findFragmentById(R.id.main_nav_host);
         if (host == null) return;
@@ -75,19 +107,17 @@ public class MainFragment extends Fragment {
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),dialBack);
         destinationListener = (controller, destination, args) -> {
             closeSpeedDial();
-            MobileUi.enter(view.findViewById(R.id.main_nav_host));
+            MobileUi.transitionPage(view.findViewById(R.id.main_nav_host));
             int id = destination.getId();
+            if (id == R.id.nav_dashboard || id == R.id.nav_campos || id == R.id.nav_ganado
+                || id == R.id.nav_inventario || id == R.id.nav_finanzas) animateSelectedTab(bottomNav);
             bottomNav.setTag(R.id.nav_perfil, id == R.id.nav_perfil);
             bottomNav.setVisibility(id == R.id.nav_perfil ? View.GONE : View.VISIBLE);
-            boolean secondary = id == R.id.nav_perfil || id == R.id.nav_clima || id == R.id.nav_tareas;
-            ImageView logo = view.findViewById(R.id.header_logo);
-            logo.setImageResource(secondary ? R.drawable.ic_arrow_back_stitch : R.drawable.ic_iconmyfarmio);
-            logo.setContentDescription(secondary ? "Volver" : "MyFarmio");
-            MobileUi.text(view, R.id.header_brand, id == R.id.nav_perfil ? "Mi Perfil" : "MyFarmio");
-            if (secondary) MobileUi.text(view, R.id.header_organization, workspace.isDemo() ? "DEMO LOCAL" : id == R.id.nav_clima ? "AGROMETEOROLOGÍA" : "");
-            else MobileUi.text(view, R.id.header_organization, workspace.isDemo() ? "Mi campo demo · DEMO LOCAL" : organization == null ? "Sin organización activa" : organization);
+            boolean secondary = id == R.id.nav_perfil || id == R.id.nav_clima || id == R.id.nav_tareas || id == R.id.nav_finance_history;
+            view.findViewById(R.id.header_back).setVisibility(secondary ? View.VISIBLE : View.GONE);
             view.findViewById(R.id.header_weather).setVisibility(id == R.id.nav_perfil ? View.GONE : View.VISIBLE);
-            view.findViewById(R.id.main_fab).setVisibility(id == R.id.nav_perfil || id == R.id.nav_clima ? View.GONE : View.VISIBLE);
+            view.findViewById(R.id.main_fab).setVisibility(id == R.id.nav_perfil || id == R.id.nav_clima || id == R.id.nav_finance_history ? View.GONE : View.VISIBLE);
+            configureFabActions(id);
             if (secondary) {
                 for(int index=0;index<bottomNav.getMenu().size();index++) {
                     android.view.MenuItem item=bottomNav.getMenu().getItem(index);
@@ -100,9 +130,53 @@ public class MainFragment extends Fragment {
         fab.setOnClickListener(v -> setSpeedDial(!speedDialOpen));
         view.findViewById(R.id.fab_scrim).setOnClickListener(v -> closeSpeedDial());
         view.findViewById(R.id.fab_field).setOnClickListener(v -> quickCreate(R.id.nav_campos, false));
+        view.findViewById(R.id.fab_task).setOnClickListener(v -> quickCreate(R.id.nav_tareas, false));
         view.findViewById(R.id.fab_animal).setOnClickListener(v -> quickCreate(R.id.nav_ganado, true));
+        view.findViewById(R.id.fab_herd).setOnClickListener(v -> quickCreate(R.id.nav_ganado, false));
         view.findViewById(R.id.fab_supply).setOnClickListener(v -> quickSecondary(R.id.nav_inventario));
         view.findViewById(R.id.fab_movement).setOnClickListener(v -> quickSecondary(R.id.nav_finanzas));
+    }
+    private void animateSelectedTab(BottomNavigationView bottomNav) {
+        if (!android.animation.ValueAnimator.areAnimatorsEnabled() || !(bottomNav.getChildAt(0) instanceof android.view.ViewGroup)) return;
+        android.view.ViewGroup menuView = (android.view.ViewGroup) bottomNav.getChildAt(0);
+        for (int index = 0; index < bottomNav.getMenu().size() && index < menuView.getChildCount(); index++) {
+            if (!bottomNav.getMenu().getItem(index).isChecked()) continue;
+            View selected = menuView.getChildAt(index);
+            selected.animate().cancel();
+            selected.setScaleX(.92f); selected.setScaleY(.92f);
+            selected.animate().scaleX(1f).scaleY(1f)
+                .setDuration(260L)
+                .setInterpolator(new android.view.animation.OvershootInterpolator(1.15f))
+                .start();
+            return;
+        }
+    }
+    private void updateOfflineStatus(View view) {
+        if (!isAdded() || offlineStore == null || session == null || workspace == null) return;
+        TextView banner = view.findViewById(R.id.offline_status);
+        if (workspace.isDemo() || session.getUserId() == null || session.getOrganizationId() == null) {
+            banner.setVisibility(View.GONE);
+            return;
+        }
+        boolean online = OfflineConnectivity.isUsable(requireContext());
+        int pending = offlineStore.pendingCount(session.getUserId(), session.getOrganizationId());
+        int failed = offlineStore.failedCount(session.getUserId(), session.getOrganizationId());
+        if (failed > 0) banner.setText(getString(R.string.offline_failed_count, failed));
+        else if (!online && pending > 0) banner.setText(getString(R.string.offline_pending_count, pending));
+        else if (!online) banner.setText(R.string.offline_no_connection);
+        else if (pending > 0) banner.setText(getString(R.string.offline_syncing_count, pending));
+        banner.setVisibility(!online || pending > 0 ? View.VISIBLE : View.GONE);
+        banner.setAlpha(online && failed == 0 ? 0.82f : 1f);
+    }
+    private void configureFabActions(int destinationId) {
+        if (root == null) return;
+        boolean dashboard = destinationId == R.id.nav_dashboard;
+        root.findViewById(R.id.fab_field).setVisibility(dashboard || destinationId == R.id.nav_campos ? View.VISIBLE : View.GONE);
+        root.findViewById(R.id.fab_task).setVisibility(dashboard || destinationId == R.id.nav_tareas ? View.VISIBLE : View.GONE);
+        root.findViewById(R.id.fab_animal).setVisibility(dashboard || destinationId == R.id.nav_ganado ? View.VISIBLE : View.GONE);
+        root.findViewById(R.id.fab_herd).setVisibility(dashboard || destinationId == R.id.nav_ganado ? View.VISIBLE : View.GONE);
+        root.findViewById(R.id.fab_supply).setVisibility(dashboard || destinationId == R.id.nav_inventario ? View.VISIBLE : View.GONE);
+        root.findViewById(R.id.fab_movement).setVisibility(dashboard || destinationId == R.id.nav_finanzas ? View.VISIBLE : View.GONE);
     }
     private void quickSecondary(int route) {
         closeSpeedDial(); destination(route);
@@ -154,6 +228,10 @@ public class MainFragment extends Fragment {
         sheet.show();
     }
     @Override public void onDestroyView() {
+        if (connectivityManager != null && networkCallback != null) {
+            try { connectivityManager.unregisterNetworkCallback(networkCallback); } catch (RuntimeException ignored) { }
+        }
+        connectivityManager = null; networkCallback = null; offlineStore = null; session = null;
         if (sheet != null) { sheet.dismiss(); sheet = null; }
         if (navController != null && destinationListener != null) navController.removeOnDestinationChangedListener(destinationListener);
         root = null; host = null; navController = null; destinationListener = null; dialBack=null;

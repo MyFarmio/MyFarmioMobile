@@ -1,6 +1,10 @@
 package com.myfarmio.app.ui.auth;
 
 import android.content.Context;
+import android.content.Intent;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -10,6 +14,9 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -22,6 +29,17 @@ import com.myfarmio.app.ui.common.MobileUi;
 public class LoginFragment extends Fragment {
     private LoginViewModel viewModel;
     private MobileUi.Sheet sheet;
+    private ActivityResultLauncher<String[]> locationPermission;
+    private boolean loginTransitionStarted;
+
+    @Override public void onCreate(@Nullable Bundle state) {
+        super.onCreate(state);
+        locationPermission = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), grants -> {
+            // Weather is optional; continue signing in even when location is denied.
+            navigateToMain();
+        });
+    }
+
     @Nullable @Override public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup parent, @Nullable Bundle state) {
         return inflater.inflate(R.layout.fragment_login, parent, false);
     }
@@ -32,12 +50,13 @@ public class LoginFragment extends Fragment {
         TextInputLayout emailLayout = view.findViewById(R.id.login_email_layout);
         TextInputLayout passwordLayout = view.findViewById(R.id.login_password_layout);
         MaterialButton submit = view.findViewById(R.id.button_submit);
-        viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
+        MaterialButton google = view.findViewById(R.id.button_google);
+        viewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
         viewModel.isLoading.observe(getViewLifecycleOwner(), loading -> {
             boolean busy = Boolean.TRUE.equals(loading);
-            view.findViewById(R.id.button_demo).setEnabled(!busy);
+            google.setEnabled(!busy);
             submit.setEnabled(!busy); email.setEnabled(!busy); password.setEnabled(!busy);
-            submit.setText(busy ? "Ingresando…" : "Ingresar");
+            submit.setText(busy ? R.string.login_loading_action : R.string.enter_system);
             view.findViewById(R.id.login_progress).setVisibility(busy ? View.VISIBLE : View.INVISIBLE);
         });
         viewModel.errorMessage.observe(getViewLifecycleOwner(), message -> {
@@ -48,7 +67,7 @@ public class LoginFragment extends Fragment {
         viewModel.loginSuccess.observe(getViewLifecycleOwner(), success -> {
             if (Boolean.TRUE.equals(success) && Navigation.findNavController(view).getCurrentDestination() != null
                 && Navigation.findNavController(view).getCurrentDestination().getId() == R.id.loginFragment) {
-                Navigation.findNavController(view).navigate(R.id.action_login_to_main);
+                continueAfterLogin();
             }
         });
         submit.setOnClickListener(v -> {
@@ -57,8 +76,8 @@ public class LoginFragment extends Fragment {
             String secret = password.getText() == null ? "" : password.getText().toString();
             emailLayout.setError(null); passwordLayout.setError(null);
             boolean validEmail = Patterns.EMAIL_ADDRESS.matcher(mail).matches();
-            if (!validEmail) emailLayout.setError("Ingresá un correo válido.");
-            if (secret.isEmpty()) passwordLayout.setError("Ingresá tu contraseña.");
+            if (!validEmail) emailLayout.setError(getString(R.string.login_email_invalid));
+            if (secret.isEmpty()) passwordLayout.setError(getString(R.string.login_password_missing));
             if (!validEmail || secret.isEmpty()) {
                 if (!validEmail) email.requestFocus(); else password.requestFocus();
                 return;
@@ -80,19 +99,49 @@ public class LoginFragment extends Fragment {
             // TODO: Conectar recuperación cuando exista el flujo autorizado en Android.
             sheet.show();
         });
-        view.findViewById(R.id.button_demo).setOnClickListener(v -> {
+        google.setOnClickListener(v -> {
             if (Boolean.TRUE.equals(viewModel.isLoading.getValue())) return;
-            emailLayout.setError(null); passwordLayout.setError(null);
             hideKeyboard();
-            // Uses the pre-existing demo branch; never simulates a real account login.
-            viewModel.login(LoginViewModel.DEMO_EMAIL, LoginViewModel.DEMO_PASSWORD, requireContext());
+            try {
+                Uri authorizationUrl = viewModel.startGoogleOAuth(requireContext());
+                startActivity(new Intent(Intent.ACTION_VIEW, authorizationUrl));
+            } catch (Exception error) {
+                viewModel.cancelGoogleIfPending(requireContext());
+                viewModel.errorMessage.setValue(error instanceof android.content.ActivityNotFoundException
+                    ? getString(R.string.login_browser_missing) : getString(R.string.login_google_error));
+            }
         });
-        MobileUi.enter(submit);
+        MobileUi.enter(view.findViewById(R.id.login_card));
+        MobileUi.enter(view.findViewById(R.id.login_logo));
+    }
+    @Override public void onResume() {
+        super.onResume();
+        android.net.Uri callback = requireActivity().getIntent() == null ? null : requireActivity().getIntent().getData();
+        boolean returningFromAuth = callback != null && "com.myfarmio.app".equals(callback.getScheme())
+            && "auth".equals(callback.getHost()) && "/callback".equals(callback.getPath());
+        if (viewModel != null && !returningFromAuth) viewModel.cancelGoogleIfPending(requireContext());
     }
     private void hideKeyboard() {
         InputMethodManager keyboard = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         View focused = requireActivity().getCurrentFocus();
         if (keyboard != null && focused != null) keyboard.hideSoftInputFromWindow(focused.getWindowToken(), 0);
+    }
+    private void continueAfterLogin() {
+        if (loginTransitionStarted || !isAdded()) return;
+        loginTransitionStarted = true;
+        boolean coarse = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED;
+        boolean fine = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED;
+        if (coarse || fine) navigateToMain();
+        else locationPermission.launch(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION});
+    }
+    private void navigateToMain() {
+        if (!isAdded() || getView() == null) return;
+        androidx.navigation.NavController navigation = Navigation.findNavController(requireView());
+        if (navigation.getCurrentDestination() != null && navigation.getCurrentDestination().getId() == R.id.loginFragment) {
+            navigation.navigate(R.id.action_login_to_main);
+        }
     }
     @Override public void onDestroyView() {
         if (sheet != null) { sheet.dismiss(); sheet = null; }

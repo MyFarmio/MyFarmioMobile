@@ -19,6 +19,7 @@ public class SessionManager {
     private static final String KEY_USER_NAME = "user_name";
     private static final String KEY_ORG_ID = "organization_id";
     private static final String KEY_ORG_NAME = "organization_name";
+    private static final String KEY_OAUTH_VERIFIER = "oauth_verifier";
 
     private SharedPreferences prefs;
     private static SessionManager instance;
@@ -43,6 +44,12 @@ public class SessionManager {
                 // Keep an unreadable encrypted file separate from the emergency store.
                 prefs = context.getSharedPreferences(PREFS_NAME + "_fallback", Context.MODE_PRIVATE);
             }
+        }
+        String storedUserId = prefs.getString(KEY_USER_ID, null);
+        String storedToken = prefs.getString(KEY_ACCESS_TOKEN, null);
+        if ("demo-user-id".equals(storedUserId) || "user-test-001".equals(storedUserId)
+            || storedToken != null && (storedToken.startsWith("demo-") || storedToken.startsWith("fake_token_"))) {
+            prefs.edit().clear().apply();
         }
     }
 
@@ -127,8 +134,18 @@ public class SessionManager {
         return prefs.getString(KEY_ORG_NAME, null);
     }
 
+    public void savePendingOAuth(String verifier) { prefs.edit().putString(KEY_OAUTH_VERIFIER, verifier).apply(); }
+
+    public String getPendingOAuthVerifier() { return prefs.getString(KEY_OAUTH_VERIFIER, null); }
+    public void clearPendingOAuth() { prefs.edit().remove(KEY_OAUTH_VERIFIER).apply(); }
+
     public void clearSession() {
         prefs.edit().clear().apply();
         SupabaseConfig.clearAuthToken();
+    }
+
+    public void updateAuthTokens(String accessToken, String refreshToken) {
+        prefs.edit().putString(KEY_ACCESS_TOKEN, accessToken).putString(KEY_REFRESH_TOKEN, refreshToken).apply();
+        SupabaseConfig.setAuthToken(accessToken);
     }
 }

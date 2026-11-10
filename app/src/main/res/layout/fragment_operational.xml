@@ -87,13 +87,11 @@
             <LinearLayout android:id="@+id/collection_toolbar" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="16dp">
                 <com.google.android.material.button.MaterialButton android:id="@+id/collection_filter" style="@style/StitchButton" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Filtrar" app:icon="@drawable/st_tune" />
                 <com.google.android.material.button.MaterialButton android:id="@+id/collection_options" style="@style/StitchButton" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Opciones" app:icon="@drawable/st_expand_more" />
-                <com.google.android.material.button.MaterialButton android:id="@+id/collection_refresh" style="@style/StitchButton" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Actualizar" app:icon="@drawable/st_history" />
             </LinearLayout>
             <com.google.android.material.button.MaterialButtonToggleGroup android:id="@+id/collection_kind" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:visibility="gone" app:singleSelection="true" app:selectionRequired="true">
                 <com.google.android.material.button.MaterialButton android:id="@+id/kind_herds" style="@style/StitchButton" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Rodeos" />
                 <com.google.android.material.button.MaterialButton android:id="@+id/kind_animals" style="@style/StitchButton" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Animales" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
-            <com.google.android.material.button.MaterialButton android:id="@+id/collection_create" style="@style/StitchPrimaryButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Crear en demo" app:icon="@drawable/st_add_circle" android:layout_marginTop="12dp" android:visibility="gone" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

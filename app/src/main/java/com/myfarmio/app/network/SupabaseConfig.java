@@ -1,6 +1,7 @@
 package com.myfarmio.app.network;
 
 import java.io.IOException;
+import com.myfarmio.app.auth.SessionManager;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -12,27 +13,38 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SupabaseConfig {
 
-    // Proyecto Supabase de MyFarmio
-    public static final String SUPABASE_URL = "https://ledbqdwwxqfzaxfccvvo.supabase.co";
-    public static final String SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZGJxZHd3eHFmemF4ZmNjdnZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NTE5NDcsImV4cCI6MjA5NTMyNzk0N30.1sA37gNTpV3SZAuTomRZX8S4zv_Dd20BA7s67raRHfw";
+    public static final String SUPABASE_URL = com.myfarmio.app.BuildConfig.SUPABASE_URL;
+    public static final String SUPABASE_ANON_KEY = com.myfarmio.app.BuildConfig.SUPABASE_ANON_KEY;
 
     private static Retrofit retrofit = null;
     private static String authToken = null; // Se setea después del login
+    private static SessionManager sessionManager;
 
-    public static void setAuthToken(String token) {
+    public static synchronized void setSessionManager(SessionManager manager) {
+        sessionManager = manager;
+    }
+
+    public static boolean isConfigured() {
+        return SUPABASE_URL != null && !SUPABASE_URL.trim().isEmpty()
+            && SUPABASE_ANON_KEY != null && !SUPABASE_ANON_KEY.trim().isEmpty();
+    }
+
+    public static synchronized void setAuthToken(String token) {
         authToken = token;
         retrofit = null; // Forzar recreación con nuevo token
     }
 
-    public static void clearAuthToken() {
+    public static synchronized void clearAuthToken() {
         authToken = null;
         retrofit = null;
     }
 
-    public static Retrofit getRetrofit() {
+    public static synchronized Retrofit getRetrofit() {
         if (retrofit == null) {
+            if (!isConfigured()) throw new IllegalStateException("Configurá MYFARMIO_SUPABASE_URL y MYFARMIO_SUPABASE_ANON_KEY.");
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+            // Never log auth headers or record payloads in release builds.
+            logging.setLevel(HttpLoggingInterceptor.Level.NONE);
 
             OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
             httpClient.addInterceptor(logging);
@@ -42,9 +54,8 @@ public class SupabaseConfig {
                 @Override
                 public Response intercept(Chain chain) throws IOException {
                     Request original = chain.request();
-                    Request.Builder requestBuilder = original.newBuilder()
-                        .header("apikey", SUPABASE_ANON_KEY)
-                        .header("Prefer", "return=representation");
+                    Request.Builder requestBuilder = original.newBuilder().header("apikey", SUPABASE_ANON_KEY);
+                    if (original.header("Prefer") == null) requestBuilder.header("Prefer", "return=representation");
 
                     // Si hay token de sesión, lo agregamos
                     if (authToken != null && !authToken.isEmpty()) {
@@ -54,9 +65,10 @@ public class SupabaseConfig {
                     return chain.proceed(requestBuilder.build());
                 }
             });
+            httpClient.authenticator(new SupabaseSessionAuthenticator(sessionManager));
 
             retrofit = new Retrofit.Builder()
-                .baseUrl(SUPABASE_URL + "/")
+                .baseUrl(SUPABASE_URL.endsWith("/") ? SUPABASE_URL : SUPABASE_URL + "/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(httpClient.build())
                 .build();

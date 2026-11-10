@@ -9,9 +9,11 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.myfarmio.app.auth.SessionManager;
 import com.myfarmio.app.network.SupabaseConfig;
+import com.myfarmio.app.ui.auth.LoginViewModel;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,7 +21,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        androidx.core.splashscreen.SplashScreen splash=androidx.core.splashscreen.SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
+        splash.setOnExitAnimationListener(provider -> {
+            android.view.View splashView=provider.getView();
+            splashView.animate().alpha(0f).scaleX(.96f).scaleY(.96f).setDuration(180L)
+                .withEndAction(provider::remove).start();
+        });
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
@@ -50,6 +58,21 @@ public class MainActivity extends AppCompatActivity {
             // The activity owns the safe area; do not pad the bottom navigation a second time.
             return WindowInsetsCompat.CONSUMED;
         });
+        findViewById(R.id.main).post(this::handleAuthCallback);
+    }
+
+    @Override protected void onNewIntent(android.content.Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleAuthCallback();
+    }
+
+    private void handleAuthCallback() {
+        android.net.Uri callback = getIntent() == null ? null : getIntent().getData();
+        if (callback == null || !"com.myfarmio.app".equals(callback.getScheme())
+            || !"auth".equals(callback.getHost()) || !"/callback".equals(callback.getPath())) return;
+        setIntent(new android.content.Intent(this, MainActivity.class));
+        new ViewModelProvider(this).get(LoginViewModel.class).handleGoogleCallback(callback, this);
     }
 
     @Override
